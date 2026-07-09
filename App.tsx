@@ -229,8 +229,11 @@ function TodayScreen({
   const given = schedule.filter((dose) => dose.status === "given").length;
   const progress = schedule.length ? given / schedule.length : 0;
   const nextDose = schedule.find(
-    (dose) => dose.status !== "given" && dose.status !== "skipped",
+    (dose) => dose.status === "due" || dose.status === "upcoming",
   );
+  const missedDose = schedule.find((dose) => dose.status === "missed");
+  const highlightedDose = nextDose ?? missedDose;
+  const needsAttention = missedDose !== undefined;
   const dates = Array.from({ length: 5 }, (_, index) => {
     const date = new Date();
     date.setDate(date.getDate() + index);
@@ -263,21 +266,30 @@ function TodayScreen({
 
         <View style={styles.heroCopy}>
           <Text style={styles.heroEyebrow}>GOOD EVENING, MAYA</Text>
-          <Text style={styles.heroTitle}>Milo’s care is{"\n"}right on track.</Text>
+          <Text style={styles.heroTitle}>
+            {needsAttention
+              ? "A dose needs\nyour attention."
+              : "Milo’s care is\nright on track."}
+          </Text>
           <Text style={styles.heroSubtitle}>
             {given} of {schedule.length} doses complete today
           </Text>
-          {nextDose && (
+          {highlightedDose && (
             <View style={styles.nextDosePill}>
               <View
                 style={[
                   styles.nextDoseDot,
-                  { backgroundColor: nextDose.medication.color },
+                  {
+                    backgroundColor: needsAttention
+                      ? COLORS.coral
+                      : highlightedDose.medication.color,
+                  },
                 ]}
               />
               <Text style={styles.nextDoseText}>
-                Next · {nextDose.medication.name} at{" "}
-                {formatTime(nextDose.scheduledTime)}
+                {needsAttention ? "Due earlier" : "Next"} ·{" "}
+                {highlightedDose.medication.name} at{" "}
+                {formatTime(highlightedDose.scheduledTime)}
               </Text>
             </View>
           )}
