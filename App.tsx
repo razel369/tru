@@ -1,5 +1,13 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
+import { Fraunces_700Bold } from "@expo-google-fonts/fraunces";
+import {
+  Manrope_400Regular,
+  Manrope_600SemiBold,
+  Manrope_700Bold,
+  Manrope_800ExtraBold,
+} from "@expo-google-fonts/manrope";
+import { useFonts } from "expo-font";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useMemo, useState } from "react";
@@ -222,6 +230,9 @@ function TodayScreen({
 }) {
   const given = schedule.filter((dose) => dose.status === "given").length;
   const progress = schedule.length ? given / schedule.length : 0;
+  const nextDose = schedule.find(
+    (dose) => dose.status !== "given" && dose.status !== "skipped",
+  );
   const dates = Array.from({ length: 5 }, (_, index) => {
     const date = new Date();
     date.setDate(date.getDate() + index);
@@ -258,6 +269,20 @@ function TodayScreen({
           <Text style={styles.heroSubtitle}>
             {given} of {schedule.length} doses complete today
           </Text>
+          {nextDose && (
+            <View style={styles.nextDosePill}>
+              <View
+                style={[
+                  styles.nextDoseDot,
+                  { backgroundColor: nextDose.medication.color },
+                ]}
+              />
+              <Text style={styles.nextDoseText}>
+                Next · {nextDose.medication.name} at{" "}
+                {formatTime(nextDose.scheduledTime)}
+              </Text>
+            </View>
+          )}
         </View>
 
         <View style={styles.heroPet}>
@@ -1163,6 +1188,25 @@ function NavItem({
 }
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    Fraunces_700Bold,
+    Manrope_400Regular,
+    Manrope_600SemiBold,
+    Manrope_700Bold,
+    Manrope_800ExtraBold,
+  });
+
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.loadingScreen}>
+        <View style={styles.loadingMark}>
+          <Ionicons name="paw" size={24} color={COLORS.navy} />
+        </View>
+        <Text style={styles.loadingWordmark}>PawPair</Text>
+      </View>
+    );
+  }
+
   return (
     <SafeAreaProvider>
       <AppContent />
@@ -1175,104 +1219,110 @@ const styles = StyleSheet.create({
   addHeader: { alignItems: "center", flexDirection: "row", gap: 12, marginBottom: 20 },
   addIllustration: { alignItems: "center", backgroundColor: COLORS.butterSoft, borderRadius: 22, flexDirection: "row", gap: 14, marginBottom: 24, padding: 17 },
   addIllustrationCircle: { alignItems: "center", backgroundColor: COLORS.paper, borderRadius: 18, height: 58, justifyContent: "center", transform: [{ rotate: "-5deg" }], width: 58 },
-  addIllustrationCopy: { color: COLORS.muted, fontSize: 11, marginTop: 4 },
-  addIllustrationTitle: { color: COLORS.ink, fontSize: 15, fontWeight: "800" },
-  addTitle: { color: COLORS.ink, fontSize: 25, fontWeight: "900", letterSpacing: -0.8, marginTop: 2 },
+  addIllustrationCopy: { color: COLORS.muted, fontFamily: "Manrope_400Regular", fontSize: 11, marginTop: 4 },
+  addIllustrationTitle: { color: COLORS.ink, fontFamily: "Manrope_800ExtraBold", fontSize: 15 },
+  addTitle: { color: COLORS.ink, fontFamily: "Fraunces_700Bold", fontSize: 28, letterSpacing: -0.6, marginTop: 2 },
   app: { backgroundColor: COLORS.background, flex: 1 },
   appHeader: { alignItems: "center", flexDirection: "row", marginBottom: 24 },
   attentionCard: { alignItems: "center", backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 19, borderWidth: 1, flexDirection: "row", gap: 12, marginBottom: 10, padding: 15 },
-  attentionCopy: { color: COLORS.muted, fontSize: 11, marginTop: 4 },
+  attentionCopy: { color: COLORS.muted, fontFamily: "Manrope_400Regular", fontSize: 11, marginTop: 4 },
   attentionIcon: { alignItems: "center", backgroundColor: COLORS.coralSoft, borderRadius: 14, height: 46, justifyContent: "center", width: 46 },
-  attentionTitle: { color: COLORS.ink, fontSize: 13, fontWeight: "800" },
+  attentionTitle: { color: COLORS.ink, fontFamily: "Manrope_800ExtraBold", fontSize: 13 },
   bottomNav: { alignItems: "flex-end", backgroundColor: COLORS.paper, borderTopColor: COLORS.line, borderTopWidth: 1, flexDirection: "row", paddingHorizontal: 8, paddingTop: 8 },
   caregiverAvatar: { alignItems: "center", backgroundColor: COLORS.coral, borderColor: COLORS.navy, borderRadius: 17, borderWidth: 2, height: 34, justifyContent: "center", width: 34 },
   caregiverInitial: { color: COLORS.white, fontSize: 12, fontWeight: "900" },
   caregiverRow: { alignItems: "center", flexDirection: "row", marginTop: 20 },
   caregiverSecond: { backgroundColor: COLORS.sage, marginLeft: -8 },
   careTeamCard: { backgroundColor: COLORS.navy, borderRadius: 23, marginTop: 18, overflow: "hidden", padding: 20 },
-  careTeamKicker: { color: "#A9C9C0", fontSize: 9, fontWeight: "900", letterSpacing: 1.2 },
-  careTeamTitle: { color: COLORS.white, fontSize: 18, fontWeight: "900", marginTop: 5 },
+  careTeamKicker: { color: "#A9C9C0", fontFamily: "Manrope_800ExtraBold", fontSize: 9, letterSpacing: 1.2 },
+  careTeamTitle: { color: COLORS.white, fontFamily: "Fraunces_700Bold", fontSize: 20, marginTop: 5 },
   careTeamTop: { flexDirection: "row", justifyContent: "space-between" },
   chartPanel: { backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 23, borderWidth: 1, marginBottom: 24, padding: 18 },
   choiceCheck: { alignItems: "center", backgroundColor: COLORS.coral, borderRadius: 8, height: 16, justifyContent: "center", position: "absolute", right: 7, top: 7, width: 16 },
   closeButton: { alignItems: "center", backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 15, borderWidth: 1, height: 44, justifyContent: "center", width: 44 },
   contentSection: { paddingBottom: 28, paddingHorizontal: 18, paddingTop: 22 },
-  dateDay: { color: COLORS.muted, fontSize: 8, fontWeight: "900", letterSpacing: 0.6 },
+  dateDay: { color: COLORS.muted, fontFamily: "Manrope_800ExtraBold", fontSize: 8, letterSpacing: 0.6 },
   dateDayActive: { color: COLORS.coral },
   dateDot: { backgroundColor: COLORS.coral, borderRadius: 2, bottom: 5, height: 4, position: "absolute", width: 4 },
   dateItem: { alignItems: "center", borderRadius: 15, flex: 1, height: 60, justifyContent: "center", position: "relative" },
   dateItemActive: { backgroundColor: COLORS.coralSoft },
-  dateNumber: { color: COLORS.ink, fontSize: 17, fontWeight: "800", marginTop: 4 },
+  dateNumber: { color: COLORS.ink, fontFamily: "Manrope_800ExtraBold", fontSize: 17, marginTop: 4 },
   dateNumberActive: { color: COLORS.coral },
-  dateRail: { backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 20, borderWidth: 1, flexDirection: "row", padding: 5 },
+  dateRail: { backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 20, borderWidth: 1, elevation: 2, flexDirection: "row", padding: 5, shadowColor: COLORS.ink, shadowOffset: { height: 5, width: 0 }, shadowOpacity: 0.05, shadowRadius: 12 },
   dateRailWrap: { backgroundColor: COLORS.background, paddingHorizontal: 18, paddingTop: 12 },
   doseActions: { flexDirection: "row", gap: 9, marginTop: 14 },
-  doseCard: { backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 20, borderWidth: 1, flex: 1, marginBottom: 14, padding: 15 },
+  doseCard: { backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 20, borderWidth: 1, elevation: 1, flex: 1, marginBottom: 14, padding: 15, shadowColor: COLORS.ink, shadowOffset: { height: 5, width: 0 }, shadowOpacity: 0.035, shadowRadius: 10 },
   doseCardActive: { borderColor: "#F0A797", shadowColor: COLORS.coral, shadowOffset: { height: 5, width: 0 }, shadowOpacity: 0.08, shadowRadius: 14 },
   doseCardResolved: { backgroundColor: "#FAF9F5" },
-  doseTime: { color: COLORS.ink, fontSize: 10, fontWeight: "800", lineHeight: 13, textAlign: "center" },
+  doseTime: { color: COLORS.ink, fontFamily: "Manrope_800ExtraBold", fontSize: 10, lineHeight: 13, textAlign: "center" },
   doseTopRow: { alignItems: "center", flexDirection: "row" },
   flex: { flex: 1 },
   formCard: { backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 22, borderWidth: 1, marginTop: 5, padding: 17 },
   formChoice: { alignItems: "center", backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 14, borderWidth: 1, flexDirection: "row", gap: 7, paddingHorizontal: 13, paddingVertical: 11 },
   formChoiceActive: { backgroundColor: COLORS.coralSoft, borderColor: "#F0A797" },
   formChoiceRow: { gap: 8, paddingBottom: 18 },
-  formChoiceText: { color: COLORS.muted, fontSize: 11, fontWeight: "700" },
+  formChoiceText: { color: COLORS.muted, fontFamily: "Manrope_700Bold", fontSize: 11 },
   formChoiceTextActive: { color: COLORS.coral },
-  formInput: { color: COLORS.ink, flex: 1, fontSize: 14, fontWeight: "700", padding: 0 },
+  formInput: { color: COLORS.ink, flex: 1, fontFamily: "Manrope_700Bold", fontSize: 14, padding: 0 },
   formInputGroup: { marginBottom: 15 },
-  formInputLabel: { color: COLORS.ink, fontSize: 11, fontWeight: "800", marginBottom: 7 },
+  formInputLabel: { color: COLORS.ink, fontFamily: "Manrope_800ExtraBold", fontSize: 11, marginBottom: 7 },
   formInputShell: { alignItems: "center", backgroundColor: COLORS.background, borderColor: COLORS.line, borderRadius: 13, borderWidth: 1, flexDirection: "row", height: 50, paddingHorizontal: 13 },
-  formInputSuffix: { color: COLORS.muted, fontSize: 11, fontWeight: "700" },
-  formLabel: { color: COLORS.ink, fontSize: 12, fontWeight: "900", marginBottom: 10 },
+  formInputSuffix: { color: COLORS.muted, fontFamily: "Manrope_700Bold", fontSize: 11 },
+  formLabel: { color: COLORS.ink, fontFamily: "Manrope_800ExtraBold", fontSize: 12, marginBottom: 10 },
   formTwoColumns: { flexDirection: "row", gap: 10 },
   giveButton: { alignItems: "center", backgroundColor: COLORS.coral, borderRadius: 12, flex: 1.75, flexDirection: "row", gap: 7, justifyContent: "center", minHeight: 41 },
-  giveButtonText: { color: COLORS.white, fontSize: 11, fontWeight: "800" },
+  giveButtonText: { color: COLORS.white, fontFamily: "Manrope_800ExtraBold", fontSize: 11 },
   headerAction: { alignItems: "center", backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 15, borderWidth: 1, height: 44, justifyContent: "center", width: 44 },
   healthyDot: { backgroundColor: COLORS.sage, borderRadius: 4, height: 7, width: 7 },
   hero: { minHeight: 326, overflow: "hidden", paddingBottom: 20, paddingHorizontal: 20, position: "relative" },
   heroCopy: { marginTop: 30, zIndex: 2 },
-  heroEyebrow: { color: "#A9C9C0", fontSize: 9, fontWeight: "900", letterSpacing: 1.2 },
+  heroEyebrow: { color: "#B5D6CD", fontFamily: "Manrope_800ExtraBold", fontSize: 9, letterSpacing: 1.4 },
   heroHeader: { alignItems: "center", flexDirection: "row", justifyContent: "space-between" },
   heroHeart: { alignItems: "center", backgroundColor: COLORS.paper, borderRadius: 17, bottom: 7, height: 32, justifyContent: "center", position: "absolute", right: 3, shadowColor: "#000", shadowOffset: { height: 3, width: 0 }, shadowOpacity: 0.12, shadowRadius: 6, width: 32 },
   heroPet: { bottom: 54, height: 150, position: "absolute", right: 10, width: 150 },
   heroPetCircle: { alignItems: "center", backgroundColor: COLORS.butter, borderRadius: 52, bottom: 12, height: 104, justifyContent: "center", position: "absolute", right: 15, transform: [{ rotate: "4deg" }], width: 104 },
   heroPetEmoji: { fontSize: 61, transform: [{ rotate: "-4deg" }] },
   heroPetHalo: { borderColor: "rgba(255,255,255,0.13)", borderRadius: 70, borderWidth: 20, height: 140, position: "absolute", right: 0, top: 0, width: 140 },
-  heroSubtitle: { color: "rgba(255,255,255,0.67)", fontSize: 11, marginTop: 10 },
-  heroTitle: { color: COLORS.white, fontSize: 30, fontWeight: "900", letterSpacing: -1, lineHeight: 34, marginTop: 8 },
+  heroSubtitle: { color: "rgba(255,255,255,0.72)", fontFamily: "Manrope_600SemiBold", fontSize: 11, marginTop: 11 },
+  heroTitle: { color: COLORS.white, fontFamily: "Fraunces_700Bold", fontSize: 34, letterSpacing: -0.8, lineHeight: 38, marginTop: 8 },
   insightHero: { alignItems: "center", borderRadius: 24, flexDirection: "row", gap: 15, marginBottom: 12, overflow: "hidden", padding: 20, position: "relative" },
-  insightHeroCopy: { color: COLORS.muted, fontSize: 11, marginTop: 5 },
-  insightHeroKicker: { color: COLORS.sage, fontSize: 8, fontWeight: "900", letterSpacing: 1 },
-  insightHeroTitle: { color: COLORS.ink, fontSize: 18, fontWeight: "900", marginTop: 4 },
+  insightHeroCopy: { color: COLORS.muted, fontFamily: "Manrope_400Regular", fontSize: 11, marginTop: 5 },
+  insightHeroKicker: { color: COLORS.sage, fontFamily: "Manrope_800ExtraBold", fontSize: 8, letterSpacing: 1 },
+  insightHeroTitle: { color: COLORS.ink, fontFamily: "Fraunces_700Bold", fontSize: 20, marginTop: 4 },
   insightScore: { color: COLORS.ink, fontSize: 30, fontWeight: "900", letterSpacing: -1.5 },
   insightScoreRing: { alignItems: "baseline", backgroundColor: "rgba(255,255,255,0.75)", borderColor: COLORS.white, borderRadius: 35, borderWidth: 5, flexDirection: "row", height: 70, justifyContent: "center", paddingTop: 11, width: 70 },
   insightScoreUnit: { color: COLORS.sage, fontSize: 11, fontWeight: "900" },
   inviteButton: { alignItems: "center", backgroundColor: COLORS.coral, borderRadius: 13, flexDirection: "row", gap: 6, marginLeft: "auto", paddingHorizontal: 13, paddingVertical: 10 },
   inviteText: { color: COLORS.white, fontSize: 10, fontWeight: "800" },
   loggedRow: { alignItems: "center", borderTopColor: COLORS.line, borderTopWidth: 1, flexDirection: "row", gap: 6, marginTop: 13, paddingTop: 11 },
-  loggedText: { color: COLORS.muted, fontSize: 10, fontWeight: "600" },
+  loggedText: { color: COLORS.muted, fontFamily: "Manrope_600SemiBold", fontSize: 10 },
+  loadingMark: { alignItems: "center", backgroundColor: COLORS.butter, borderRadius: 19, height: 52, justifyContent: "center", transform: [{ rotate: "-6deg" }], width: 52 },
+  loadingScreen: { alignItems: "center", backgroundColor: COLORS.background, flex: 1, gap: 14, justifyContent: "center" },
+  loadingWordmark: { color: COLORS.ink, fontFamily: "Fraunces_700Bold", fontSize: 24 },
   logoMark: { alignItems: "center", backgroundColor: COLORS.butter, borderRadius: 12, height: 34, justifyContent: "center", transform: [{ rotate: "-5deg" }], width: 34 },
   markerCore: { backgroundColor: COLORS.line, borderRadius: 4, height: 7, width: 7 },
   markerCoreActive: { backgroundColor: COLORS.coral },
-  medDetails: { color: COLORS.muted, fontSize: 10, marginTop: 5 },
+  medDetails: { color: COLORS.muted, fontFamily: "Manrope_400Regular", fontSize: 10, marginTop: 5 },
   medIcon: { alignItems: "center", borderRadius: 13, height: 42, justifyContent: "center", marginRight: 10, width: 42 },
-  medName: { color: COLORS.ink, fontSize: 14, fontWeight: "900" },
+  medName: { color: COLORS.ink, fontFamily: "Manrope_800ExtraBold", fontSize: 14 },
   medNameRow: { alignItems: "center", flexDirection: "row", gap: 7 },
   medicationCard: { alignItems: "center", backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 19, borderWidth: 1, flexDirection: "row", gap: 12, marginBottom: 10, padding: 15 },
   medicationIconLarge: { alignItems: "center", borderRadius: 15, height: 50, justifyContent: "center", width: 50 },
-  medicationMeta: { color: COLORS.muted, fontSize: 10, marginTop: 4 },
-  medicationTitle: { color: COLORS.ink, fontSize: 14, fontWeight: "900" },
+  medicationMeta: { color: COLORS.muted, fontFamily: "Manrope_400Regular", fontSize: 10, marginTop: 4 },
+  medicationTitle: { color: COLORS.ink, fontFamily: "Manrope_800ExtraBold", fontSize: 14 },
   moreButton: { alignItems: "center", backgroundColor: "rgba(255,255,255,0.56)", borderRadius: 12, height: 38, justifyContent: "center", width: 38 },
   navAdd: { alignItems: "center", flex: 1, marginTop: -24 },
   navAddGradient: { alignItems: "center", borderColor: COLORS.paper, borderRadius: 25, borderWidth: 4, height: 54, justifyContent: "center", shadowColor: COLORS.coral, shadowOffset: { height: 6, width: 0 }, shadowOpacity: 0.26, shadowRadius: 8, width: 54 },
   navIconWrap: { alignItems: "center", borderRadius: 11, height: 29, justifyContent: "center", width: 39 },
   navIconWrapActive: { backgroundColor: COLORS.coralSoft },
   navItem: { alignItems: "center", flex: 1, gap: 2 },
-  navLabel: { color: "#97A1A6", fontSize: 8, fontWeight: "700" },
+  navLabel: { color: "#97A1A6", fontFamily: "Manrope_700Bold", fontSize: 8 },
   navLabelActive: { color: COLORS.coral },
+  nextDoseDot: { borderRadius: 4, height: 7, width: 7 },
+  nextDosePill: { alignItems: "center", alignSelf: "flex-start", backgroundColor: "rgba(255,255,255,0.11)", borderColor: "rgba(255,255,255,0.13)", borderRadius: 12, borderWidth: 1, flexDirection: "row", gap: 7, marginTop: 14, paddingHorizontal: 10, paddingVertical: 8 },
+  nextDoseText: { color: "rgba(255,255,255,0.88)", fontFamily: "Manrope_700Bold", fontSize: 9 },
   onlineDot: { backgroundColor: "#83D0A8", borderColor: COLORS.navy, borderRadius: 5, borderWidth: 2, bottom: -1, height: 10, position: "absolute", right: -1, width: 10 },
-  pageTitle: { color: COLORS.ink, fontSize: 29, fontWeight: "900", letterSpacing: -1, marginTop: 2 },
+  pageTitle: { color: COLORS.ink, fontFamily: "Fraunces_700Bold", fontSize: 32, letterSpacing: -0.7, marginTop: 2 },
   personBubble: { alignItems: "center", borderColor: COLORS.paper, borderRadius: 17, borderWidth: 2, height: 34, justifyContent: "center", position: "absolute", width: 34 },
   personBubbleFirst: { backgroundColor: COLORS.coral, left: 2 },
   personBubbleSecond: { backgroundColor: COLORS.sage, left: 26 },
@@ -1284,10 +1334,10 @@ const styles = StyleSheet.create({
   petChoiceNameActive: { color: COLORS.coral },
   petChoiceRow: { flexDirection: "row", gap: 9, marginBottom: 22 },
   petProfileAvatar: { alignItems: "center", backgroundColor: "rgba(255,255,255,0.68)", borderRadius: 30, height: 66, justifyContent: "center", marginRight: 14, width: 66 },
-  petProfileCard: { alignItems: "center", borderRadius: 24, flexDirection: "row", marginBottom: 24, padding: 18 },
+  petProfileCard: { alignItems: "center", borderColor: "rgba(255,255,255,0.75)", borderRadius: 24, borderWidth: 1, elevation: 1, flexDirection: "row", marginBottom: 24, padding: 18, shadowColor: COLORS.ink, shadowOffset: { height: 6, width: 0 }, shadowOpacity: 0.05, shadowRadius: 14 },
   petProfileEmoji: { fontSize: 39 },
   petProfileMeta: { color: COLORS.muted, fontSize: 11, marginTop: 4 },
-  petProfileName: { color: COLORS.ink, fontSize: 22, fontWeight: "900" },
+  petProfileName: { color: COLORS.ink, fontFamily: "Fraunces_700Bold", fontSize: 24 },
   petProfileStatus: { alignItems: "center", flexDirection: "row", gap: 5, marginTop: 8 },
   petProfileStatusText: { color: COLORS.sage, fontSize: 9, fontWeight: "800" },
   petSelector: { gap: 14, paddingBottom: 18 },
@@ -1315,12 +1365,12 @@ const styles = StyleSheet.create({
   safetyNote: { alignItems: "flex-start", backgroundColor: COLORS.sageSoft, borderRadius: 16, flexDirection: "row", gap: 10, marginVertical: 16, padding: 14 },
   safetyText: { color: COLORS.ink, flex: 1, fontSize: 10, lineHeight: 16 },
   saveMedicationButton: { alignItems: "center", backgroundColor: COLORS.coral, borderRadius: 17, flexDirection: "row", gap: 9, justifyContent: "center", minHeight: 56, paddingHorizontal: 18 },
-  saveMedicationText: { color: COLORS.white, flex: 1, fontSize: 14, fontWeight: "900", textAlign: "center" },
+  saveMedicationText: { color: COLORS.white, flex: 1, fontFamily: "Manrope_800ExtraBold", fontSize: 14, textAlign: "center" },
   sectionHeadingRow: { alignItems: "center", flexDirection: "row", justifyContent: "space-between", marginBottom: 14 },
-  sectionKicker: { color: COLORS.sage, fontSize: 8, fontWeight: "900", letterSpacing: 1.2 },
-  sectionTitle: { color: COLORS.ink, fontSize: 20, fontWeight: "900", letterSpacing: -0.5, marginTop: 3 },
+  sectionKicker: { color: COLORS.sage, fontFamily: "Manrope_800ExtraBold", fontSize: 8, letterSpacing: 1.3 },
+  sectionTitle: { color: COLORS.ink, fontFamily: "Fraunces_700Bold", fontSize: 23, letterSpacing: -0.4, marginTop: 3 },
   skipButton: { alignItems: "center", backgroundColor: COLORS.background, borderRadius: 12, flex: 0.75, justifyContent: "center", minHeight: 41 },
-  skipButtonText: { color: COLORS.muted, fontSize: 10, fontWeight: "800" },
+  skipButtonText: { color: COLORS.muted, fontFamily: "Manrope_800ExtraBold", fontSize: 10 },
   sparkle: { color: COLORS.coral, fontSize: 20, position: "absolute", right: 10, top: 8 },
   standardContent: { paddingBottom: 32, paddingHorizontal: 18 },
   statCard: { alignItems: "center", backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 17, borderWidth: 1, flex: 1, paddingHorizontal: 7, paddingVertical: 14 },
@@ -1335,9 +1385,9 @@ const styles = StyleSheet.create({
   stockText: { color: COLORS.sage, fontSize: 9, fontWeight: "700" },
   syncBadge: { alignItems: "center", backgroundColor: COLORS.paper, borderRadius: 10, height: 20, justifyContent: "center", left: 22, position: "absolute", top: 8, width: 20 },
   syncCard: { alignItems: "center", backgroundColor: COLORS.sageSoft, borderRadius: 20, flexDirection: "row", gap: 12, marginTop: 6, padding: 16 },
-  syncCopy: { color: COLORS.muted, fontSize: 10, marginTop: 4 },
+  syncCopy: { color: COLORS.muted, fontFamily: "Manrope_400Regular", fontSize: 10, marginTop: 4 },
   syncIllustration: { height: 38, position: "relative", width: 62 },
-  syncTitle: { color: COLORS.ink, fontSize: 13, fontWeight: "800" },
+  syncTitle: { color: COLORS.ink, fontFamily: "Manrope_800ExtraBold", fontSize: 13 },
   textAction: { color: COLORS.coral, fontSize: 10, fontWeight: "900" },
   timeBlock: { alignItems: "center", marginRight: 9, width: 35 },
   timeline: { marginTop: 2 },
@@ -1349,17 +1399,17 @@ const styles = StyleSheet.create({
   timelineRow: { alignItems: "stretch", flexDirection: "row" },
   toast: { alignItems: "center", alignSelf: "center", backgroundColor: COLORS.ink, borderRadius: 16, flexDirection: "row", gap: 9, left: 22, paddingHorizontal: 15, paddingVertical: 13, position: "absolute", right: 22, shadowColor: "#000", shadowOffset: { height: 7, width: 0 }, shadowOpacity: 0.18, shadowRadius: 14 },
   toastCheck: { alignItems: "center", backgroundColor: COLORS.sage, borderRadius: 10, height: 21, justifyContent: "center", width: 21 },
-  toastText: { color: COLORS.white, flex: 1, fontSize: 11, fontWeight: "700" },
+  toastText: { color: COLORS.white, flex: 1, fontFamily: "Manrope_700Bold", fontSize: 11 },
   todayContent: { paddingBottom: 24 },
   vetCard: { alignItems: "center", backgroundColor: COLORS.sageSoft, borderRadius: 20, flexDirection: "row", gap: 12, marginTop: 12, padding: 16 },
-  vetCopy: { color: COLORS.muted, fontSize: 10, lineHeight: 15, marginTop: 4 },
+  vetCopy: { color: COLORS.muted, fontFamily: "Manrope_400Regular", fontSize: 10, lineHeight: 15, marginTop: 4 },
   vetIcon: { alignItems: "center", backgroundColor: COLORS.paper, borderRadius: 14, height: 48, justifyContent: "center", width: 48 },
-  vetTitle: { color: COLORS.ink, fontSize: 13, fontWeight: "900" },
+  vetTitle: { color: COLORS.ink, fontFamily: "Manrope_800ExtraBold", fontSize: 13 },
   weekBar: { backgroundColor: COLORS.sage, borderRadius: 5, bottom: 0, position: "absolute", width: "100%" },
   weekBarTrack: { backgroundColor: COLORS.sageSoft, borderRadius: 5, flex: 1, overflow: "hidden", width: 18 },
   weekChart: { flexDirection: "row", gap: 14, height: 150, justifyContent: "center", marginTop: 8 },
   weekColumn: { alignItems: "center", flex: 1, gap: 7 },
   weekDay: { color: COLORS.muted, fontSize: 9, fontWeight: "800" },
-  wordmark: { color: COLORS.white, fontSize: 18, fontWeight: "900", letterSpacing: -0.5 },
+  wordmark: { color: COLORS.white, fontFamily: "Manrope_800ExtraBold", fontSize: 18, letterSpacing: -0.5 },
   wordmarkRow: { alignItems: "center", flexDirection: "row", gap: 9 },
 });
