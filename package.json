@@ -1,7 +1,7 @@
 {
-  "name": "raintank-planner",
+  "name": "pawpair-pet-med-tracker",
   "version": "0.1.0",
-  "description": "Offline rainwater harvesting and tank sizing planner",
+  "description": "Shared pet medication tracker for calm, reliable care",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
@@ -15,8 +15,8 @@
     "url": "git+https://github.com/razel369/tru.git"
   },
   "keywords": [
-    "rainwater",
-    "tank-calculator",
+    "pet-medication",
+    "pet-care",
     "expo",
     "react-native"
   ],

@@ -1,8 +1,9 @@
-# RainTank
+# PawPair
 
-RainTank is an offline-first rainwater harvesting planner for iOS and Android.
-It models monthly roof catchment, tank storage, overflow, shortfall, and annual
-demand reliability in metric or imperial units.
+PawPair is a design-led pet medication tracker for households that share care.
+It makes the answer to “did someone already give the medicine?” immediately
+visible, while keeping medication schedules, supply, and vet-ready history in
+one calm interface.
 
 ## Run locally
 
@@ -21,16 +22,16 @@ npm run typecheck
 npm test
 ```
 
-## Calculation model
+## MVP
 
-Monthly captured water is:
+- Unified daily timeline across multiple pets
+- Given, skipped, due, upcoming, and missed dose states
+- Caregiver-attributed dose confirmation
+- Medication supply countdown and refill warnings
+- Multi-pet medication profiles
+- Adherence and caregiver insights
+- Functional add-medication flow
+- Local offline persistence
 
-`roof area × rainfall depth × roof runoff coefficient`
-
-The app then applies a monthly water balance: incoming water is added to the
-current tank level, storage is capped at tank capacity, and monthly demand is
-removed. Overflow and unmet demand are tracked separately. The suggested tank
-capacity uses a bounded search for a 95% annual demand target.
-
-Monthly averages are appropriate for early feasibility only. Detailed system
-design should use multi-year daily rainfall records and qualified local advice.
+PawPair is a record-keeping tool. It does not recommend medications, alter
+dosages, diagnose conditions, or replace veterinary advice.

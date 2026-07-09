@@ -1,18 +1,18 @@
 {
   "expo": {
-    "name": "RainTank",
-    "slug": "raintank-planner",
+    "name": "PawPair",
+    "slug": "pawpair-pet-med-tracker",
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "app.raintank.planner"
+      "bundleIdentifier": "app.pawpair.medtracker"
     },
     "android": {
-      "package": "app.raintank.planner",
+      "package": "app.pawpair.medtracker",
       "adaptiveIcon": {
-        "backgroundColor": "#E7F7F4"
+        "backgroundColor": "#F7F4EE"
       }
     },
     "plugins": [

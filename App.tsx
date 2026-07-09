@@ -20,844 +20,1144 @@ import {
 } from "react-native-safe-area-context";
 
 import {
-  convertInputs,
-  DEFAULT_INPUTS,
-  MONTHS,
-  RUNOFF_COEFFICIENTS,
-  simulateTank,
-  validateInputs,
-} from "./src/calculations";
+  addMedicationToPets,
+  buildSchedule,
+  createDoseLog,
+  dateKey,
+  DEMO_PETS,
+  formatTime,
+} from "./src/schedule";
 import {
-  ProjectInputs,
-  RoofMaterial,
-  SavedProject,
-  SimulationResult,
-  UnitSystem,
+  DoseLog,
+  Medication,
+  MedicationForm,
+  Pet,
+  ScheduledDose,
 } from "./src/types";
 
-type Screen = "plan" | "rainfall" | "results" | "saved";
+type Screen = "today" | "pets" | "insights" | "add";
 
 const COLORS = {
-  ink: "#173D3B",
-  muted: "#63807D",
-  teal: "#146C67",
-  mint: "#D6F1EB",
-  pale: "#F2F8F6",
-  cream: "#FCF8EE",
+  background: "#F7F4EE",
+  paper: "#FFFDF9",
+  ink: "#1D3040",
+  navy: "#243E52",
+  muted: "#73828B",
+  line: "#E7E2D9",
+  coral: "#EF7B63",
+  coralSoft: "#FBE1DA",
+  sage: "#5D9387",
+  sageSoft: "#DCECE7",
+  butter: "#F6D58C",
+  butterSoft: "#FCF1D4",
+  lavender: "#9891C7",
   white: "#FFFFFF",
-  orange: "#F2A65A",
-  border: "#DDEAE6",
-  danger: "#B84B4B",
+  danger: "#C95C5C",
 };
 
-const MATERIALS: Array<{
-  id: RoofMaterial;
-  label: string;
+const PETS_KEY = "pawpair.pets.v1";
+const LOGS_KEY = "pawpair.logs.v1";
+const CAREGIVER = "Maya";
+
+const FORM_OPTIONS: Array<{
+  id: MedicationForm;
   icon: keyof typeof Ionicons.glyphMap;
+  label: string;
 }> = [
-  { id: "metal", label: "Metal", icon: "layers-outline" },
-  { id: "tile", label: "Tile", icon: "grid-outline" },
-  { id: "concrete", label: "Concrete", icon: "cube-outline" },
-  { id: "green", label: "Green", icon: "leaf-outline" },
+  { id: "tablet", icon: "ellipse-outline", label: "Tablet" },
+  { id: "liquid", icon: "water-outline", label: "Liquid" },
+  { id: "drops", icon: "eyedrop-outline", label: "Drops" },
+  { id: "injection", icon: "medkit-outline", label: "Injection" },
 ];
 
-const STORAGE_KEY = "raintank.projects.v1";
-
-function toNumber(value: string): number {
-  const parsed = Number(value.replace(",", "."));
-  return Number.isFinite(parsed) ? parsed : 0;
-}
-
-function round(value: number, digits = 0): string {
-  return value.toLocaleString(undefined, {
-    maximumFractionDigits: digits,
-  });
+function makeSeedLogs(): DoseLog[] {
+  const now = new Date();
+  const schedule = buildSchedule(DEMO_PETS, [], now, 12 * 60);
+  return schedule.slice(0, 2).map((dose, index) =>
+    createDoseLog(
+      dose,
+      "given",
+      index === 0 ? "Alex" : CAREGIVER,
+      new Date(now.getFullYear(), now.getMonth(), now.getDate(), 8, index * 4),
+    ),
+  );
 }
 
 function AppContent() {
   const insets = useSafeAreaInsets();
-  const [screen, setScreen] = useState<Screen>("plan");
-  const [inputs, setInputs] = useState<ProjectInputs>(DEFAULT_INPUTS);
-  const [result, setResult] = useState<SimulationResult>(() =>
-    simulateTank(DEFAULT_INPUTS),
-  );
-  const [saved, setSaved] = useState<SavedProject[]>([]);
+  const [screen, setScreen] = useState<Screen>("today");
+  const [pets, setPets] = useState<Pet[]>(DEMO_PETS);
+  const [logs, setLogs] = useState<DoseLog[]>(makeSeedLogs);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [toast, setToast] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    AsyncStorage.getItem(STORAGE_KEY)
-      .then((value) => {
-        if (value) setSaved(JSON.parse(value) as SavedProject[]);
+    Promise.all([AsyncStorage.getItem(PETS_KEY), AsyncStorage.getItem(LOGS_KEY)])
+      .then(([savedPets, savedLogs]) => {
+        if (savedPets) setPets(JSON.parse(savedPets) as Pet[]);
+        if (savedLogs) setLogs(JSON.parse(savedLogs) as DoseLog[]);
       })
-      .catch(() => {
-        // A failed local restore should not block planning.
-      });
+      .finally(() => setLoaded(true));
   }, []);
 
-  const units = useMemo(
-    () =>
-      inputs.units === "metric"
-        ? { area: "m²", volume: "L", rain: "mm" }
-        : { area: "ft²", volume: "gal", rain: "in" },
-    [inputs.units],
+  useEffect(() => {
+    if (!loaded) return;
+    void AsyncStorage.setItem(PETS_KEY, JSON.stringify(pets));
+    void AsyncStorage.setItem(LOGS_KEY, JSON.stringify(logs));
+  }, [loaded, logs, pets]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const timer = setTimeout(() => setToast(null), 2600);
+    return () => clearTimeout(timer);
+  }, [toast]);
+
+  const schedule = useMemo(
+    () => buildSchedule(pets, logs, selectedDate),
+    [logs, pets, selectedDate],
   );
 
-  const calculate = () => {
-    const errors = validateInputs(inputs);
-    if (errors.length) {
-      Alert.alert("Check your plan", errors[0]);
-      return;
+  const logDose = (dose: ScheduledDose, status: "given" | "skipped") => {
+    if (dose.status === "given" || dose.status === "skipped") return;
+    const nextLog = createDoseLog(dose, status, CAREGIVER);
+    setLogs((current) => [...current, nextLog]);
+    if (status === "given") {
+      setPets((current) =>
+        current.map((pet) =>
+          pet.id !== dose.pet.id
+            ? pet
+            : {
+                ...pet,
+                medications: pet.medications.map((medication) =>
+                  medication.id === dose.medication.id
+                    ? {
+                        ...medication,
+                        stock: Math.max(0, medication.stock - 1),
+                      }
+                    : medication,
+                ),
+              },
+        ),
+      );
+      setToast(`${dose.medication.name} logged for ${dose.pet.name}`);
+    } else {
+      setToast(`Dose marked as skipped`);
     }
-    setResult(simulateTank(inputs));
-    setScreen("results");
   };
 
-  const saveProject = async () => {
-    const project: SavedProject = {
-      id: `${Date.now()}`,
-      savedAt: new Date().toISOString(),
-      inputs,
-      result,
-    };
-    const next = [project, ...saved.filter((item) => item.inputs.name !== inputs.name)];
-    setSaved(next);
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    Alert.alert("Plan saved", "Your project is available offline.");
-  };
-
-  const openSaved = (project: SavedProject) => {
-    setInputs(project.inputs);
-    setResult(project.result);
-    setScreen("results");
-  };
-
-  const deleteSaved = async (id: string) => {
-    const next = saved.filter((project) => project.id !== id);
-    setSaved(next);
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  const addMedication = (petId: string, medication: Medication) => {
+    setPets((current) => addMedicationToPets(current, petId, medication));
+    setScreen("today");
+    setToast(`${medication.name} added to today’s care plan`);
   };
 
   return (
     <View style={styles.app}>
-      <StatusBar style="dark" />
-      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
-        <View style={styles.brandMark}>
-          <Ionicons name="water" size={20} color={COLORS.white} />
+      <StatusBar style={screen === "today" ? "light" : "dark"} />
+      {screen === "today" && (
+        <TodayScreen
+          onAdd={() => setScreen("add")}
+          onDateChange={setSelectedDate}
+          onLog={logDose}
+          schedule={schedule}
+          selectedDate={selectedDate}
+          topInset={insets.top}
+        />
+      )}
+      {screen === "pets" && (
+        <PetsScreen
+          onAdd={() => setScreen("add")}
+          pets={pets}
+          topInset={insets.top}
+        />
+      )}
+      {screen === "insights" && (
+        <InsightsScreen logs={logs} pets={pets} topInset={insets.top} />
+      )}
+      {screen === "add" && (
+        <AddMedicationScreen
+          onBack={() => setScreen("today")}
+          onSave={addMedication}
+          pets={pets}
+          topInset={insets.top}
+        />
+      )}
+
+      {screen !== "add" && (
+        <BottomNav
+          active={screen}
+          bottomInset={insets.bottom}
+          onAdd={() => setScreen("add")}
+          onChange={setScreen}
+        />
+      )}
+
+      {toast && (
+        <View style={[styles.toast, { bottom: 92 + insets.bottom }]}>
+          <View style={styles.toastCheck}>
+            <Ionicons name="checkmark" size={15} color={COLORS.white} />
+          </View>
+          <Text style={styles.toastText}>{toast}</Text>
         </View>
-        <View style={styles.brandCopy}>
-          <Text style={styles.brand}>RainTank</Text>
-          <Text style={styles.brandTagline}>Harvest with confidence</Text>
+      )}
+    </View>
+  );
+}
+
+function TodayScreen({
+  schedule,
+  selectedDate,
+  topInset,
+  onDateChange,
+  onLog,
+  onAdd,
+}: {
+  schedule: ScheduledDose[];
+  selectedDate: Date;
+  topInset: number;
+  onDateChange: (date: Date) => void;
+  onLog: (dose: ScheduledDose, status: "given" | "skipped") => void;
+  onAdd: () => void;
+}) {
+  const given = schedule.filter((dose) => dose.status === "given").length;
+  const progress = schedule.length ? given / schedule.length : 0;
+  const dates = Array.from({ length: 5 }, (_, index) => {
+    const date = new Date();
+    date.setDate(date.getDate() + index);
+    return date;
+  });
+
+  return (
+    <ScrollView
+      contentContainerStyle={styles.todayContent}
+      showsVerticalScrollIndicator={false}
+      stickyHeaderIndices={[1]}
+    >
+      <LinearGradient
+        colors={["#20394C", "#2D5362"]}
+        end={{ x: 1, y: 1 }}
+        style={[styles.hero, { paddingTop: topInset + 12 }]}
+      >
+        <View style={styles.heroHeader}>
+          <View style={styles.wordmarkRow}>
+            <View style={styles.logoMark}>
+              <Ionicons name="paw" size={18} color={COLORS.navy} />
+            </View>
+            <Text style={styles.wordmark}>PawPair</Text>
+          </View>
+          <Pressable style={styles.profileButton}>
+            <Text style={styles.profileInitial}>M</Text>
+            <View style={styles.onlineDot} />
+          </Pressable>
         </View>
-        <Pressable
-          accessibilityLabel="Open saved plans"
-          onPress={() => setScreen("saved")}
-          style={({ pressed }) => [styles.headerButton, pressed && styles.pressed]}
-        >
-          <Ionicons name="bookmark-outline" size={21} color={COLORS.ink} />
-          {saved.length > 0 && <View style={styles.savedDot} />}
-        </Pressable>
+
+        <View style={styles.heroCopy}>
+          <Text style={styles.heroEyebrow}>GOOD EVENING, MAYA</Text>
+          <Text style={styles.heroTitle}>Milo’s care is{"\n"}right on track.</Text>
+          <Text style={styles.heroSubtitle}>
+            {given} of {schedule.length} doses complete today
+          </Text>
+        </View>
+
+        <View style={styles.heroPet}>
+          <View style={styles.heroPetHalo} />
+          <View style={styles.heroPetCircle}>
+            <Text style={styles.heroPetEmoji}>🐕</Text>
+          </View>
+          <View style={styles.heroHeart}>
+            <Ionicons name="heart" size={14} color={COLORS.coral} />
+          </View>
+        </View>
+
+        <View style={styles.progressRow}>
+          <View style={styles.progressTrack}>
+            <View
+              style={[
+                styles.progressFill,
+                { width: `${Math.max(8, progress * 100)}%` },
+              ]}
+            />
+          </View>
+          <Text style={styles.progressText}>{Math.round(progress * 100)}%</Text>
+        </View>
+      </LinearGradient>
+
+      <View style={styles.dateRailWrap}>
+        <View style={styles.dateRail}>
+          {dates.map((date, index) => {
+            const active = dateKey(date) === dateKey(selectedDate);
+            return (
+              <Pressable
+                key={dateKey(date)}
+                onPress={() => onDateChange(date)}
+                style={[styles.dateItem, active && styles.dateItemActive]}
+              >
+                <Text
+                  style={[styles.dateDay, active && styles.dateDayActive]}
+                >
+                  {index === 0
+                    ? "TODAY"
+                    : date
+                        .toLocaleDateString("en-US", { weekday: "short" })
+                        .toUpperCase()}
+                </Text>
+                <Text
+                  style={[styles.dateNumber, active && styles.dateNumberActive]}
+                >
+                  {date.getDate()}
+                </Text>
+                {active && <View style={styles.dateDot} />}
+              </Pressable>
+            );
+          })}
+        </View>
       </View>
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={styles.flex}
-      >
-        {screen === "plan" && (
-          <PlanScreen
-            inputs={inputs}
-            units={units}
-            onChange={setInputs}
-            onRainfall={() => setScreen("rainfall")}
-            onCalculate={calculate}
-          />
-        )}
-        {screen === "rainfall" && (
-          <RainfallScreen
-            inputs={inputs}
-            onChange={setInputs}
-            onBack={() => setScreen("plan")}
-            onCalculate={calculate}
-          />
-        )}
-        {screen === "results" && (
-          <ResultsScreen
-            inputs={inputs}
-            result={result}
-            onBack={() => setScreen("plan")}
-            onSave={saveProject}
-          />
-        )}
-        {screen === "saved" && (
-          <SavedScreen
-            projects={saved}
-            onOpen={openSaved}
-            onDelete={deleteSaved}
-            onBack={() => setScreen("plan")}
-          />
-        )}
-      </KeyboardAvoidingView>
+      <View style={styles.contentSection}>
+        <View style={styles.sectionHeadingRow}>
+          <View>
+            <Text style={styles.sectionKicker}>CARE PLAN</Text>
+            <Text style={styles.sectionTitle}>Today’s doses</Text>
+          </View>
+          <Pressable onPress={onAdd} style={styles.roundAddButton}>
+            <Ionicons name="add" size={22} color={COLORS.coral} />
+          </Pressable>
+        </View>
 
-      <View style={[styles.tabBar, { paddingBottom: Math.max(insets.bottom, 10) }]}>
-        <TabButton
-          active={screen === "plan" || screen === "rainfall"}
-          icon="calculator-outline"
-          label="Plan"
-          onPress={() => setScreen("plan")}
-        />
-        <TabButton
-          active={screen === "results"}
-          icon="analytics-outline"
-          label="Results"
-          onPress={() => setScreen("results")}
-        />
-        <TabButton
-          active={screen === "saved"}
-          icon="folder-open-outline"
-          label="Saved"
-          onPress={() => setScreen("saved")}
-        />
+        <View style={styles.timeline}>
+          {schedule.map((dose, index) => (
+            <DoseCard
+              dose={dose}
+              isLast={index === schedule.length - 1}
+              key={dose.id}
+              onLog={onLog}
+            />
+          ))}
+        </View>
+
+        <View style={styles.syncCard}>
+          <View style={styles.syncIllustration}>
+            <View style={[styles.personBubble, styles.personBubbleFirst]}>
+              <Text style={styles.personText}>M</Text>
+            </View>
+            <View style={[styles.personBubble, styles.personBubbleSecond]}>
+              <Text style={styles.personText}>A</Text>
+            </View>
+            <View style={styles.syncBadge}>
+              <Ionicons name="sync" size={13} color={COLORS.sage} />
+            </View>
+          </View>
+          <View style={styles.flex}>
+            <Text style={styles.syncTitle}>Everyone stays in sync</Text>
+            <Text style={styles.syncCopy}>
+              Alex can see every dose you log, instantly.
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color={COLORS.muted} />
+        </View>
+      </View>
+    </ScrollView>
+  );
+}
+
+function DoseCard({
+  dose,
+  isLast,
+  onLog,
+}: {
+  dose: ScheduledDose;
+  isLast: boolean;
+  onLog: (dose: ScheduledDose, status: "given" | "skipped") => void;
+}) {
+  const complete = dose.status === "given";
+  const skipped = dose.status === "skipped";
+  const active = dose.status === "due";
+
+  return (
+    <View style={styles.timelineRow}>
+      <View style={styles.timelineMarkerColumn}>
+        <View
+          style={[
+            styles.timelineMarker,
+            complete && styles.timelineMarkerComplete,
+            active && styles.timelineMarkerActive,
+          ]}
+        >
+          {complete ? (
+            <Ionicons name="checkmark" size={13} color={COLORS.white} />
+          ) : (
+            <View
+              style={[styles.markerCore, active && styles.markerCoreActive]}
+            />
+          )}
+        </View>
+        {!isLast && <View style={styles.timelineLine} />}
+      </View>
+
+      <View
+        style={[
+          styles.doseCard,
+          active && styles.doseCardActive,
+          (complete || skipped) && styles.doseCardResolved,
+        ]}
+      >
+        <View style={styles.doseTopRow}>
+          <View style={styles.timeBlock}>
+            <Text
+              style={[styles.doseTime, complete && styles.resolvedText]}
+            >
+              {formatTime(dose.scheduledTime).replace(" ", "\n")}
+            </Text>
+          </View>
+          <View
+            style={[
+              styles.medIcon,
+              { backgroundColor: `${dose.medication.color}1F` },
+            ]}
+          >
+            <Ionicons
+              name={dose.medication.form === "liquid" ? "water" : "medical"}
+              size={20}
+              color={dose.medication.color}
+            />
+          </View>
+          <View style={styles.flex}>
+            <View style={styles.medNameRow}>
+              <Text
+                style={[styles.medName, complete && styles.resolvedText]}
+              >
+                {dose.medication.name}
+              </Text>
+              <View
+                style={[
+                  styles.petTag,
+                  { backgroundColor: `${dose.pet.color}26` },
+                ]}
+              >
+                <Text style={styles.petTagText}>
+                  {dose.pet.emoji} {dose.pet.name}
+                </Text>
+              </View>
+            </View>
+            <Text style={styles.medDetails}>
+              {dose.medication.dosage} · {dose.medication.instructions}
+            </Text>
+          </View>
+        </View>
+
+        {complete && dose.log ? (
+          <View style={styles.loggedRow}>
+            <Ionicons
+              name="checkmark-circle"
+              size={17}
+              color={COLORS.sage}
+            />
+            <Text style={styles.loggedText}>
+              Given by {dose.log.completedBy} ·{" "}
+              {new Date(dose.log.completedAt).toLocaleTimeString([], {
+                hour: "numeric",
+                minute: "2-digit",
+              })}
+            </Text>
+          </View>
+        ) : skipped ? (
+          <View style={styles.loggedRow}>
+            <Ionicons
+              name="remove-circle-outline"
+              size={17}
+              color={COLORS.muted}
+            />
+            <Text style={styles.loggedText}>Dose skipped</Text>
+          </View>
+        ) : (
+          <View style={styles.doseActions}>
+            <Pressable
+              onPress={() => onLog(dose, "skipped")}
+              style={({ pressed }) => [
+                styles.skipButton,
+                pressed && styles.pressed,
+              ]}
+            >
+              <Text style={styles.skipButtonText}>Skip</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => onLog(dose, "given")}
+              style={({ pressed }) => [
+                styles.giveButton,
+                pressed && styles.pressed,
+              ]}
+            >
+              <Ionicons name="checkmark" size={18} color={COLORS.white} />
+              <Text style={styles.giveButtonText}>Mark as given</Text>
+            </Pressable>
+          </View>
+        )}
       </View>
     </View>
   );
 }
 
-function PlanScreen({
-  inputs,
-  units,
-  onChange,
-  onRainfall,
-  onCalculate,
+function PetsScreen({
+  pets,
+  topInset,
+  onAdd,
 }: {
-  inputs: ProjectInputs;
-  units: { area: string; volume: string; rain: string };
-  onChange: (inputs: ProjectInputs) => void;
-  onRainfall: () => void;
-  onCalculate: () => void;
+  pets: Pet[];
+  topInset: number;
+  onAdd: () => void;
 }) {
-  const setUnits = (next: UnitSystem) => {
-    onChange(convertInputs(inputs, next));
-  };
-
-  const annualRain = inputs.rainfall.reduce((sum, value) => sum + value, 0);
+  const [selectedPet, setSelectedPet] = useState(pets[0]?.id ?? "");
+  const pet = pets.find((item) => item.id === selectedPet) ?? pets[0];
 
   return (
     <ScrollView
-      contentContainerStyle={styles.scrollContent}
-      keyboardShouldPersistTaps="handled"
+      contentContainerStyle={[styles.standardContent, { paddingTop: topInset + 14 }]}
       showsVerticalScrollIndicator={false}
     >
-      <LinearGradient
-        colors={["#D7F1EA", "#EEF7EF", "#FCF8EE"]}
-        end={{ x: 1, y: 1 }}
-        start={{ x: 0, y: 0 }}
-        style={styles.hero}
+      <AppHeader
+        actionIcon="add"
+        eyebrow="YOUR FAMILY"
+        onAction={onAdd}
+        title="Pets"
+      />
+
+      <ScrollView
+        contentContainerStyle={styles.petSelector}
+        horizontal
+        showsHorizontalScrollIndicator={false}
       >
-        <View style={styles.heroBadge}>
-          <Ionicons name="sparkles" size={13} color={COLORS.teal} />
-          <Text style={styles.heroBadgeText}>OFFLINE PLANNER</Text>
-        </View>
-        <Text style={styles.heroTitle}>Turn rainfall into a reliable reserve.</Text>
-        <Text style={styles.heroBody}>
-          Model your roof, climate, and daily use to find a tank that fits.
-        </Text>
-        <View style={styles.heroArt}>
-          <View style={styles.heroDrop}>
-            <Ionicons name="water" size={38} color={COLORS.white} />
-          </View>
-          <View style={styles.rainLineOne} />
-          <View style={styles.rainLineTwo} />
-        </View>
-      </LinearGradient>
-
-      <SectionHeader number="01" title="Project basics" />
-      <View style={styles.card}>
-        <LabeledInput
-          label="Project name"
-          onChange={(name) => onChange({ ...inputs, name })}
-          value={inputs.name}
-        />
-        <Text style={styles.fieldLabel}>Units</Text>
-        <View style={styles.segment}>
-          <SegmentButton
-            active={inputs.units === "metric"}
-            label="Metric"
-            onPress={() => setUnits("metric")}
-          />
-          <SegmentButton
-            active={inputs.units === "imperial"}
-            label="Imperial"
-            onPress={() => setUnits("imperial")}
-          />
-        </View>
-      </View>
-
-      <SectionHeader number="02" title="Catchment" />
-      <View style={styles.card}>
-        <LabeledInput
-          keyboardType="decimal-pad"
-          label="Roof area"
-          onChange={(roofArea) =>
-            onChange({ ...inputs, roofArea: toNumber(roofArea) })
-          }
-          suffix={units.area}
-          value={`${round(inputs.roofArea, 1)}`}
-        />
-        <Text style={styles.fieldLabel}>Roof surface</Text>
-        <View style={styles.materialGrid}>
-          {MATERIALS.map((material) => {
-            const active = inputs.roofMaterial === material.id;
-            return (
-              <Pressable
-                accessibilityRole="button"
-                key={material.id}
-                onPress={() =>
-                  onChange({ ...inputs, roofMaterial: material.id })
-                }
-                style={({ pressed }) => [
-                  styles.material,
-                  active && styles.materialActive,
-                  pressed && styles.pressed,
+        {pets.map((item) => {
+          const active = item.id === pet?.id;
+          return (
+            <Pressable
+              key={item.id}
+              onPress={() => setSelectedPet(item.id)}
+              style={[styles.petSelectorItem, active && styles.petSelectorActive]}
+            >
+              <View
+                style={[
+                  styles.petSelectorAvatar,
+                  { backgroundColor: `${item.color}38` },
                 ]}
               >
-                <Ionicons
-                  color={active ? COLORS.teal : COLORS.muted}
-                  name={material.icon}
-                  size={21}
-                />
-                <Text
-                  style={[
-                    styles.materialText,
-                    active && styles.materialTextActive,
-                  ]}
-                >
-                  {material.label}
-                </Text>
-                <Text style={styles.materialRate}>
-                  {Math.round(RUNOFF_COEFFICIENTS[material.id] * 100)}%
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-        <Text style={styles.helper}>
-          The percentage estimates water retained after first-flush and surface
-          losses.
-        </Text>
-      </View>
-
-      <SectionHeader number="03" title="Storage & use" />
-      <View style={styles.card}>
-        <View style={styles.twoColumns}>
-          <View style={styles.column}>
-            <LabeledInput
-              keyboardType="decimal-pad"
-              label="Tank size"
-              onChange={(tankCapacity) =>
-                onChange({ ...inputs, tankCapacity: toNumber(tankCapacity) })
-              }
-              suffix={units.volume}
-              value={`${round(inputs.tankCapacity, 0)}`}
-            />
-          </View>
-          <View style={styles.column}>
-            <LabeledInput
-              keyboardType="decimal-pad"
-              label="Daily use"
-              onChange={(dailyDemand) =>
-                onChange({ ...inputs, dailyDemand: toNumber(dailyDemand) })
-              }
-              suffix={units.volume}
-              value={`${round(inputs.dailyDemand, 1)}`}
-            />
-          </View>
-        </View>
-        <LabeledInput
-          keyboardType="number-pad"
-          label="Starting tank level"
-          onChange={(startingFillPercent) =>
-            onChange({
-              ...inputs,
-              startingFillPercent: Math.min(
-                100,
-                Math.max(0, toNumber(startingFillPercent)),
-              ),
-            })
-          }
-          suffix="%"
-          value={`${round(inputs.startingFillPercent)}`}
-        />
-      </View>
-
-      <SectionHeader number="04" title="Local rainfall" />
-      <Pressable
-        onPress={onRainfall}
-        style={({ pressed }) => [
-          styles.rainfallCard,
-          pressed && styles.pressed,
-        ]}
-      >
-        <View style={styles.rainfallIcon}>
-          <Ionicons name="rainy-outline" size={24} color={COLORS.teal} />
-        </View>
-        <View style={styles.flex}>
-          <Text style={styles.rainfallTitle}>12-month rainfall profile</Text>
-          <Text style={styles.rainfallMeta}>
-            {round(annualRain, 1)} {units.rain} per year · Tap to edit
-          </Text>
-        </View>
-        <Ionicons name="chevron-forward" size={20} color={COLORS.muted} />
-      </Pressable>
-
-      <PrimaryButton
-        icon="analytics"
-        label="Calculate reliability"
-        onPress={onCalculate}
-      />
-      <Text style={styles.disclaimer}>
-        Planning estimate only. Verify structural, health, and local code
-        requirements with qualified professionals.
-      </Text>
-    </ScrollView>
-  );
-}
-
-function RainfallScreen({
-  inputs,
-  onChange,
-  onBack,
-  onCalculate,
-}: {
-  inputs: ProjectInputs;
-  onChange: (inputs: ProjectInputs) => void;
-  onBack: () => void;
-  onCalculate: () => void;
-}) {
-  const rainUnit = inputs.units === "metric" ? "mm" : "in";
-  const total = inputs.rainfall.reduce((sum, value) => sum + value, 0);
-  const peak = Math.max(...inputs.rainfall, 1);
-
-  const updateMonth = (index: number, value: string) => {
-    const rainfall = [...inputs.rainfall];
-    rainfall[index] = Math.max(0, toNumber(value));
-    onChange({ ...inputs, rainfall });
-  };
-
-  return (
-    <ScrollView
-      contentContainerStyle={styles.scrollContent}
-      keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}
-    >
-      <BackTitle
-        eyebrow="CLIMATE PROFILE"
-        onBack={onBack}
-        title="Monthly rainfall"
-      />
-      <Text style={styles.pageIntro}>
-        Use long-term monthly averages from your nearest reliable weather
-        station.
-      </Text>
-      <View style={styles.rainSummary}>
-        <View>
-          <Text style={styles.summaryLabel}>ANNUAL TOTAL</Text>
-          <Text style={styles.summaryValue}>
-            {round(total, 1)} <Text style={styles.summaryUnit}>{rainUnit}</Text>
-          </Text>
-        </View>
-        <View style={styles.miniChart}>
-          {inputs.rainfall.map((value, index) => (
-            <View
-              key={MONTHS[index]}
-              style={[
-                styles.miniBar,
-                { height: Math.max(5, (value / peak) * 48) },
-              ]}
-            />
-          ))}
-        </View>
-      </View>
-      <View style={styles.monthGrid}>
-        {MONTHS.map((month, index) => (
-          <View key={month} style={styles.monthField}>
-            <Text style={styles.monthLabel}>{month}</Text>
-            <TextInput
-              accessibilityLabel={`${month} rainfall in ${rainUnit}`}
-              keyboardType="decimal-pad"
-              onChangeText={(value) => updateMonth(index, value)}
-              selectTextOnFocus
-              style={styles.monthInput}
-              value={`${round(inputs.rainfall[index] ?? 0, 1)}`}
-            />
-            <Text style={styles.monthUnit}>{rainUnit}</Text>
-          </View>
-        ))}
-      </View>
-      <View style={styles.infoNote}>
-        <Ionicons name="information-circle-outline" size={20} color={COLORS.teal} />
-        <Text style={styles.infoNoteText}>
-          Monthly averages are ideal for an early feasibility estimate. Final
-          engineering should use several years of daily rainfall records.
-        </Text>
-      </View>
-      <PrimaryButton icon="analytics" label="Run simulation" onPress={onCalculate} />
-    </ScrollView>
-  );
-}
-
-function ResultsScreen({
-  inputs,
-  result,
-  onBack,
-  onSave,
-}: {
-  inputs: ProjectInputs;
-  result: SimulationResult;
-  onBack: () => void;
-  onSave: () => void;
-}) {
-  const volumeUnit = inputs.units === "metric" ? "L" : "gal";
-  const reliabilityColor =
-    result.reliability >= 90
-      ? COLORS.teal
-      : result.reliability >= 70
-        ? "#C47A2C"
-        : COLORS.danger;
-  const maxStorage = Math.max(inputs.tankCapacity, 1);
-
-  return (
-    <ScrollView
-      contentContainerStyle={styles.scrollContent}
-      showsVerticalScrollIndicator={false}
-    >
-      <BackTitle eyebrow="YOUR WATER PLAN" onBack={onBack} title={inputs.name} />
-      <LinearGradient
-        colors={["#153F3C", "#166D67"]}
-        end={{ x: 1, y: 1 }}
-        style={styles.scoreCard}
-      >
-        <Text style={styles.scoreEyebrow}>ESTIMATED DEMAND MET</Text>
-        <Text style={styles.score}>
-          {round(result.reliability)}
-          <Text style={styles.scorePercent}>%</Text>
-        </Text>
-        <View style={styles.progressTrack}>
-          <View
-            style={[
-              styles.progressFill,
-              {
-                backgroundColor: reliabilityColor,
-                width: `${Math.min(100, result.reliability)}%`,
-              },
-            ]}
-          />
-        </View>
-        <Text style={styles.scoreCopy}>
-          {result.reliability >= 95
-            ? "Strong match for the rainfall profile and demand."
-            : "Dry months may need backup water or lower demand."}
-        </Text>
-      </LinearGradient>
-
-      <View style={styles.metricGrid}>
-        <Metric
-          icon="water-outline"
-          label="Captured"
-          unit={volumeUnit}
-          value={result.annualCaptured}
-        />
-        <Metric
-          icon="flash-outline"
-          label="Demand"
-          unit={volumeUnit}
-          value={result.annualDemand}
-        />
-        <Metric
-          icon="arrow-up-circle-outline"
-          label="Overflow"
-          unit={volumeUnit}
-          value={result.annualOverflow}
-        />
-        <Metric
-          icon="alert-circle-outline"
-          label="Shortfall"
-          unit={volumeUnit}
-          value={result.annualShortage}
-        />
-      </View>
-
-      <SectionHeader number="12M" title="Storage through the year" />
-      <View style={styles.chartCard}>
-        <View style={styles.chart}>
-          {result.months.map((month) => {
-            const height = (month.endingStorage / maxStorage) * 112;
-            return (
-              <View key={month.monthIndex} style={styles.chartColumn}>
-                <View style={styles.chartBarTrack}>
-                  <View style={[styles.chartBar, { height: Math.max(2, height) }]} />
-                </View>
-                <Text style={styles.chartMonth}>{MONTHS[month.monthIndex]}</Text>
+                <Text style={styles.petSelectorEmoji}>{item.emoji}</Text>
               </View>
-            );
-          })}
-        </View>
-        <View style={styles.chartLegend}>
-          <View style={styles.legendDot} />
-          <Text style={styles.chartLegendText}>End-of-month tank level</Text>
-        </View>
-      </View>
+              <Text
+                style={[
+                  styles.petSelectorName,
+                  active && styles.petSelectorNameActive,
+                ]}
+              >
+                {item.name}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
 
-      <View style={styles.recommendation}>
-        <View style={styles.recommendationIcon}>
-          <Ionicons name="bulb-outline" size={24} color={COLORS.teal} />
-        </View>
-        <View style={styles.flex}>
-          <Text style={styles.recommendationLabel}>95% RELIABILITY TARGET</Text>
-          <Text style={styles.recommendationValue}>
-            {round(result.suggestedCapacity)} {volumeUnit}
-          </Text>
-          <Text style={styles.recommendationCopy}>
-            Modelled minimum within the search range. A larger tank cannot fix a
-            yearly supply deficit.
-          </Text>
-        </View>
-      </View>
-
-      <View style={styles.actionRow}>
-        <Pressable
-          onPress={onBack}
-          style={({ pressed }) => [
-            styles.secondaryButton,
-            pressed && styles.pressed,
-          ]}
-        >
-          <Ionicons name="create-outline" size={20} color={COLORS.teal} />
-          <Text style={styles.secondaryButtonText}>Edit</Text>
-        </Pressable>
-        <View style={styles.actionPrimary}>
-          <PrimaryButton icon="bookmark-outline" label="Save plan" onPress={onSave} />
-        </View>
-      </View>
-    </ScrollView>
-  );
-}
-
-function SavedScreen({
-  projects,
-  onOpen,
-  onDelete,
-  onBack,
-}: {
-  projects: SavedProject[];
-  onOpen: (project: SavedProject) => void;
-  onDelete: (id: string) => void;
-  onBack: () => void;
-}) {
-  return (
-    <ScrollView
-      contentContainerStyle={styles.scrollContent}
-      showsVerticalScrollIndicator={false}
-    >
-      <BackTitle eyebrow="OFFLINE LIBRARY" onBack={onBack} title="Saved plans" />
-      {projects.length === 0 ? (
-        <View style={styles.emptyState}>
-          <View style={styles.emptyIcon}>
-            <Ionicons name="folder-open-outline" size={36} color={COLORS.teal} />
-          </View>
-          <Text style={styles.emptyTitle}>No plans saved yet</Text>
-          <Text style={styles.emptyCopy}>
-            Run a simulation, then save it for quick offline access.
-          </Text>
-          <PrimaryButton icon="add" label="Create a plan" onPress={onBack} />
-        </View>
-      ) : (
-        projects.map((project) => (
-          <Pressable
-            key={project.id}
-            onPress={() => onOpen(project)}
-            style={({ pressed }) => [
-              styles.savedCard,
-              pressed && styles.pressed,
-            ]}
+      {pet && (
+        <>
+          <LinearGradient
+            colors={[`${pet.color}32`, `${pet.color}10`]}
+            style={styles.petProfileCard}
           >
-            <View style={styles.savedCardIcon}>
-              <Ionicons name="water-outline" size={24} color={COLORS.teal} />
+            <View style={styles.petProfileAvatar}>
+              <Text style={styles.petProfileEmoji}>{pet.emoji}</Text>
             </View>
             <View style={styles.flex}>
-              <Text style={styles.savedName}>{project.inputs.name}</Text>
-              <Text style={styles.savedMeta}>
-                {round(project.inputs.tankCapacity)}{" "}
-                {project.inputs.units === "metric" ? "L" : "gal"} tank ·{" "}
-                {round(project.result.reliability)}% demand met
+              <Text style={styles.petProfileName}>{pet.name}</Text>
+              <Text style={styles.petProfileMeta}>
+                {pet.breed} · {pet.age} years
+              </Text>
+              <View style={styles.petProfileStatus}>
+                <View style={styles.healthyDot} />
+                <Text style={styles.petProfileStatusText}>
+                  Care plan is up to date
+                </Text>
+              </View>
+            </View>
+            <Pressable style={styles.moreButton}>
+              <Ionicons
+                name="ellipsis-horizontal"
+                size={20}
+                color={COLORS.ink}
+              />
+            </Pressable>
+          </LinearGradient>
+
+          <View style={styles.sectionHeadingRow}>
+            <View>
+              <Text style={styles.sectionKicker}>ACTIVE PLAN</Text>
+              <Text style={styles.sectionTitle}>
+                {pet.medications.length} medications
               </Text>
             </View>
-            <Pressable
-              accessibilityLabel={`Delete ${project.inputs.name}`}
-              hitSlop={10}
-              onPress={() => onDelete(project.id)}
-              style={styles.deleteButton}
-            >
-              <Ionicons name="trash-outline" size={19} color={COLORS.muted} />
+            <Pressable onPress={onAdd}>
+              <Text style={styles.textAction}>Add new</Text>
             </Pressable>
-          </Pressable>
-        ))
+          </View>
+
+          {pet.medications.map((medication) => (
+            <MedicationCard key={medication.id} medication={medication} />
+          ))}
+
+          <View style={styles.vetCard}>
+            <View style={styles.vetIcon}>
+              <Ionicons name="document-text-outline" size={24} color={COLORS.sage} />
+            </View>
+            <View style={styles.flex}>
+              <Text style={styles.vetTitle}>Vet-ready care summary</Text>
+              <Text style={styles.vetCopy}>
+                Every dose, note, and missed medication in one clear report.
+              </Text>
+            </View>
+            <View style={styles.proPill}>
+              <Text style={styles.proPillText}>PRO</Text>
+            </View>
+          </View>
+        </>
       )}
     </ScrollView>
   );
 }
 
-function LabeledInput({
+function MedicationCard({ medication }: { medication: Medication }) {
+  const lowStock = medication.stock <= 10;
+  return (
+    <View style={styles.medicationCard}>
+      <View
+        style={[
+          styles.medicationIconLarge,
+          { backgroundColor: `${medication.color}20` },
+        ]}
+      >
+        <Ionicons
+          name={medication.form === "liquid" ? "water" : "medical"}
+          size={23}
+          color={medication.color}
+        />
+      </View>
+      <View style={styles.flex}>
+        <Text style={styles.medicationTitle}>{medication.name}</Text>
+        <Text style={styles.medicationMeta}>
+          {medication.dosage} · {medication.times.map(formatTime).join(" & ")}
+        </Text>
+        <View style={styles.stockRow}>
+          <View
+            style={[
+              styles.stockDot,
+              { backgroundColor: lowStock ? COLORS.coral : COLORS.sage },
+            ]}
+          />
+          <Text
+            style={[
+              styles.stockText,
+              lowStock && { color: COLORS.coral },
+            ]}
+          >
+            {medication.stock} {medication.stockUnit} left
+            {lowStock ? " · Refill soon" : ""}
+          </Text>
+        </View>
+      </View>
+      <Ionicons name="chevron-forward" size={19} color={COLORS.muted} />
+    </View>
+  );
+}
+
+function InsightsScreen({
+  pets,
+  logs,
+  topInset,
+}: {
+  pets: Pet[];
+  logs: DoseLog[];
+  topInset: number;
+}) {
+  const weekly = [100, 86, 100, 100, 72, 100, 94];
+  const lowStock = pets.flatMap((pet) =>
+    pet.medications
+      .filter((medication) => medication.stock <= 10)
+      .map((medication) => ({ pet, medication })),
+  );
+
+  return (
+    <ScrollView
+      contentContainerStyle={[styles.standardContent, { paddingTop: topInset + 14 }]}
+      showsVerticalScrollIndicator={false}
+    >
+      <AppHeader
+        actionIcon="share-outline"
+        eyebrow="CARE AT A GLANCE"
+        title="Insights"
+      />
+
+      <LinearGradient
+        colors={["#E4EEE9", "#F6EBD2"]}
+        end={{ x: 1, y: 1 }}
+        style={styles.insightHero}
+      >
+        <View style={styles.insightScoreRing}>
+          <Text style={styles.insightScore}>94</Text>
+          <Text style={styles.insightScoreUnit}>%</Text>
+        </View>
+        <View style={styles.flex}>
+          <Text style={styles.insightHeroKicker}>7-DAY ADHERENCE</Text>
+          <Text style={styles.insightHeroTitle}>Beautiful consistency</Text>
+          <Text style={styles.insightHeroCopy}>
+            That’s 6% better than last week.
+          </Text>
+        </View>
+        <Text style={styles.sparkle}>✦</Text>
+      </LinearGradient>
+
+      <View style={styles.statsRow}>
+        <StatCard
+          icon="checkmark-done"
+          label="Doses given"
+          value={`${Math.max(18, logs.filter((log) => log.status === "given").length)}`}
+        />
+        <StatCard icon="flame" label="Day streak" value="12" />
+        <StatCard icon="people" label="Caregivers" value="2" />
+      </View>
+
+      <View style={styles.chartPanel}>
+        <View style={styles.sectionHeadingRow}>
+          <View>
+            <Text style={styles.sectionKicker}>THIS WEEK</Text>
+            <Text style={styles.sectionTitle}>Daily completion</Text>
+          </View>
+          <Text style={styles.textAction}>Jul 6–12</Text>
+        </View>
+        <View style={styles.weekChart}>
+          {weekly.map((value, index) => (
+            <View key={`${value}-${index}`} style={styles.weekColumn}>
+              <View style={styles.weekBarTrack}>
+                <View style={[styles.weekBar, { height: `${value}%` }]} />
+              </View>
+              <Text style={styles.weekDay}>
+                {["M", "T", "W", "T", "F", "S", "S"][index]}
+              </Text>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      <View style={styles.sectionHeadingRow}>
+        <View>
+          <Text style={styles.sectionKicker}>SMART HEADS-UP</Text>
+          <Text style={styles.sectionTitle}>Needs attention</Text>
+        </View>
+      </View>
+      {lowStock.map(({ pet, medication }) => (
+        <View key={`${pet.id}-${medication.id}`} style={styles.attentionCard}>
+          <View style={styles.attentionIcon}>
+            <Ionicons name="cube-outline" size={22} color={COLORS.coral} />
+          </View>
+          <View style={styles.flex}>
+            <Text style={styles.attentionTitle}>
+              {medication.name} is running low
+            </Text>
+            <Text style={styles.attentionCopy}>
+              {pet.name} has about {medication.stock} doses remaining.
+            </Text>
+          </View>
+          <Pressable style={styles.refillButton}>
+            <Text style={styles.refillText}>Refill</Text>
+          </Pressable>
+        </View>
+      ))}
+
+      <View style={styles.careTeamCard}>
+        <View style={styles.careTeamTop}>
+          <View>
+            <Text style={styles.careTeamKicker}>PAWPAIR FAMILY</Text>
+            <Text style={styles.careTeamTitle}>Care works better together.</Text>
+          </View>
+          <Ionicons name="heart-circle" size={38} color={COLORS.butter} />
+        </View>
+        <View style={styles.caregiverRow}>
+          <View style={styles.caregiverAvatar}>
+            <Text style={styles.caregiverInitial}>M</Text>
+          </View>
+          <View style={[styles.caregiverAvatar, styles.caregiverSecond]}>
+            <Text style={styles.caregiverInitial}>A</Text>
+          </View>
+          <Pressable style={styles.inviteButton}>
+            <Ionicons name="add" size={17} color={COLORS.white} />
+            <Text style={styles.inviteText}>Invite caregiver</Text>
+          </Pressable>
+        </View>
+      </View>
+    </ScrollView>
+  );
+}
+
+function AddMedicationScreen({
+  pets,
+  topInset,
+  onBack,
+  onSave,
+}: {
+  pets: Pet[];
+  topInset: number;
+  onBack: () => void;
+  onSave: (petId: string, medication: Medication) => void;
+}) {
+  const [petId, setPetId] = useState(pets[0]?.id ?? "");
+  const [name, setName] = useState("");
+  const [dosage, setDosage] = useState("");
+  const [instructions, setInstructions] = useState("Give with food");
+  const [time, setTime] = useState("08:00");
+  const [stock, setStock] = useState("30");
+  const [form, setForm] = useState<MedicationForm>("tablet");
+
+  const save = () => {
+    if (!petId || !name.trim() || !dosage.trim() || !/^\d{2}:\d{2}$/.test(time)) {
+      Alert.alert(
+        "A few details are missing",
+        "Choose a pet and add the medication, dosage, and time.",
+      );
+      return;
+    }
+    onSave(petId, {
+      id: `${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`,
+      name: name.trim(),
+      dosage: dosage.trim(),
+      instructions: instructions.trim() || "Follow veterinary instructions",
+      form,
+      times: [time],
+      stock: Math.max(0, Number(stock) || 0),
+      stockUnit: form === "liquid" ? "doses" : "tablets",
+      color: COLORS.coral,
+    });
+  };
+
+  return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      style={styles.flex}
+    >
+      <ScrollView
+        contentContainerStyle={[
+          styles.addContent,
+          { paddingTop: topInset + 12 },
+        ]}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.addHeader}>
+          <Pressable onPress={onBack} style={styles.closeButton}>
+            <Ionicons name="close" size={22} color={COLORS.ink} />
+          </Pressable>
+          <View style={styles.flex}>
+            <Text style={styles.sectionKicker}>NEW CARE ROUTINE</Text>
+            <Text style={styles.addTitle}>Add medication</Text>
+          </View>
+          <View style={styles.stepPill}>
+            <Text style={styles.stepText}>1 OF 1</Text>
+          </View>
+        </View>
+
+        <View style={styles.addIllustration}>
+          <View style={styles.addIllustrationCircle}>
+            <Ionicons name="medical" size={30} color={COLORS.coral} />
+          </View>
+          <View>
+            <Text style={styles.addIllustrationTitle}>
+              Let’s make every dose easy.
+            </Text>
+            <Text style={styles.addIllustrationCopy}>
+              Add exactly what your veterinarian prescribed.
+            </Text>
+          </View>
+        </View>
+
+        <FormLabel label="Who is it for?" />
+        <View style={styles.petChoiceRow}>
+          {pets.map((pet) => {
+            const active = pet.id === petId;
+            return (
+              <Pressable
+                key={pet.id}
+                onPress={() => setPetId(pet.id)}
+                style={[styles.petChoice, active && styles.petChoiceActive]}
+              >
+                <Text style={styles.petChoiceEmoji}>{pet.emoji}</Text>
+                <Text
+                  style={[
+                    styles.petChoiceName,
+                    active && styles.petChoiceNameActive,
+                  ]}
+                >
+                  {pet.name}
+                </Text>
+                {active && (
+                  <View style={styles.choiceCheck}>
+                    <Ionicons name="checkmark" size={11} color={COLORS.white} />
+                  </View>
+                )}
+              </Pressable>
+            );
+          })}
+        </View>
+
+        <FormLabel label="Medication form" />
+        <ScrollView
+          contentContainerStyle={styles.formChoiceRow}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+        >
+          {FORM_OPTIONS.map((option) => {
+            const active = option.id === form;
+            return (
+              <Pressable
+                key={option.id}
+                onPress={() => setForm(option.id)}
+                style={[styles.formChoice, active && styles.formChoiceActive]}
+              >
+                <Ionicons
+                  name={option.icon}
+                  size={19}
+                  color={active ? COLORS.coral : COLORS.muted}
+                />
+                <Text
+                  style={[
+                    styles.formChoiceText,
+                    active && styles.formChoiceTextActive,
+                  ]}
+                >
+                  {option.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
+
+        <View style={styles.formCard}>
+          <FormInput
+            label="Medication name"
+            onChange={setName}
+            placeholder="e.g. Carprofen"
+            value={name}
+          />
+          <View style={styles.formTwoColumns}>
+            <View style={styles.flex}>
+              <FormInput
+                label="Dosage"
+                onChange={setDosage}
+                placeholder="e.g. 75 mg"
+                value={dosage}
+              />
+            </View>
+            <View style={styles.flex}>
+              <FormInput
+                label="Time"
+                onChange={setTime}
+                placeholder="08:00"
+                value={time}
+              />
+            </View>
+          </View>
+          <FormInput
+            label="Instructions"
+            onChange={setInstructions}
+            placeholder="Give with food"
+            value={instructions}
+          />
+          <FormInput
+            keyboardType="number-pad"
+            label="Starting supply"
+            onChange={setStock}
+            placeholder="30"
+            suffix={form === "liquid" ? "doses" : "tablets"}
+            value={stock}
+          />
+        </View>
+
+        <View style={styles.safetyNote}>
+          <Ionicons
+            name="shield-checkmark-outline"
+            size={21}
+            color={COLORS.sage}
+          />
+          <Text style={styles.safetyText}>
+            PawPair tracks the schedule you enter. It never changes dosage or
+            replaces veterinary advice.
+          </Text>
+        </View>
+
+        <Pressable
+          onPress={save}
+          style={({ pressed }) => [
+            styles.saveMedicationButton,
+            pressed && styles.pressed,
+          ]}
+        >
+          <Ionicons name="sparkles" size={19} color={COLORS.white} />
+          <Text style={styles.saveMedicationText}>Add to care plan</Text>
+          <Ionicons name="arrow-forward" size={19} color={COLORS.white} />
+        </Pressable>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+}
+
+function AppHeader({
+  eyebrow,
+  title,
+  actionIcon,
+  onAction,
+}: {
+  eyebrow: string;
+  title: string;
+  actionIcon: keyof typeof Ionicons.glyphMap;
+  onAction?: () => void;
+}) {
+  return (
+    <View style={styles.appHeader}>
+      <View style={styles.flex}>
+        <Text style={styles.sectionKicker}>{eyebrow}</Text>
+        <Text style={styles.pageTitle}>{title}</Text>
+      </View>
+      <Pressable onPress={onAction} style={styles.headerAction}>
+        <Ionicons name={actionIcon} size={21} color={COLORS.ink} />
+      </Pressable>
+    </View>
+  );
+}
+
+function StatCard({
+  icon,
   label,
   value,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  value: string;
+}) {
+  return (
+    <View style={styles.statCard}>
+      <View style={styles.statIcon}>
+        <Ionicons name={icon} size={17} color={COLORS.sage} />
+      </View>
+      <Text style={styles.statValue}>{value}</Text>
+      <Text style={styles.statLabel}>{label}</Text>
+    </View>
+  );
+}
+
+function FormLabel({ label }: { label: string }) {
+  return <Text style={styles.formLabel}>{label}</Text>;
+}
+
+function FormInput({
+  label,
+  value,
+  placeholder,
   suffix,
   keyboardType,
   onChange,
 }: {
   label: string;
   value: string;
+  placeholder: string;
   suffix?: string;
-  keyboardType?: "default" | "decimal-pad" | "number-pad";
+  keyboardType?: "default" | "number-pad";
   onChange: (value: string) => void;
 }) {
   return (
-    <View style={styles.inputGroup}>
-      <Text style={styles.fieldLabel}>{label}</Text>
-      <View style={styles.inputShell}>
+    <View style={styles.formInputGroup}>
+      <Text style={styles.formInputLabel}>{label}</Text>
+      <View style={styles.formInputShell}>
         <TextInput
           accessibilityLabel={label}
           keyboardType={keyboardType}
           onChangeText={onChange}
-          selectTextOnFocus={keyboardType !== undefined}
-          style={styles.input}
+          placeholder={placeholder}
+          placeholderTextColor="#A9B0B3"
+          style={styles.formInput}
           value={value}
         />
-        {suffix && <Text style={styles.inputSuffix}>{suffix}</Text>}
+        {suffix && <Text style={styles.formInputSuffix}>{suffix}</Text>}
       </View>
     </View>
   );
 }
 
-function SectionHeader({ number, title }: { number: string; title: string }) {
-  return (
-    <View style={styles.sectionHeader}>
-      <Text style={styles.sectionNumber}>{number}</Text>
-      <Text style={styles.sectionTitle}>{title}</Text>
-      <View style={styles.sectionLine} />
-    </View>
-  );
-}
-
-function SegmentButton({
+function BottomNav({
   active,
-  label,
-  onPress,
+  bottomInset,
+  onChange,
+  onAdd,
 }: {
-  active: boolean;
-  label: string;
-  onPress: () => void;
+  active: Screen;
+  bottomInset: number;
+  onChange: (screen: Screen) => void;
+  onAdd: () => void;
 }) {
   return (
-    <Pressable
-      onPress={onPress}
-      style={[styles.segmentButton, active && styles.segmentButtonActive]}
-    >
-      <Text style={[styles.segmentText, active && styles.segmentTextActive]}>
-        {label}
-      </Text>
-    </Pressable>
-  );
-}
-
-function PrimaryButton({
-  icon,
-  label,
-  onPress,
-}: {
-  icon: keyof typeof Ionicons.glyphMap;
-  label: string;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.primaryButton,
-        pressed && styles.primaryButtonPressed,
-      ]}
-    >
-      <Ionicons name={icon} size={20} color={COLORS.white} />
-      <Text style={styles.primaryButtonText}>{label}</Text>
-      <Ionicons name="arrow-forward" size={18} color={COLORS.white} />
-    </Pressable>
-  );
-}
-
-function BackTitle({
-  eyebrow,
-  onBack,
-  title,
-}: {
-  eyebrow: string;
-  onBack: () => void;
-  title: string;
-}) {
-  return (
-    <View style={styles.pageTitleRow}>
-      <Pressable onPress={onBack} style={styles.backButton}>
-        <Ionicons name="arrow-back" size={21} color={COLORS.ink} />
-      </Pressable>
-      <View style={styles.flex}>
-        <Text style={styles.pageEyebrow}>{eyebrow}</Text>
-        <Text numberOfLines={1} style={styles.pageTitle}>
-          {title}
-        </Text>
-      </View>
-    </View>
-  );
-}
-
-function Metric({
-  icon,
-  label,
-  unit,
-  value,
-}: {
-  icon: keyof typeof Ionicons.glyphMap;
-  label: string;
-  unit: string;
-  value: number;
-}) {
-  return (
-    <View style={styles.metric}>
-      <Ionicons name={icon} size={20} color={COLORS.teal} />
-      <Text style={styles.metricLabel}>{label}</Text>
-      <Text style={styles.metricValue}>{round(value)}</Text>
-      <Text style={styles.metricUnit}>{unit} / year</Text>
-    </View>
-  );
-}
-
-function TabButton({
-  active,
-  icon,
-  label,
-  onPress,
-}: {
-  active: boolean;
-  icon: keyof typeof Ionicons.glyphMap;
-  label: string;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable onPress={onPress} style={styles.tabButton}>
-      <Ionicons
-        color={active ? COLORS.teal : "#8AA09D"}
-        name={icon}
-        size={22}
+    <View style={[styles.bottomNav, { paddingBottom: Math.max(bottomInset, 10) }]}>
+      <NavItem
+        active={active === "today"}
+        icon="home-outline"
+        label="Today"
+        onPress={() => onChange("today")}
       />
-      <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>
+      <NavItem
+        active={active === "pets"}
+        icon="paw-outline"
+        label="Pets"
+        onPress={() => onChange("pets")}
+      />
+      <Pressable onPress={onAdd} style={styles.navAdd}>
+        <LinearGradient
+          colors={["#F28A70", "#E96D58"]}
+          style={styles.navAddGradient}
+        >
+          <Ionicons name="add" size={27} color={COLORS.white} />
+        </LinearGradient>
+      </Pressable>
+      <NavItem
+        active={active === "insights"}
+        icon="stats-chart-outline"
+        label="Insights"
+        onPress={() => onChange("insights")}
+      />
+      <NavItem
+        active={false}
+        icon="person-outline"
+        label="Profile"
+        onPress={() => undefined}
+      />
+    </View>
+  );
+}
+
+function NavItem({
+  active,
+  icon,
+  label,
+  onPress,
+}: {
+  active: boolean;
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable onPress={onPress} style={styles.navItem}>
+      <View style={[styles.navIconWrap, active && styles.navIconWrapActive]}>
+        <Ionicons
+          name={active ? (icon.replace("-outline", "") as keyof typeof Ionicons.glyphMap) : icon}
+          size={21}
+          color={active ? COLORS.coral : "#97A1A6"}
+        />
+      </View>
+      <Text style={[styles.navLabel, active && styles.navLabelActive]}>
         {label}
       </Text>
-      {active && <View style={styles.tabIndicator} />}
     </Pressable>
   );
 }
@@ -871,309 +1171,195 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  actionPrimary: { flex: 1.55 },
-  actionRow: { flexDirection: "row", gap: 10, marginTop: 20 },
-  app: { backgroundColor: COLORS.pale, flex: 1 },
-  backButton: {
-    alignItems: "center",
-    backgroundColor: COLORS.white,
-    borderColor: COLORS.border,
-    borderRadius: 16,
-    borderWidth: 1,
-    height: 46,
-    justifyContent: "center",
-    marginRight: 14,
-    width: 46,
-  },
-  brand: { color: COLORS.ink, fontSize: 18, fontWeight: "800", letterSpacing: -0.5 },
-  brandCopy: { flex: 1 },
-  brandMark: {
-    alignItems: "center",
-    backgroundColor: COLORS.teal,
-    borderRadius: 14,
-    height: 40,
-    justifyContent: "center",
-    marginRight: 10,
-    transform: [{ rotate: "-6deg" }],
-    width: 40,
-  },
-  brandTagline: { color: COLORS.muted, fontSize: 10, fontWeight: "600", letterSpacing: 0.2 },
-  card: {
-    backgroundColor: COLORS.white,
-    borderColor: COLORS.border,
-    borderRadius: 22,
-    borderWidth: 1,
-    padding: 18,
-  },
-  chart: { flexDirection: "row", gap: 6, height: 142 },
-  chartBar: {
-    backgroundColor: "#58B5A7",
-    borderRadius: 5,
-    bottom: 0,
-    position: "absolute",
-    width: "100%",
-  },
-  chartBarTrack: {
-    backgroundColor: "#E7F1EE",
-    borderRadius: 5,
-    flex: 1,
-    overflow: "hidden",
-    width: "100%",
-  },
-  chartCard: {
-    backgroundColor: COLORS.white,
-    borderColor: COLORS.border,
-    borderRadius: 22,
-    borderWidth: 1,
-    padding: 18,
-  },
-  chartColumn: { alignItems: "center", flex: 1, gap: 7 },
-  chartLegend: { alignItems: "center", flexDirection: "row", gap: 7, marginTop: 15 },
-  chartLegendText: { color: COLORS.muted, fontSize: 12 },
-  chartMonth: { color: COLORS.muted, fontSize: 9, fontWeight: "700" },
-  column: { flex: 1 },
-  deleteButton: { padding: 6 },
-  disclaimer: {
-    color: COLORS.muted,
-    fontSize: 11,
-    lineHeight: 16,
-    marginHorizontal: 12,
-    marginTop: 12,
-    textAlign: "center",
-  },
-  emptyCopy: {
-    color: COLORS.muted,
-    fontSize: 14,
-    lineHeight: 21,
-    marginBottom: 24,
-    maxWidth: 270,
-    textAlign: "center",
-  },
-  emptyIcon: {
-    alignItems: "center",
-    backgroundColor: COLORS.mint,
-    borderRadius: 30,
-    height: 74,
-    justifyContent: "center",
-    marginBottom: 18,
-    width: 74,
-  },
-  emptyState: {
-    alignItems: "center",
-    backgroundColor: COLORS.white,
-    borderColor: COLORS.border,
-    borderRadius: 24,
-    borderWidth: 1,
-    marginTop: 24,
-    padding: 30,
-  },
-  emptyTitle: { color: COLORS.ink, fontSize: 20, fontWeight: "800", marginBottom: 8 },
-  fieldLabel: {
-    color: COLORS.ink,
-    fontSize: 12,
-    fontWeight: "700",
-    marginBottom: 8,
-  },
+  addContent: { paddingBottom: 34, paddingHorizontal: 18 },
+  addHeader: { alignItems: "center", flexDirection: "row", gap: 12, marginBottom: 20 },
+  addIllustration: { alignItems: "center", backgroundColor: COLORS.butterSoft, borderRadius: 22, flexDirection: "row", gap: 14, marginBottom: 24, padding: 17 },
+  addIllustrationCircle: { alignItems: "center", backgroundColor: COLORS.paper, borderRadius: 18, height: 58, justifyContent: "center", transform: [{ rotate: "-5deg" }], width: 58 },
+  addIllustrationCopy: { color: COLORS.muted, fontSize: 11, marginTop: 4 },
+  addIllustrationTitle: { color: COLORS.ink, fontSize: 15, fontWeight: "800" },
+  addTitle: { color: COLORS.ink, fontSize: 25, fontWeight: "900", letterSpacing: -0.8, marginTop: 2 },
+  app: { backgroundColor: COLORS.background, flex: 1 },
+  appHeader: { alignItems: "center", flexDirection: "row", marginBottom: 24 },
+  attentionCard: { alignItems: "center", backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 19, borderWidth: 1, flexDirection: "row", gap: 12, marginBottom: 10, padding: 15 },
+  attentionCopy: { color: COLORS.muted, fontSize: 11, marginTop: 4 },
+  attentionIcon: { alignItems: "center", backgroundColor: COLORS.coralSoft, borderRadius: 14, height: 46, justifyContent: "center", width: 46 },
+  attentionTitle: { color: COLORS.ink, fontSize: 13, fontWeight: "800" },
+  bottomNav: { alignItems: "flex-end", backgroundColor: COLORS.paper, borderTopColor: COLORS.line, borderTopWidth: 1, flexDirection: "row", paddingHorizontal: 8, paddingTop: 8 },
+  caregiverAvatar: { alignItems: "center", backgroundColor: COLORS.coral, borderColor: COLORS.navy, borderRadius: 17, borderWidth: 2, height: 34, justifyContent: "center", width: 34 },
+  caregiverInitial: { color: COLORS.white, fontSize: 12, fontWeight: "900" },
+  caregiverRow: { alignItems: "center", flexDirection: "row", marginTop: 20 },
+  caregiverSecond: { backgroundColor: COLORS.sage, marginLeft: -8 },
+  careTeamCard: { backgroundColor: COLORS.navy, borderRadius: 23, marginTop: 18, overflow: "hidden", padding: 20 },
+  careTeamKicker: { color: "#A9C9C0", fontSize: 9, fontWeight: "900", letterSpacing: 1.2 },
+  careTeamTitle: { color: COLORS.white, fontSize: 18, fontWeight: "900", marginTop: 5 },
+  careTeamTop: { flexDirection: "row", justifyContent: "space-between" },
+  chartPanel: { backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 23, borderWidth: 1, marginBottom: 24, padding: 18 },
+  choiceCheck: { alignItems: "center", backgroundColor: COLORS.coral, borderRadius: 8, height: 16, justifyContent: "center", position: "absolute", right: 7, top: 7, width: 16 },
+  closeButton: { alignItems: "center", backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 15, borderWidth: 1, height: 44, justifyContent: "center", width: 44 },
+  contentSection: { paddingBottom: 28, paddingHorizontal: 18, paddingTop: 22 },
+  dateDay: { color: COLORS.muted, fontSize: 8, fontWeight: "900", letterSpacing: 0.6 },
+  dateDayActive: { color: COLORS.coral },
+  dateDot: { backgroundColor: COLORS.coral, borderRadius: 2, bottom: 5, height: 4, position: "absolute", width: 4 },
+  dateItem: { alignItems: "center", borderRadius: 15, flex: 1, height: 60, justifyContent: "center", position: "relative" },
+  dateItemActive: { backgroundColor: COLORS.coralSoft },
+  dateNumber: { color: COLORS.ink, fontSize: 17, fontWeight: "800", marginTop: 4 },
+  dateNumberActive: { color: COLORS.coral },
+  dateRail: { backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 20, borderWidth: 1, flexDirection: "row", padding: 5 },
+  dateRailWrap: { backgroundColor: COLORS.background, paddingHorizontal: 18, paddingTop: 12 },
+  doseActions: { flexDirection: "row", gap: 9, marginTop: 14 },
+  doseCard: { backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 20, borderWidth: 1, flex: 1, marginBottom: 14, padding: 15 },
+  doseCardActive: { borderColor: "#F0A797", shadowColor: COLORS.coral, shadowOffset: { height: 5, width: 0 }, shadowOpacity: 0.08, shadowRadius: 14 },
+  doseCardResolved: { backgroundColor: "#FAF9F5" },
+  doseTime: { color: COLORS.ink, fontSize: 10, fontWeight: "800", lineHeight: 13, textAlign: "center" },
+  doseTopRow: { alignItems: "center", flexDirection: "row" },
   flex: { flex: 1 },
-  header: {
-    alignItems: "center",
-    backgroundColor: COLORS.pale,
-    flexDirection: "row",
-    paddingBottom: 10,
-    paddingHorizontal: 20,
-  },
-  headerButton: {
-    alignItems: "center",
-    backgroundColor: COLORS.white,
-    borderColor: COLORS.border,
-    borderRadius: 14,
-    borderWidth: 1,
-    height: 42,
-    justifyContent: "center",
-    width: 42,
-  },
-  helper: { color: COLORS.muted, fontSize: 11, lineHeight: 16, marginTop: 12 },
-  hero: {
-    borderRadius: 26,
-    minHeight: 220,
-    overflow: "hidden",
-    padding: 22,
-    position: "relative",
-  },
-  heroArt: {
-    alignItems: "center",
-    bottom: -16,
-    height: 130,
-    justifyContent: "center",
-    position: "absolute",
-    right: -3,
-    width: 130,
-  },
-  heroBadge: {
-    alignItems: "center",
-    alignSelf: "flex-start",
-    backgroundColor: "rgba(255,255,255,0.72)",
-    borderRadius: 20,
-    flexDirection: "row",
-    gap: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-  },
-  heroBadgeText: { color: COLORS.teal, fontSize: 9, fontWeight: "900", letterSpacing: 1.1 },
-  heroBody: { color: COLORS.muted, fontSize: 14, lineHeight: 21, marginTop: 10, maxWidth: "68%" },
-  heroDrop: {
-    alignItems: "center",
-    backgroundColor: "#4AAB9E",
-    borderRadius: 50,
-    height: 82,
-    justifyContent: "center",
-    transform: [{ rotate: "7deg" }],
-    width: 82,
-  },
-  heroTitle: {
-    color: COLORS.ink,
-    fontSize: 29,
-    fontWeight: "900",
-    letterSpacing: -1.2,
-    lineHeight: 33,
-    marginTop: 18,
-    maxWidth: "77%",
-  },
-  infoNote: {
-    alignItems: "flex-start",
-    backgroundColor: COLORS.mint,
-    borderRadius: 16,
-    flexDirection: "row",
-    gap: 10,
-    marginBottom: 18,
-    padding: 15,
-  },
-  infoNoteText: { color: COLORS.ink, flex: 1, fontSize: 12, lineHeight: 18 },
-  input: { color: COLORS.ink, flex: 1, fontSize: 16, fontWeight: "700", padding: 0 },
-  inputGroup: { marginBottom: 17 },
-  inputShell: {
-    alignItems: "center",
-    backgroundColor: COLORS.pale,
-    borderColor: COLORS.border,
-    borderRadius: 13,
-    borderWidth: 1,
-    flexDirection: "row",
-    height: 50,
-    paddingHorizontal: 14,
-  },
-  inputSuffix: { color: COLORS.muted, fontSize: 13, fontWeight: "700", marginLeft: 8 },
-  legendDot: { backgroundColor: "#58B5A7", borderRadius: 4, height: 8, width: 8 },
-  material: {
-    alignItems: "center",
-    backgroundColor: COLORS.pale,
-    borderColor: "transparent",
-    borderRadius: 14,
-    borderWidth: 1.5,
-    flex: 1,
-    minWidth: "44%",
-    padding: 12,
-  },
-  materialActive: { backgroundColor: COLORS.mint, borderColor: "#78BFB4" },
-  materialGrid: { flexDirection: "row", flexWrap: "wrap", gap: 9 },
-  materialRate: { color: COLORS.muted, fontSize: 9, marginTop: 2 },
-  materialText: { color: COLORS.muted, fontSize: 12, fontWeight: "700", marginTop: 5 },
-  materialTextActive: { color: COLORS.teal },
-  metric: {
-    backgroundColor: COLORS.white,
-    borderColor: COLORS.border,
-    borderRadius: 18,
-    borderWidth: 1,
-    minWidth: "46%",
-    padding: 15,
-  },
-  metricGrid: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginTop: 12 },
-  metricLabel: { color: COLORS.muted, fontSize: 11, fontWeight: "700", marginTop: 10 },
-  metricUnit: { color: COLORS.muted, fontSize: 10, marginTop: 1 },
-  metricValue: { color: COLORS.ink, fontSize: 21, fontWeight: "900", marginTop: 3 },
-  miniBar: { backgroundColor: "#4EAB9E", borderRadius: 3, flex: 1 },
-  miniChart: { alignItems: "flex-end", flex: 1, flexDirection: "row", gap: 3, height: 50, marginLeft: 28 },
-  monthField: {
-    backgroundColor: COLORS.white,
-    borderColor: COLORS.border,
-    borderRadius: 16,
-    borderWidth: 1,
-    minWidth: "30%",
-    padding: 12,
-  },
-  monthGrid: { flexDirection: "row", flexWrap: "wrap", gap: 9, marginBottom: 16 },
-  monthInput: { color: COLORS.ink, fontSize: 18, fontWeight: "800", paddingVertical: 7 },
-  monthLabel: { color: COLORS.teal, fontSize: 10, fontWeight: "900", letterSpacing: 0.8 },
-  monthUnit: { color: COLORS.muted, fontSize: 9 },
-  pageEyebrow: { color: COLORS.teal, fontSize: 9, fontWeight: "900", letterSpacing: 1.2 },
-  pageIntro: { color: COLORS.muted, fontSize: 14, lineHeight: 21, marginBottom: 18 },
-  pageTitle: { color: COLORS.ink, fontSize: 25, fontWeight: "900", letterSpacing: -0.8, marginTop: 2 },
-  pageTitleRow: { alignItems: "center", flexDirection: "row", marginBottom: 14 },
-  pressed: { opacity: 0.72, transform: [{ scale: 0.985 }] },
-  primaryButton: {
-    alignItems: "center",
-    backgroundColor: COLORS.teal,
-    borderRadius: 17,
-    flexDirection: "row",
-    gap: 10,
-    justifyContent: "center",
-    minHeight: 56,
-    paddingHorizontal: 18,
-  },
-  primaryButtonPressed: { backgroundColor: "#0E5955", transform: [{ scale: 0.985 }] },
-  primaryButtonText: { color: COLORS.white, flex: 1, fontSize: 15, fontWeight: "800", textAlign: "center" },
-  progressFill: { borderRadius: 4, height: 7 },
-  progressTrack: { backgroundColor: "rgba(255,255,255,0.17)", borderRadius: 4, height: 7, marginTop: 16, overflow: "hidden" },
-  rainLineOne: { backgroundColor: "rgba(20,108,103,0.16)", borderRadius: 4, height: 5, position: "absolute", right: 10, top: 10, transform: [{ rotate: "-35deg" }], width: 34 },
-  rainLineTwo: { backgroundColor: "rgba(20,108,103,0.12)", borderRadius: 4, height: 5, left: 0, position: "absolute", top: 32, transform: [{ rotate: "-35deg" }], width: 25 },
-  rainfallCard: {
-    alignItems: "center",
-    backgroundColor: COLORS.white,
-    borderColor: COLORS.border,
-    borderRadius: 20,
-    borderWidth: 1,
-    flexDirection: "row",
-    gap: 12,
-    marginBottom: 20,
-    padding: 16,
-  },
-  rainfallIcon: { alignItems: "center", backgroundColor: COLORS.mint, borderRadius: 14, height: 48, justifyContent: "center", width: 48 },
-  rainfallMeta: { color: COLORS.muted, fontSize: 11, marginTop: 4 },
-  rainfallTitle: { color: COLORS.ink, fontSize: 14, fontWeight: "800" },
-  rainSummary: { alignItems: "flex-end", backgroundColor: COLORS.cream, borderRadius: 20, flexDirection: "row", marginBottom: 14, padding: 18 },
-  recommendation: { alignItems: "flex-start", backgroundColor: COLORS.cream, borderRadius: 20, flexDirection: "row", gap: 13, marginTop: 14, padding: 17 },
-  recommendationCopy: { color: COLORS.muted, fontSize: 11, lineHeight: 16, marginTop: 5 },
-  recommendationIcon: { alignItems: "center", backgroundColor: "#F3E6C6", borderRadius: 14, height: 48, justifyContent: "center", width: 48 },
-  recommendationLabel: { color: COLORS.teal, fontSize: 9, fontWeight: "900", letterSpacing: 0.9 },
-  recommendationValue: { color: COLORS.ink, fontSize: 22, fontWeight: "900", marginTop: 3 },
-  savedCard: { alignItems: "center", backgroundColor: COLORS.white, borderColor: COLORS.border, borderRadius: 19, borderWidth: 1, flexDirection: "row", gap: 12, marginBottom: 10, padding: 15 },
-  savedCardIcon: { alignItems: "center", backgroundColor: COLORS.mint, borderRadius: 14, height: 48, justifyContent: "center", width: 48 },
-  savedDot: { backgroundColor: COLORS.orange, borderColor: COLORS.white, borderRadius: 5, borderWidth: 1.5, height: 9, position: "absolute", right: 8, top: 7, width: 9 },
-  savedMeta: { color: COLORS.muted, fontSize: 11, marginTop: 4 },
-  savedName: { color: COLORS.ink, fontSize: 15, fontWeight: "800" },
-  score: { color: COLORS.white, fontSize: 58, fontWeight: "900", letterSpacing: -3, marginTop: 3 },
-  scoreCard: { borderRadius: 25, padding: 22 },
-  scoreCopy: { color: "rgba(255,255,255,0.76)", fontSize: 12, lineHeight: 18, marginTop: 12 },
-  scoreEyebrow: { color: "#9FD5CC", fontSize: 9, fontWeight: "900", letterSpacing: 1.2 },
-  scorePercent: { fontSize: 25, letterSpacing: 0 },
-  scrollContent: { paddingBottom: 30, paddingHorizontal: 18, paddingTop: 6 },
-  secondaryButton: { alignItems: "center", backgroundColor: COLORS.white, borderColor: COLORS.border, borderRadius: 17, borderWidth: 1, flex: 0.75, flexDirection: "row", gap: 7, justifyContent: "center", minHeight: 56 },
-  secondaryButtonText: { color: COLORS.teal, fontSize: 14, fontWeight: "800" },
-  sectionHeader: { alignItems: "center", flexDirection: "row", gap: 9, marginBottom: 10, marginTop: 24 },
-  sectionLine: { backgroundColor: COLORS.border, flex: 1, height: 1 },
-  sectionNumber: { color: COLORS.teal, fontSize: 9, fontWeight: "900", letterSpacing: 1 },
-  sectionTitle: { color: COLORS.ink, fontSize: 14, fontWeight: "800" },
-  segment: { backgroundColor: COLORS.pale, borderRadius: 13, flexDirection: "row", padding: 4 },
-  segmentButton: { alignItems: "center", borderRadius: 10, flex: 1, paddingVertical: 10 },
-  segmentButtonActive: { backgroundColor: COLORS.white },
-  segmentText: { color: COLORS.muted, fontSize: 12, fontWeight: "700" },
-  segmentTextActive: { color: COLORS.teal },
-  summaryLabel: { color: COLORS.teal, fontSize: 9, fontWeight: "900", letterSpacing: 1 },
-  summaryUnit: { color: COLORS.muted, fontSize: 13 },
-  summaryValue: { color: COLORS.ink, fontSize: 25, fontWeight: "900", marginTop: 5 },
-  tabBar: { backgroundColor: COLORS.white, borderTopColor: COLORS.border, borderTopWidth: 1, flexDirection: "row", paddingTop: 8 },
-  tabButton: { alignItems: "center", flex: 1, gap: 3, position: "relative" },
-  tabIndicator: { backgroundColor: COLORS.teal, borderRadius: 2, height: 3, position: "absolute", top: -9, width: 28 },
-  tabLabel: { color: "#8AA09D", fontSize: 9, fontWeight: "700" },
-  tabLabelActive: { color: COLORS.teal },
-  twoColumns: { flexDirection: "row", gap: 10 },
+  formCard: { backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 22, borderWidth: 1, marginTop: 5, padding: 17 },
+  formChoice: { alignItems: "center", backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 14, borderWidth: 1, flexDirection: "row", gap: 7, paddingHorizontal: 13, paddingVertical: 11 },
+  formChoiceActive: { backgroundColor: COLORS.coralSoft, borderColor: "#F0A797" },
+  formChoiceRow: { gap: 8, paddingBottom: 18 },
+  formChoiceText: { color: COLORS.muted, fontSize: 11, fontWeight: "700" },
+  formChoiceTextActive: { color: COLORS.coral },
+  formInput: { color: COLORS.ink, flex: 1, fontSize: 14, fontWeight: "700", padding: 0 },
+  formInputGroup: { marginBottom: 15 },
+  formInputLabel: { color: COLORS.ink, fontSize: 11, fontWeight: "800", marginBottom: 7 },
+  formInputShell: { alignItems: "center", backgroundColor: COLORS.background, borderColor: COLORS.line, borderRadius: 13, borderWidth: 1, flexDirection: "row", height: 50, paddingHorizontal: 13 },
+  formInputSuffix: { color: COLORS.muted, fontSize: 11, fontWeight: "700" },
+  formLabel: { color: COLORS.ink, fontSize: 12, fontWeight: "900", marginBottom: 10 },
+  formTwoColumns: { flexDirection: "row", gap: 10 },
+  giveButton: { alignItems: "center", backgroundColor: COLORS.coral, borderRadius: 12, flex: 1.75, flexDirection: "row", gap: 7, justifyContent: "center", minHeight: 41 },
+  giveButtonText: { color: COLORS.white, fontSize: 11, fontWeight: "800" },
+  headerAction: { alignItems: "center", backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 15, borderWidth: 1, height: 44, justifyContent: "center", width: 44 },
+  healthyDot: { backgroundColor: COLORS.sage, borderRadius: 4, height: 7, width: 7 },
+  hero: { minHeight: 326, overflow: "hidden", paddingBottom: 20, paddingHorizontal: 20, position: "relative" },
+  heroCopy: { marginTop: 30, zIndex: 2 },
+  heroEyebrow: { color: "#A9C9C0", fontSize: 9, fontWeight: "900", letterSpacing: 1.2 },
+  heroHeader: { alignItems: "center", flexDirection: "row", justifyContent: "space-between" },
+  heroHeart: { alignItems: "center", backgroundColor: COLORS.paper, borderRadius: 17, bottom: 7, height: 32, justifyContent: "center", position: "absolute", right: 3, shadowColor: "#000", shadowOffset: { height: 3, width: 0 }, shadowOpacity: 0.12, shadowRadius: 6, width: 32 },
+  heroPet: { bottom: 54, height: 150, position: "absolute", right: 10, width: 150 },
+  heroPetCircle: { alignItems: "center", backgroundColor: COLORS.butter, borderRadius: 52, bottom: 12, height: 104, justifyContent: "center", position: "absolute", right: 15, transform: [{ rotate: "4deg" }], width: 104 },
+  heroPetEmoji: { fontSize: 61, transform: [{ rotate: "-4deg" }] },
+  heroPetHalo: { borderColor: "rgba(255,255,255,0.13)", borderRadius: 70, borderWidth: 20, height: 140, position: "absolute", right: 0, top: 0, width: 140 },
+  heroSubtitle: { color: "rgba(255,255,255,0.67)", fontSize: 11, marginTop: 10 },
+  heroTitle: { color: COLORS.white, fontSize: 30, fontWeight: "900", letterSpacing: -1, lineHeight: 34, marginTop: 8 },
+  insightHero: { alignItems: "center", borderRadius: 24, flexDirection: "row", gap: 15, marginBottom: 12, overflow: "hidden", padding: 20, position: "relative" },
+  insightHeroCopy: { color: COLORS.muted, fontSize: 11, marginTop: 5 },
+  insightHeroKicker: { color: COLORS.sage, fontSize: 8, fontWeight: "900", letterSpacing: 1 },
+  insightHeroTitle: { color: COLORS.ink, fontSize: 18, fontWeight: "900", marginTop: 4 },
+  insightScore: { color: COLORS.ink, fontSize: 30, fontWeight: "900", letterSpacing: -1.5 },
+  insightScoreRing: { alignItems: "baseline", backgroundColor: "rgba(255,255,255,0.75)", borderColor: COLORS.white, borderRadius: 35, borderWidth: 5, flexDirection: "row", height: 70, justifyContent: "center", paddingTop: 11, width: 70 },
+  insightScoreUnit: { color: COLORS.sage, fontSize: 11, fontWeight: "900" },
+  inviteButton: { alignItems: "center", backgroundColor: COLORS.coral, borderRadius: 13, flexDirection: "row", gap: 6, marginLeft: "auto", paddingHorizontal: 13, paddingVertical: 10 },
+  inviteText: { color: COLORS.white, fontSize: 10, fontWeight: "800" },
+  loggedRow: { alignItems: "center", borderTopColor: COLORS.line, borderTopWidth: 1, flexDirection: "row", gap: 6, marginTop: 13, paddingTop: 11 },
+  loggedText: { color: COLORS.muted, fontSize: 10, fontWeight: "600" },
+  logoMark: { alignItems: "center", backgroundColor: COLORS.butter, borderRadius: 12, height: 34, justifyContent: "center", transform: [{ rotate: "-5deg" }], width: 34 },
+  markerCore: { backgroundColor: COLORS.line, borderRadius: 4, height: 7, width: 7 },
+  markerCoreActive: { backgroundColor: COLORS.coral },
+  medDetails: { color: COLORS.muted, fontSize: 10, marginTop: 5 },
+  medIcon: { alignItems: "center", borderRadius: 13, height: 42, justifyContent: "center", marginRight: 10, width: 42 },
+  medName: { color: COLORS.ink, fontSize: 14, fontWeight: "900" },
+  medNameRow: { alignItems: "center", flexDirection: "row", gap: 7 },
+  medicationCard: { alignItems: "center", backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 19, borderWidth: 1, flexDirection: "row", gap: 12, marginBottom: 10, padding: 15 },
+  medicationIconLarge: { alignItems: "center", borderRadius: 15, height: 50, justifyContent: "center", width: 50 },
+  medicationMeta: { color: COLORS.muted, fontSize: 10, marginTop: 4 },
+  medicationTitle: { color: COLORS.ink, fontSize: 14, fontWeight: "900" },
+  moreButton: { alignItems: "center", backgroundColor: "rgba(255,255,255,0.56)", borderRadius: 12, height: 38, justifyContent: "center", width: 38 },
+  navAdd: { alignItems: "center", flex: 1, marginTop: -24 },
+  navAddGradient: { alignItems: "center", borderColor: COLORS.paper, borderRadius: 25, borderWidth: 4, height: 54, justifyContent: "center", shadowColor: COLORS.coral, shadowOffset: { height: 6, width: 0 }, shadowOpacity: 0.26, shadowRadius: 8, width: 54 },
+  navIconWrap: { alignItems: "center", borderRadius: 11, height: 29, justifyContent: "center", width: 39 },
+  navIconWrapActive: { backgroundColor: COLORS.coralSoft },
+  navItem: { alignItems: "center", flex: 1, gap: 2 },
+  navLabel: { color: "#97A1A6", fontSize: 8, fontWeight: "700" },
+  navLabelActive: { color: COLORS.coral },
+  onlineDot: { backgroundColor: "#83D0A8", borderColor: COLORS.navy, borderRadius: 5, borderWidth: 2, bottom: -1, height: 10, position: "absolute", right: -1, width: 10 },
+  pageTitle: { color: COLORS.ink, fontSize: 29, fontWeight: "900", letterSpacing: -1, marginTop: 2 },
+  personBubble: { alignItems: "center", borderColor: COLORS.paper, borderRadius: 17, borderWidth: 2, height: 34, justifyContent: "center", position: "absolute", width: 34 },
+  personBubbleFirst: { backgroundColor: COLORS.coral, left: 2 },
+  personBubbleSecond: { backgroundColor: COLORS.sage, left: 26 },
+  personText: { color: COLORS.white, fontSize: 11, fontWeight: "900" },
+  petChoice: { alignItems: "center", backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 18, borderWidth: 1, flex: 1, padding: 13, position: "relative" },
+  petChoiceActive: { backgroundColor: COLORS.coralSoft, borderColor: "#F0A797" },
+  petChoiceEmoji: { fontSize: 28 },
+  petChoiceName: { color: COLORS.muted, fontSize: 11, fontWeight: "800", marginTop: 5 },
+  petChoiceNameActive: { color: COLORS.coral },
+  petChoiceRow: { flexDirection: "row", gap: 9, marginBottom: 22 },
+  petProfileAvatar: { alignItems: "center", backgroundColor: "rgba(255,255,255,0.68)", borderRadius: 30, height: 66, justifyContent: "center", marginRight: 14, width: 66 },
+  petProfileCard: { alignItems: "center", borderRadius: 24, flexDirection: "row", marginBottom: 24, padding: 18 },
+  petProfileEmoji: { fontSize: 39 },
+  petProfileMeta: { color: COLORS.muted, fontSize: 11, marginTop: 4 },
+  petProfileName: { color: COLORS.ink, fontSize: 22, fontWeight: "900" },
+  petProfileStatus: { alignItems: "center", flexDirection: "row", gap: 5, marginTop: 8 },
+  petProfileStatusText: { color: COLORS.sage, fontSize: 9, fontWeight: "800" },
+  petSelector: { gap: 14, paddingBottom: 18 },
+  petSelectorActive: { backgroundColor: COLORS.paper, borderColor: COLORS.line, borderWidth: 1 },
+  petSelectorAvatar: { alignItems: "center", borderRadius: 22, height: 46, justifyContent: "center", width: 46 },
+  petSelectorEmoji: { fontSize: 27 },
+  petSelectorItem: { alignItems: "center", borderColor: "transparent", borderRadius: 18, borderWidth: 1, flexDirection: "row", gap: 8, paddingHorizontal: 9, paddingVertical: 7 },
+  petSelectorName: { color: COLORS.muted, fontSize: 12, fontWeight: "800", paddingRight: 4 },
+  petSelectorNameActive: { color: COLORS.ink },
+  petTag: { borderRadius: 7, paddingHorizontal: 6, paddingVertical: 3 },
+  petTagText: { color: COLORS.ink, fontSize: 8, fontWeight: "800" },
+  pressed: { opacity: 0.78, transform: [{ scale: 0.985 }] },
+  profileButton: { alignItems: "center", backgroundColor: "#365B6B", borderColor: "rgba(255,255,255,0.25)", borderRadius: 17, borderWidth: 1, height: 38, justifyContent: "center", position: "relative", width: 38 },
+  profileInitial: { color: COLORS.white, fontSize: 13, fontWeight: "900" },
+  progressFill: { backgroundColor: COLORS.butter, borderRadius: 4, height: 6 },
+  progressRow: { alignItems: "center", bottom: 22, flexDirection: "row", gap: 9, left: 20, position: "absolute", width: "50%" },
+  progressText: { color: COLORS.white, fontSize: 9, fontWeight: "900" },
+  progressTrack: { backgroundColor: "rgba(255,255,255,0.16)", borderRadius: 4, flex: 1, height: 6, overflow: "hidden" },
+  proPill: { backgroundColor: COLORS.butterSoft, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 5 },
+  proPillText: { color: "#A77921", fontSize: 8, fontWeight: "900", letterSpacing: 0.5 },
+  refillButton: { backgroundColor: COLORS.coralSoft, borderRadius: 10, paddingHorizontal: 11, paddingVertical: 8 },
+  refillText: { color: COLORS.coral, fontSize: 9, fontWeight: "900" },
+  resolvedText: { color: COLORS.muted },
+  roundAddButton: { alignItems: "center", backgroundColor: COLORS.coralSoft, borderRadius: 15, height: 42, justifyContent: "center", width: 42 },
+  safetyNote: { alignItems: "flex-start", backgroundColor: COLORS.sageSoft, borderRadius: 16, flexDirection: "row", gap: 10, marginVertical: 16, padding: 14 },
+  safetyText: { color: COLORS.ink, flex: 1, fontSize: 10, lineHeight: 16 },
+  saveMedicationButton: { alignItems: "center", backgroundColor: COLORS.coral, borderRadius: 17, flexDirection: "row", gap: 9, justifyContent: "center", minHeight: 56, paddingHorizontal: 18 },
+  saveMedicationText: { color: COLORS.white, flex: 1, fontSize: 14, fontWeight: "900", textAlign: "center" },
+  sectionHeadingRow: { alignItems: "center", flexDirection: "row", justifyContent: "space-between", marginBottom: 14 },
+  sectionKicker: { color: COLORS.sage, fontSize: 8, fontWeight: "900", letterSpacing: 1.2 },
+  sectionTitle: { color: COLORS.ink, fontSize: 20, fontWeight: "900", letterSpacing: -0.5, marginTop: 3 },
+  skipButton: { alignItems: "center", backgroundColor: COLORS.background, borderRadius: 12, flex: 0.75, justifyContent: "center", minHeight: 41 },
+  skipButtonText: { color: COLORS.muted, fontSize: 10, fontWeight: "800" },
+  sparkle: { color: COLORS.coral, fontSize: 20, position: "absolute", right: 10, top: 8 },
+  standardContent: { paddingBottom: 32, paddingHorizontal: 18 },
+  statCard: { alignItems: "center", backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 17, borderWidth: 1, flex: 1, paddingHorizontal: 7, paddingVertical: 14 },
+  statIcon: { alignItems: "center", backgroundColor: COLORS.sageSoft, borderRadius: 10, height: 30, justifyContent: "center", marginBottom: 7, width: 30 },
+  statLabel: { color: COLORS.muted, fontSize: 8, marginTop: 3, textAlign: "center" },
+  statsRow: { flexDirection: "row", gap: 8, marginBottom: 12 },
+  statValue: { color: COLORS.ink, fontSize: 18, fontWeight: "900" },
+  stepPill: { backgroundColor: COLORS.sageSoft, borderRadius: 9, paddingHorizontal: 9, paddingVertical: 6 },
+  stepText: { color: COLORS.sage, fontSize: 8, fontWeight: "900", letterSpacing: 0.7 },
+  stockDot: { borderRadius: 3, height: 6, width: 6 },
+  stockRow: { alignItems: "center", flexDirection: "row", gap: 5, marginTop: 7 },
+  stockText: { color: COLORS.sage, fontSize: 9, fontWeight: "700" },
+  syncBadge: { alignItems: "center", backgroundColor: COLORS.paper, borderRadius: 10, height: 20, justifyContent: "center", left: 22, position: "absolute", top: 8, width: 20 },
+  syncCard: { alignItems: "center", backgroundColor: COLORS.sageSoft, borderRadius: 20, flexDirection: "row", gap: 12, marginTop: 6, padding: 16 },
+  syncCopy: { color: COLORS.muted, fontSize: 10, marginTop: 4 },
+  syncIllustration: { height: 38, position: "relative", width: 62 },
+  syncTitle: { color: COLORS.ink, fontSize: 13, fontWeight: "800" },
+  textAction: { color: COLORS.coral, fontSize: 10, fontWeight: "900" },
+  timeBlock: { alignItems: "center", marginRight: 9, width: 35 },
+  timeline: { marginTop: 2 },
+  timelineLine: { backgroundColor: COLORS.line, flex: 1, marginVertical: 3, width: 1.5 },
+  timelineMarker: { alignItems: "center", backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 10, borderWidth: 1.5, height: 20, justifyContent: "center", width: 20 },
+  timelineMarkerActive: { borderColor: COLORS.coral },
+  timelineMarkerColumn: { alignItems: "center", marginRight: 8, width: 20 },
+  timelineMarkerComplete: { backgroundColor: COLORS.sage, borderColor: COLORS.sage },
+  timelineRow: { alignItems: "stretch", flexDirection: "row" },
+  toast: { alignItems: "center", alignSelf: "center", backgroundColor: COLORS.ink, borderRadius: 16, flexDirection: "row", gap: 9, left: 22, paddingHorizontal: 15, paddingVertical: 13, position: "absolute", right: 22, shadowColor: "#000", shadowOffset: { height: 7, width: 0 }, shadowOpacity: 0.18, shadowRadius: 14 },
+  toastCheck: { alignItems: "center", backgroundColor: COLORS.sage, borderRadius: 10, height: 21, justifyContent: "center", width: 21 },
+  toastText: { color: COLORS.white, flex: 1, fontSize: 11, fontWeight: "700" },
+  todayContent: { paddingBottom: 24 },
+  vetCard: { alignItems: "center", backgroundColor: COLORS.sageSoft, borderRadius: 20, flexDirection: "row", gap: 12, marginTop: 12, padding: 16 },
+  vetCopy: { color: COLORS.muted, fontSize: 10, lineHeight: 15, marginTop: 4 },
+  vetIcon: { alignItems: "center", backgroundColor: COLORS.paper, borderRadius: 14, height: 48, justifyContent: "center", width: 48 },
+  vetTitle: { color: COLORS.ink, fontSize: 13, fontWeight: "900" },
+  weekBar: { backgroundColor: COLORS.sage, borderRadius: 5, bottom: 0, position: "absolute", width: "100%" },
+  weekBarTrack: { backgroundColor: COLORS.sageSoft, borderRadius: 5, flex: 1, overflow: "hidden", width: 18 },
+  weekChart: { flexDirection: "row", gap: 14, height: 150, justifyContent: "center", marginTop: 8 },
+  weekColumn: { alignItems: "center", flex: 1, gap: 7 },
+  weekDay: { color: COLORS.muted, fontSize: 9, fontWeight: "800" },
+  wordmark: { color: COLORS.white, fontSize: 18, fontWeight: "900", letterSpacing: -0.5 },
+  wordmarkRow: { alignItems: "center", flexDirection: "row", gap: 9 },
 });

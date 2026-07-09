@@ -1,85 +1,109 @@
-# Market research: RainTank
+# Market research: PawPair
 
 Research date: July 2026
 
 ## Decision
 
-Build a focused **rainwater harvesting and tank sizing calculator**. App Store
-ranking cannot be guaranteed: ranking varies by storefront, language, query,
-conversion, retention, rating velocity, and competition. The practical target
-is to rank for narrow, high-intent phrases in multiple localized storefronts.
+Build a focused **shared pet medication tracker**. The product wedge is not a
+generic pet diary; it answers a high-stakes household question quickly:
+
+> Did someone already give this dose?
+
+App Store ranking cannot be guaranteed. Apple does not publish exact organic
+keyword search volume, and rankings vary by storefront, language, relevance,
+conversion, retention, rating velocity, and competition.
 
 ## Why this niche
 
-- Dedicated App Store competition is small. The closest apps found were
-  Rainfall Calculator, Rain Harvest, Rain Harvesting, and Water BoD-I-Y
-  Calculator. Public rating footprints were very small, and most products
-  offered either a one-event/annual volume calculator or a broad collection of
-  water tools.
-- Existing calculators commonly use simplistic annual estimates. RainTank
-  differentiates with a 12-month water-balance model showing storage, overflow,
-  shortage, and demand reliability.
-- The same deterministic, offline product works across climates and languages.
-  It avoids accounts, proprietary hardware, subscriptions, and regulated
-  medical interpretation.
-- The problem has clear global relevance for gardeners, homesteaders,
-  off-grid households, property owners, and early-stage system planning.
+- APPA reports 95 million pet-owning US households and $41 billion spent on
+  veterinary care and products in 2025.
+- Medication tracking creates daily or weekly recurring use, unlike one-off
+  calculators.
+- Existing apps demonstrate paid pricing around $2.99–$4.49 monthly and
+  $19.99–$39.99 yearly.
+- Dedicated competitors are young and have very small rating footprints. The
+  established alternatives are typically broad pet diaries rather than
+  medication-first caregiver tools.
+- Shared, timestamped confirmation, complex schedules, refill lead times, and
+  concise veterinary reports remain meaningful product gaps.
 
-## Initial search positioning
+## Initial positioning
 
-Primary English phrases:
+Name: `PawPair`
 
-- rainwater harvesting calculator
-- rainwater tank calculator
-- rain catchment calculator
-- cistern size calculator
-- roof rainwater calculator
+App Store title direction:
 
-Initial App Store title and subtitle direction:
+`PawPair: Pet Med Tracker`
 
-- Name: `RainTank: Harvest Planner`
-- Subtitle: `Rainwater Tank Calculator`
+Subtitle direction:
 
-Localization priorities:
+`Shared Reminders, No Double Dose`
 
-1. Spanish: `calculadora captación agua lluvia`
-2. Brazilian Portuguese: `calculadora captação água da chuva`
-3. German: `Regenwasser Rechner`
-4. French: `calculateur récupération eau de pluie`
+Primary search phrases:
 
-Metadata must be validated against the final 30-character App Store limits and
-tested per storefront before release.
+- pet medication tracker
+- dog medication reminder
+- pet pill reminder
+- cat medication tracker
+- pet medication schedule
+- pet refill reminder
 
-## MVP differentiation
+## Product wedge
 
-- Metric and imperial units
-- Four roof surfaces with visible runoff assumptions
-- Editable 12-month rainfall profile
-- Monthly tank balance, overflow, shortage, and annual demand reliability
-- Suggested capacity for a 95% annual demand target
-- Offline saved plans
-- Explicit planning disclaimer
+- A unified today view across all pets
+- One-tap “given” confirmation with caregiver and timestamp
+- Clear due, upcoming, missed, skipped, and completed states
+- Multi-pet and multi-caregiver coordination
+- Daily, every-N-hours, alternating, taper, temporary, and as-needed schedules
+- Supply countdown with refill lead-time reminders
+- Vet-ready PDF/CSV care history
+- Local-first privacy with private household sync
 
-## Evidence and methodology
+The app must never recommend a medication, calculate a dose, diagnose a
+condition, or override veterinary instructions.
 
-The standard catchment relationship is `volume = area × rainfall × runoff
-coefficient`. Monthly water balance adds captured water to current storage,
-caps it at tank capacity, subtracts demand, and records overflow and shortage.
+## Monetization hypothesis
 
-Sources consulted:
+Free:
 
-- Texas Water Development Board, *The Texas Manual on Rainwater Harvesting*:
-  https://www.twdb.texas.gov/publications/brochures/conservation/doc/RainwaterHarvestingManual_3rdedition.pdf
-- Rahman et al., tank sizing and yield-after-spillage modeling:
-  https://cs-people.bu.edu/papon/pdfs/2017_STK_MTIP.pdf
-- Apple listing, Rainfall Calculator:
-  https://apps.apple.com/us/app/rainfall-calculator/id1446150880
-- Apple listing, Rain Harvest:
-  https://apps.apple.com/us/app/rain-harvest/id322055663
-- Apple listing, Water BoD-I-Y Calculator:
-  https://apps.apple.com/us/app/water-bod-i-y-calculator/id6749874589
+- One pet
+- Two active medications
+- Core reminders
+- 30 days of history
 
-Apple does not publish organic keyword volume or keyword difficulty. App counts
-and ratings are therefore competition signals, not proof of demand. Before a
-paid launch, validate each keyword with a localized landing page and a small
-Apple Search Ads discovery campaign.
+PawPair Plus:
+
+- Unlimited pets and medications
+- Household caregiver sync
+- Full history and vet reports
+- Advanced schedules
+- Refill planning and private backup
+
+Initial price test:
+
+- $2.99 monthly
+- $29.99 yearly
+- $49.99 lifetime
+
+## Design thesis
+
+Medication apps often look clinical or overloaded. PawPair uses a warm,
+editorial visual system: deep navy for trust, coral for action, sage for
+completion, cream for calm, large pet identity, and a timeline that makes
+status scannable in seconds. The primary conversion asset should be the Today
+screen, showing emotional warmth and concrete coordination value at once.
+
+## Evidence
+
+- APPA industry statistics:
+  https://americanpetproducts.org/industry-trends-and-stats
+- My Pet Rx listing and $19.99 yearly Rx+ positioning:
+  https://apps.apple.com/us/app/my-pet-rx/id6760552794
+- PillPaw pricing signal:
+  https://apps.apple.com/us/app/pillpaw-pet-med-reminder/id6747359674
+- PawDose category competition:
+  https://apps.apple.com/us/app/pawdose-pet-med-tracker/id6760492648
+
+Before paid development beyond the MVP, validate exact-match impressions and
+taps with a small US Apple Search Ads discovery campaign. Public market size,
+ratings, and competitor pricing are demand proxies, not keyword-volume proof.
