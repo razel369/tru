@@ -1,0 +1,44 @@
+{
+  "name": "raintank-planner",
+  "version": "0.1.0",
+  "description": "Offline rainwater harvesting and tank sizing planner",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/razel369/tru.git"
+  },
+  "keywords": [
+    "rainwater",
+    "tank-calculator",
+    "expo",
+    "react-native"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/razel369/tru/issues"
+  },
+  "homepage": "https://github.com/razel369/tru#readme",
+  "dependencies": {
+    "@expo/vector-icons": "^15.0.2",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "expo": "^57.0.4",
+    "expo-linear-gradient": "~57.0.0",
+    "expo-status-bar": "~57.0.0",
+    "react": "19.2.3",
+    "react-native": "0.86.0",
+    "react-native-safe-area-context": "~5.7.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.17",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "RainTank",
+    "slug": "raintank-planner",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "app.raintank.planner"
+    },
+    "android": {
+      "package": "app.raintank.planner",
+      "adaptiveIcon": {
+        "backgroundColor": "#E7F7F4"
+      },
+      "edgeToEdgeEnabled": true
+    },
+    "plugins": [
+      "expo-status-bar"
+    ]
+  }
+}
+{
+  "plugins": [
+    "expo-status-bar"
+  ]
+}
