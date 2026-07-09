@@ -5,12 +5,16 @@ import { Manrope_400Regular } from "@expo-google-fonts/manrope/400Regular";
 import { Manrope_600SemiBold } from "@expo-google-fonts/manrope/600SemiBold";
 import { Manrope_700Bold } from "@expo-google-fonts/manrope/700Bold";
 import { Manrope_800ExtraBold } from "@expo-google-fonts/manrope/800ExtraBold";
+import { BlurView } from "expo-blur";
 import { useFonts } from "expo-font";
+import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useMemo, useState } from "react";
 import {
   Alert,
+  Image,
+  ImageSourcePropType,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -61,8 +65,15 @@ const COLORS = {
   danger: "#C95C5C",
 };
 
-const PETS_KEY = "pawpair.pets.v1";
-const LOGS_KEY = "pawpair.logs.v1";
+const PET_IMAGES: Record<Pet["avatar"], ImageSourcePropType> = {
+  milo: require("./assets/pawpair-milo.png") as ImageSourcePropType,
+  luna: require("./assets/pawpair-luna.png") as ImageSourcePropType,
+};
+
+const APP_ICON = require("./assets/pawpair-icon.png") as ImageSourcePropType;
+
+const PETS_KEY = "pawpair.pets.v2";
+const LOGS_KEY = "pawpair.logs.v2";
 const CAREGIVER = "Maya";
 
 const FORM_OPTIONS: Array<{
@@ -126,6 +137,11 @@ function AppContent() {
 
   const logDose = (dose: ScheduledDose, status: "given" | "skipped") => {
     if (dose.status === "given" || dose.status === "skipped") return;
+    void Haptics.notificationAsync(
+      status === "given"
+        ? Haptics.NotificationFeedbackType.Success
+        : Haptics.NotificationFeedbackType.Warning,
+    );
     const nextLog = createDoseLog(dose, status, CAREGIVER);
     setLogs((current) => [...current, nextLog]);
     if (status === "given") {
@@ -153,6 +169,7 @@ function AppContent() {
   };
 
   const addMedication = (petId: string, medication: Medication) => {
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setPets((current) => addMedicationToPets(current, petId, medication));
     setScreen("today");
     setToast(`${medication.name} added to today’s care plan`);
@@ -253,9 +270,7 @@ function TodayScreen({
       >
         <View style={styles.heroHeader}>
           <View style={styles.wordmarkRow}>
-            <View style={styles.logoMark}>
-              <Ionicons name="paw" size={18} color={COLORS.navy} />
-            </View>
+            <Image source={APP_ICON} style={styles.logoImage} />
             <Text style={styles.wordmark}>PawPair</Text>
           </View>
           <Pressable style={styles.profileButton}>
@@ -298,7 +313,11 @@ function TodayScreen({
         <View style={styles.heroPet}>
           <View style={styles.heroPetHalo} />
           <View style={styles.heroPetCircle}>
-            <Text style={styles.heroPetEmoji}>🐕</Text>
+            <Image
+              accessibilityLabel="Portrait of Milo"
+              source={PET_IMAGES.milo}
+              style={styles.heroPetImage}
+            />
           </View>
           <View style={styles.heroHeart}>
             <Ionicons name="heart" size={14} color={COLORS.coral} />
@@ -470,9 +489,13 @@ function DoseCard({
                   { backgroundColor: `${dose.pet.color}26` },
                 ]}
               >
-                <Text style={styles.petTagText}>
-                  {dose.pet.emoji} {dose.pet.name}
-                </Text>
+                <View
+                  style={[
+                    styles.petTagDot,
+                    { backgroundColor: dose.pet.color },
+                  ]}
+                />
+                <Text style={styles.petTagText}>{dose.pet.name}</Text>
               </View>
             </View>
             <Text style={styles.medDetails}>
@@ -576,7 +599,11 @@ function PetsScreen({
                   { backgroundColor: `${item.color}38` },
                 ]}
               >
-                <Text style={styles.petSelectorEmoji}>{item.emoji}</Text>
+                <Image
+                  accessibilityLabel={`Portrait of ${item.name}`}
+                  source={PET_IMAGES[item.avatar]}
+                  style={styles.petSelectorImage}
+                />
               </View>
               <Text
                 style={[
@@ -598,7 +625,11 @@ function PetsScreen({
             style={styles.petProfileCard}
           >
             <View style={styles.petProfileAvatar}>
-              <Text style={styles.petProfileEmoji}>{pet.emoji}</Text>
+              <Image
+                accessibilityLabel={`Portrait of ${pet.name}`}
+                source={PET_IMAGES[pet.avatar]}
+                style={styles.petProfileImage}
+              />
             </View>
             <View style={styles.flex}>
               <Text style={styles.petProfileName}>{pet.name}</Text>
@@ -744,7 +775,12 @@ function InsightsScreen({
             That’s 6% better than last week.
           </Text>
         </View>
-        <Text style={styles.sparkle}>✦</Text>
+        <Ionicons
+          name="sparkles"
+          size={18}
+          color={COLORS.coral}
+          style={styles.sparkleIcon}
+        />
       </LinearGradient>
 
       <View style={styles.statsRow}>
@@ -919,7 +955,11 @@ function AddMedicationScreen({
                 onPress={() => setPetId(pet.id)}
                 style={[styles.petChoice, active && styles.petChoiceActive]}
               >
-                <Text style={styles.petChoiceEmoji}>{pet.emoji}</Text>
+                <Image
+                  accessibilityLabel={`Portrait of ${pet.name}`}
+                  source={PET_IMAGES[pet.avatar]}
+                  style={styles.petChoiceImage}
+                />
                 <Text
                   style={[
                     styles.petChoiceName,
@@ -1133,7 +1173,11 @@ function BottomNav({
   onAdd: () => void;
 }) {
   return (
-    <View style={[styles.bottomNav, { paddingBottom: Math.max(bottomInset, 10) }]}>
+    <BlurView
+      intensity={88}
+      tint="light"
+      style={[styles.bottomNav, { paddingBottom: Math.max(bottomInset, 10) }]}
+    >
       <NavItem
         active={active === "today"}
         icon="home-outline"
@@ -1166,7 +1210,7 @@ function BottomNav({
         label="Profile"
         onPress={() => undefined}
       />
-    </View>
+    </BlurView>
   );
 }
 
@@ -1209,9 +1253,7 @@ export default function App() {
   if (!fontsLoaded) {
     return (
       <View style={styles.loadingScreen}>
-        <View style={styles.loadingMark}>
-          <Ionicons name="paw" size={24} color={COLORS.navy} />
-        </View>
+        <Image source={APP_ICON} style={styles.loadingMark} />
         <Text style={styles.loadingWordmark}>PawPair</Text>
       </View>
     );
@@ -1238,7 +1280,7 @@ const styles = StyleSheet.create({
   attentionCopy: { color: COLORS.muted, fontFamily: "Manrope_400Regular", fontSize: 11, marginTop: 4 },
   attentionIcon: { alignItems: "center", backgroundColor: COLORS.coralSoft, borderRadius: 14, height: 46, justifyContent: "center", width: 46 },
   attentionTitle: { color: COLORS.ink, fontFamily: "Manrope_800ExtraBold", fontSize: 13 },
-  bottomNav: { alignItems: "flex-end", backgroundColor: COLORS.paper, borderTopColor: COLORS.line, borderTopWidth: 1, flexDirection: "row", paddingHorizontal: 8, paddingTop: 8 },
+  bottomNav: { alignItems: "flex-end", backgroundColor: "rgba(255,253,249,0.82)", borderTopColor: "rgba(231,226,217,0.78)", borderTopWidth: 1, flexDirection: "row", overflow: "visible", paddingHorizontal: 8, paddingTop: 8 },
   caregiverAvatar: { alignItems: "center", backgroundColor: COLORS.coral, borderColor: COLORS.navy, borderRadius: 17, borderWidth: 2, height: 34, justifyContent: "center", width: 34 },
   caregiverInitial: { color: COLORS.white, fontSize: 12, fontWeight: "900" },
   caregiverRow: { alignItems: "center", flexDirection: "row", marginTop: 20 },
@@ -1290,8 +1332,8 @@ const styles = StyleSheet.create({
   heroHeader: { alignItems: "center", flexDirection: "row", justifyContent: "space-between" },
   heroHeart: { alignItems: "center", backgroundColor: COLORS.paper, borderRadius: 17, bottom: 7, height: 32, justifyContent: "center", position: "absolute", right: 3, shadowColor: "#000", shadowOffset: { height: 3, width: 0 }, shadowOpacity: 0.12, shadowRadius: 6, width: 32 },
   heroPet: { bottom: 54, height: 150, position: "absolute", right: 10, width: 150 },
-  heroPetCircle: { alignItems: "center", backgroundColor: COLORS.butter, borderRadius: 52, bottom: 12, height: 104, justifyContent: "center", position: "absolute", right: 15, transform: [{ rotate: "4deg" }], width: 104 },
-  heroPetEmoji: { fontSize: 61, transform: [{ rotate: "-4deg" }] },
+  heroPetCircle: { alignItems: "center", backgroundColor: COLORS.butter, borderColor: "rgba(255,255,255,0.7)", borderRadius: 58, borderWidth: 3, bottom: 8, elevation: 4, height: 116, justifyContent: "center", overflow: "hidden", position: "absolute", right: 10, shadowColor: "#071923", shadowOffset: { height: 8, width: 0 }, shadowOpacity: 0.22, shadowRadius: 14, transform: [{ rotate: "3deg" }], width: 116 },
+  heroPetImage: { height: "100%", transform: [{ rotate: "-3deg" }, { scale: 1.08 }], width: "100%" },
   heroPetHalo: { borderColor: "rgba(255,255,255,0.13)", borderRadius: 70, borderWidth: 20, height: 140, position: "absolute", right: 0, top: 0, width: 140 },
   heroSubtitle: { color: "rgba(255,255,255,0.72)", fontFamily: "Manrope_600SemiBold", fontSize: 11, marginTop: 11 },
   heroTitle: { color: COLORS.white, fontFamily: "Fraunces_700Bold", fontSize: 34, letterSpacing: -0.8, lineHeight: 38, marginTop: 8 },
@@ -1306,10 +1348,10 @@ const styles = StyleSheet.create({
   inviteText: { color: COLORS.white, fontSize: 10, fontWeight: "800" },
   loggedRow: { alignItems: "center", borderTopColor: COLORS.line, borderTopWidth: 1, flexDirection: "row", gap: 6, marginTop: 13, paddingTop: 11 },
   loggedText: { color: COLORS.muted, fontFamily: "Manrope_600SemiBold", fontSize: 10 },
-  loadingMark: { alignItems: "center", backgroundColor: COLORS.butter, borderRadius: 19, height: 52, justifyContent: "center", transform: [{ rotate: "-6deg" }], width: 52 },
+  loadingMark: { borderRadius: 18, height: 54, transform: [{ rotate: "-5deg" }], width: 54 },
   loadingScreen: { alignItems: "center", backgroundColor: COLORS.background, flex: 1, gap: 14, justifyContent: "center" },
   loadingWordmark: { color: COLORS.ink, fontFamily: "Fraunces_700Bold", fontSize: 24 },
-  logoMark: { alignItems: "center", backgroundColor: COLORS.butter, borderRadius: 12, height: 34, justifyContent: "center", transform: [{ rotate: "-5deg" }], width: 34 },
+  logoImage: { borderColor: "rgba(255,255,255,0.22)", borderRadius: 11, borderWidth: 1, height: 34, transform: [{ rotate: "-4deg" }], width: 34 },
   markerCore: { backgroundColor: COLORS.line, borderRadius: 4, height: 7, width: 7 },
   markerCoreActive: { backgroundColor: COLORS.coral },
   medDetails: { color: COLORS.muted, fontFamily: "Manrope_400Regular", fontSize: 10, marginTop: 5 },
@@ -1339,13 +1381,13 @@ const styles = StyleSheet.create({
   personText: { color: COLORS.white, fontSize: 11, fontWeight: "900" },
   petChoice: { alignItems: "center", backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 18, borderWidth: 1, flex: 1, padding: 13, position: "relative" },
   petChoiceActive: { backgroundColor: COLORS.coralSoft, borderColor: "#F0A797" },
-  petChoiceEmoji: { fontSize: 28 },
+  petChoiceImage: { borderRadius: 22, height: 44, width: 44 },
   petChoiceName: { color: COLORS.muted, fontSize: 11, fontWeight: "800", marginTop: 5 },
   petChoiceNameActive: { color: COLORS.coral },
   petChoiceRow: { flexDirection: "row", gap: 9, marginBottom: 22 },
   petProfileAvatar: { alignItems: "center", backgroundColor: "rgba(255,255,255,0.68)", borderRadius: 30, height: 66, justifyContent: "center", marginRight: 14, width: 66 },
   petProfileCard: { alignItems: "center", borderColor: "rgba(255,255,255,0.75)", borderRadius: 24, borderWidth: 1, elevation: 1, flexDirection: "row", marginBottom: 24, padding: 18, shadowColor: COLORS.ink, shadowOffset: { height: 6, width: 0 }, shadowOpacity: 0.05, shadowRadius: 14 },
-  petProfileEmoji: { fontSize: 39 },
+  petProfileImage: { borderRadius: 31, height: 62, width: 62 },
   petProfileMeta: { color: COLORS.muted, fontSize: 11, marginTop: 4 },
   petProfileName: { color: COLORS.ink, fontFamily: "Fraunces_700Bold", fontSize: 24 },
   petProfileStatus: { alignItems: "center", flexDirection: "row", gap: 5, marginTop: 8 },
@@ -1353,11 +1395,12 @@ const styles = StyleSheet.create({
   petSelector: { gap: 14, paddingBottom: 18 },
   petSelectorActive: { backgroundColor: COLORS.paper, borderColor: COLORS.line, borderWidth: 1 },
   petSelectorAvatar: { alignItems: "center", borderRadius: 22, height: 46, justifyContent: "center", width: 46 },
-  petSelectorEmoji: { fontSize: 27 },
+  petSelectorImage: { borderRadius: 22, height: 44, width: 44 },
   petSelectorItem: { alignItems: "center", borderColor: "transparent", borderRadius: 18, borderWidth: 1, flexDirection: "row", gap: 8, paddingHorizontal: 9, paddingVertical: 7 },
   petSelectorName: { color: COLORS.muted, fontSize: 12, fontWeight: "800", paddingRight: 4 },
   petSelectorNameActive: { color: COLORS.ink },
-  petTag: { borderRadius: 7, paddingHorizontal: 6, paddingVertical: 3 },
+  petTag: { alignItems: "center", borderRadius: 7, flexDirection: "row", gap: 4, paddingHorizontal: 6, paddingVertical: 3 },
+  petTagDot: { borderRadius: 3, height: 6, width: 6 },
   petTagText: { color: COLORS.ink, fontSize: 8, fontWeight: "800" },
   pressed: { opacity: 0.78, transform: [{ scale: 0.985 }] },
   profileButton: { alignItems: "center", backgroundColor: "#365B6B", borderColor: "rgba(255,255,255,0.25)", borderRadius: 17, borderWidth: 1, height: 38, justifyContent: "center", position: "relative", width: 38 },
@@ -1381,7 +1424,7 @@ const styles = StyleSheet.create({
   sectionTitle: { color: COLORS.ink, fontFamily: "Fraunces_700Bold", fontSize: 23, letterSpacing: -0.4, marginTop: 3 },
   skipButton: { alignItems: "center", backgroundColor: COLORS.background, borderRadius: 12, flex: 0.75, justifyContent: "center", minHeight: 41 },
   skipButtonText: { color: COLORS.muted, fontFamily: "Manrope_800ExtraBold", fontSize: 10 },
-  sparkle: { color: COLORS.coral, fontSize: 20, position: "absolute", right: 10, top: 8 },
+  sparkleIcon: { position: "absolute", right: 10, top: 8 },
   standardContent: { paddingBottom: 32, paddingHorizontal: 18 },
   statCard: { alignItems: "center", backgroundColor: COLORS.paper, borderColor: COLORS.line, borderRadius: 17, borderWidth: 1, flex: 1, paddingHorizontal: 7, paddingVertical: 14 },
   statIcon: { alignItems: "center", backgroundColor: COLORS.sageSoft, borderRadius: 10, height: 30, justifyContent: "center", marginBottom: 7, width: 30 },

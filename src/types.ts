@@ -24,7 +24,7 @@ export interface Pet {
   species: "dog" | "cat" | "other";
   breed: string;
   age: number;
-  emoji: string;
+  avatar: "milo" | "luna";
   color: string;
   medications: Medication[];
 }

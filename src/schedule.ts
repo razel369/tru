@@ -7,7 +7,7 @@ export const DEMO_PETS: Pet[] = [
     species: "dog",
     breed: "Golden retriever",
     age: 9,
-    emoji: "🐕",
+    avatar: "milo",
     color: "#F3B66D",
     medications: [
       {
@@ -40,7 +40,7 @@ export const DEMO_PETS: Pet[] = [
     species: "cat",
     breed: "British shorthair",
     age: 6,
-    emoji: "🐈",
+    avatar: "luna",
     color: "#9B91C8",
     medications: [
       {
