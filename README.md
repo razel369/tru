@@ -35,3 +35,9 @@ npm test
 
 PawPair is a record-keeping tool. It does not recommend medications, alter
 dosages, diagnose conditions, or replace veterinary advice.
+
+## Production handoff
+
+The complete product, architecture, design, testing, and App Store completion
+plan for the next implementation agent is in
+[`docs/AAA-HANDOFF.md`](docs/AAA-HANDOFF.md).
