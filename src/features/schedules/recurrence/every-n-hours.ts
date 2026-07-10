@@ -17,7 +17,7 @@ export function* everyNHoursOccurrences(
   if (schedule.times.length === 0) return;
 
   const anchorTime = schedule.times[0];
-  if (typeof anchorTime !== "undefined") {
+  if (anchorTime !== undefined) {
     const timeParts = anchorTime.split(":").map((n) => Number(n));
     const hh = timeParts[0] ?? 0;
     const mm = timeParts[1] ?? 0;

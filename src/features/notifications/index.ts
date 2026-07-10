@@ -28,6 +28,9 @@ export {
   __setDoseLogger,
 } from "./bridge";
 export type { DoseLogger } from "./bridge";
-export { makeExpoBackend } from "./expo-backend";
 export { scheduleAllPets, DEFAULT_HORIZON_DAYS } from "./scheduler";
 export { HealthScreen } from "./HealthScreen";
+// makeExpoBackend is intentionally NOT re-exported here:
+// it pulls in expo-notifications which is not safe in tests
+// or the web bundle. Import it directly from "./expo-backend"
+// in the production App.tsx wiring.

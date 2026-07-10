@@ -1,4 +1,5 @@
-import { AccessibilityInfo, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { AccessibilityInfo } from "react-native";
 
 /**
  * docs/AAA-HANDOFF.md §10: "Motion must explain state change.
@@ -14,14 +15,14 @@ export function usePrefersReducedMotion(): boolean {
   const [reduce, setReduce] = useState(false);
   useEffect(() => {
     let active = true;
-    AccessibilityInfo.isReduceMotionEnabled().then((value) => {
+    AccessibilityInfo.isReduceMotionEnabled().then((value: boolean) => {
       if (active) setReduce(value);
     });
     const sub = AccessibilityInfo.addEventListener(
-      "reduceMotionChanged",
-      (event) => {
+      "reduceMotionChanged" as never,
+      ((event: { reduceMotionEnabled: boolean }) => {
         setReduce(event.reduceMotionEnabled);
-      },
+      }) as never,
     );
     return () => {
       active = false;

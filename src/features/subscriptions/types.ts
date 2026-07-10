@@ -77,13 +77,19 @@ export const PLUS_BENEFITS: PaywallBenefit[] = [
  * limit. This block list enumerates the actions that require
  * Plus. The UI consults it before showing a paywall.
  */
-export const PLUS_GATED_ACTIONS = [
+export type PlusGatedAction =
+  | "addPet"
+  | "addMedication"
+  | "householdSync"
+  | "report"
+  | "refillForecast"
+  | "backup";
+
+export const PLUS_GATED_ACTIONS: PlusGatedAction[] = [
   "addPet",
   "addMedication",
   "householdSync",
   "report",
   "refillForecast",
   "backup",
-] as const;
-
-export type PlusGatedAction = (typeof PLUS_GATED_ACTIONS)[number];
+];
