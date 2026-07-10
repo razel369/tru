@@ -22,9 +22,15 @@ import type { NotificationHealthReport } from "./types";
  */
 interface HealthScreenProps {
   onOpenSettings?: () => void;
+  onOpenHousehold?: () => void;
+  onOpenPaywall?: () => void;
 }
 
-export function HealthScreen({ onOpenSettings }: HealthScreenProps = {}) {
+export function HealthScreen({
+  onOpenSettings,
+  onOpenHousehold,
+  onOpenPaywall,
+}: HealthScreenProps = {}) {
   const insets = useSafeAreaInsets();
   const [report, setReport] = useState<NotificationHealthReport | null>(null);
 
@@ -140,6 +146,20 @@ export function HealthScreen({ onOpenSettings }: HealthScreenProps = {}) {
           <Pressable onPress={onOpenSettings} style={styles.secondaryButton}>
             <Text style={styles.secondaryButtonText}>
               Open app settings
+            </Text>
+          </Pressable>
+        )}
+        {onOpenHousehold && (
+          <Pressable onPress={onOpenHousehold} style={styles.secondaryButton}>
+            <Text style={styles.secondaryButtonText}>
+              Manage household
+            </Text>
+          </Pressable>
+        )}
+        {onOpenPaywall && (
+          <Pressable onPress={onOpenPaywall} style={styles.secondaryButton}>
+            <Text style={styles.secondaryButtonText}>
+              Upgrade to PawPair Plus
             </Text>
           </Pressable>
         )}

@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { colors } from "../../design";
 import { formatTime } from "../../schedule";
@@ -7,15 +7,24 @@ import type { Medication } from "../../types";
 
 interface MedicationCardProps {
   medication: Medication;
+  onPress?: () => void;
+  onLongPress?: () => void;
 }
 
 /**
  * A medication row inside the active plan list on the Pets screen.
- * Extracted verbatim from App.tsx in stage 2.
+ * Extracted verbatim from App.tsx in stage 2. The optional
+ * onPress / onLongPress props let the host wire a single tap
+ * to edit and a long press to the action menu without changing
+ * the visual.
  */
-export function MedicationCard({ medication }: MedicationCardProps) {
+export function MedicationCard({
+  medication,
+  onPress,
+  onLongPress,
+}: MedicationCardProps) {
   const lowStock = medication.stock <= 10;
-  return (
+  const content = (
     <View style={styles.medicationCard}>
       <View
         style={[
@@ -55,10 +64,21 @@ export function MedicationCard({ medication }: MedicationCardProps) {
       <Ionicons name="chevron-forward" size={19} color={colors.muted} />
     </View>
   );
+  if (onPress === undefined && onLongPress === undefined) return content;
+  return (
+    <Pressable
+      onPress={onPress}
+      onLongPress={onLongPress}
+      style={({ pressed }) => pressed && styles.pressed}
+    >
+      {content}
+    </Pressable>
+  );
 }
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
+  pressed: { opacity: 0.85 },
   medicationCard: {
     alignItems: "center",
     backgroundColor: colors.paper,

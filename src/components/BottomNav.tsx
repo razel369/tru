@@ -13,7 +13,11 @@ type Screen =
   | "health"
   | "settings"
   | "paywall"
-  | "household";
+  | "household"
+  | "add-pet"
+  | "edit-pet"
+  | "pet-menu"
+  | "report";
 
 interface BottomNavProps {
   active: Screen;

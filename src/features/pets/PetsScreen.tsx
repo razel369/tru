@@ -22,6 +22,12 @@ interface PetsScreenProps {
   topInset: number;
   petImages: Record<Pet["avatar"], ImageSourcePropType>;
   onAdd: () => void;
+  onEditMedication?: (petId: string, medicationId: string) => void;
+  onLongPressMedication?: (petId: string, medicationId: string) => void;
+  onAddPet?: () => void;
+  onEditPet?: (petId: string) => void;
+  onLongPressPet?: (petId: string) => void;
+  onOpenReport?: () => void;
 }
 
 /**
@@ -34,6 +40,12 @@ export function PetsScreen({
   topInset,
   petImages,
   onAdd,
+  onEditMedication,
+  onLongPressMedication,
+  onAddPet,
+  onEditPet,
+  onLongPressPet,
+  onOpenReport,
 }: PetsScreenProps) {
   const [selectedPet, setSelectedPet] = useState(pets[0]?.id ?? "");
   const pet = pets.find((item) => item.id === selectedPet) ?? pets[0];
@@ -119,7 +131,11 @@ export function PetsScreen({
                 </Text>
               </View>
             </View>
-            <Pressable style={styles.moreButton}>
+            <Pressable
+              onPress={() => onOpenReport?.()}
+              onLongPress={() => onLongPressPet?.(pet.id)}
+              style={styles.moreButton}
+            >
               <Ionicons
                 color={colors.ink}
                 name="ellipsis-horizontal"
@@ -139,9 +155,37 @@ export function PetsScreen({
               <Text style={styles.textAction}>Add new</Text>
             </Pressable>
           </View>
+          {onEditPet && (
+            <Pressable
+              onPress={() => onEditPet(pet.id)}
+              style={styles.editPetButton}
+            >
+              <Ionicons
+                color={colors.ink}
+                name="create-outline"
+                size={14}
+              />
+              <Text style={styles.editPetButtonText}>
+                Edit {pet.name}'s profile
+              </Text>
+            </Pressable>
+          )}
 
           {pet.medications.map((medication) => (
-            <MedicationCard key={medication.id} medication={medication} />
+            <MedicationCard
+              key={medication.id}
+              medication={medication}
+              onPress={
+                onEditMedication
+                  ? () => onEditMedication(pet.id, medication.id)
+                  : undefined
+              }
+              onLongPress={
+                onLongPressMedication
+                  ? () => onLongPressMedication(pet.id, medication.id)
+                  : undefined
+              }
+            />
           ))}
 
           <View style={styles.vetCard}>
@@ -289,6 +333,24 @@ const styles = StyleSheet.create({
   textAction: {
     color: colors.coral,
     fontFamily: "Manrope_800ExtraBold",
+    fontSize: 11,
+  },
+  editPetButton: {
+    alignItems: "center",
+    backgroundColor: colors.paper,
+    borderColor: colors.line,
+    borderRadius: 12,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: 6,
+    justifyContent: "center",
+    marginTop: -8,
+    marginBottom: 14,
+    paddingVertical: 8,
+  },
+  editPetButtonText: {
+    color: colors.ink,
+    fontFamily: "Manrope_700Bold",
     fontSize: 11,
   },
   vetCard: {

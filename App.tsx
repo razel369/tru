@@ -37,6 +37,7 @@ import { TodayScreen } from "./src/features/today/TodayScreen";
 import { SettingsScreen } from "./src/features/settings/SettingsScreen";
 import { PaywallScreen } from "./src/features/subscriptions/PaywallScreen";
 import { HouseholdScreen } from "./src/features/household/HouseholdScreen";
+import { ReportScreen } from "./src/features/reports/ReportScreen";
 import {
   addMedicationToPets,
   createDoseLog,
@@ -54,7 +55,11 @@ type Screen =
   | "medication-menu"
   | "settings"
   | "paywall"
-  | "household";
+  | "household"
+  | "add-pet"
+  | "edit-pet"
+  | "pet-menu"
+  | "report";
 
 const PETS_KEY = "pawpair.pets.v2";
 const LOGS_KEY = "pawpair.logs.v2";
@@ -87,6 +92,12 @@ function AppContent() {
   const [menuMedication, setMenuMedication] = useState<{
     petId: string;
     medicationId: string;
+  } | null>(null);
+  const [editingPetOnly, setEditingPetOnly] = useState<{
+    petId: string;
+  } | null>(null);
+  const [menuPetOnly, setMenuPetOnly] = useState<{
+    petId: string;
   } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -278,6 +289,30 @@ function AppContent() {
     setToast("Medication archived");
   };
 
+  const addPet = (pet: Pet) => {
+    setPets((current) => [...current, pet]);
+    setScreen("pets");
+    setToast(`${pet.name} added to your family`);
+  };
+
+  const updatePet = (pet: Pet) => {
+    setPets((current) =>
+      current.map((p) => (p.id === pet.id ? pet : p)),
+    );
+    setEditingPetOnly(null);
+    setMenuPetOnly(null);
+    setScreen("pets");
+    setToast(`${pet.name} updated`);
+  };
+
+  const archivePet = (petId: string) => {
+    const pet = pets.find((p) => p.id === petId);
+    setPets((current) => current.filter((p) => p.id !== petId));
+    setMenuPetOnly(null);
+    setScreen("pets");
+    setToast(`${pet?.name ?? "Pet"} archived`);
+  };
+
   const editingPet = editingMedication
     ? pets.find((p) => p.id === editingMedication.petId) ?? null
     : null;
@@ -391,6 +426,24 @@ function AppContent() {
             luna: require("./assets/pawpair-luna.png"),
           }}
           onAdd={() => setScreen("add")}
+          onAddPet={() => setScreen("add-pet")}
+          onEditPet={(petId) => {
+            setEditingPetOnly({ petId });
+            setScreen("edit-pet");
+          }}
+          onLongPressPet={(petId) => {
+            setMenuPetOnly({ petId });
+            setScreen("pet-menu");
+          }}
+          onEditMedication={(petId, medicationId) => {
+            setEditingMedication({ petId, medicationId });
+            setScreen("edit-medication");
+          }}
+          onLongPressMedication={(petId, medicationId) => {
+            setMenuMedication({ petId, medicationId });
+            setScreen("medication-menu");
+          }}
+          onOpenReport={() => setScreen("report")}
           pets={pets}
           topInset={insets.top}
         />
@@ -399,7 +452,11 @@ function AppContent() {
         <InsightsScreen logs={logs} pets={pets} topInset={insets.top} />
       )}
       {screen === "health" && (
-        <HealthScreen onOpenSettings={() => setScreen("settings")} />
+        <HealthScreen
+          onOpenHousehold={() => setScreen("household")}
+          onOpenPaywall={() => setScreen("paywall")}
+          onOpenSettings={() => setScreen("settings")}
+        />
       )}
       {screen === "settings" && (
         <SettingsScreen
@@ -457,6 +514,60 @@ function AppContent() {
       )}
       {screen === "household" && (
         <HouseholdScreen onClose={() => setScreen("today")} />
+      )}
+      {screen === "add-pet" && (
+        <PetFormScreen
+          onCancel={() => setScreen("pets")}
+          onSave={addPet}
+        />
+      )}
+      {screen === "edit-pet" &&
+        editingPetOnly &&
+        (() => {
+          const pet = pets.find((p) => p.id === editingPetOnly.petId);
+          if (!pet) return null;
+          return (
+            <PetFormScreen
+              editing={pet}
+              onCancel={() => {
+                setEditingPetOnly(null);
+                setScreen("pets");
+              }}
+              onSave={updatePet}
+            />
+          );
+        })()}
+      {screen === "pet-menu" &&
+        menuPetOnly &&
+        (() => {
+          const pet = pets.find((p) => p.id === menuPetOnly.petId);
+          if (!pet) return null;
+          return (
+            <View style={styles.absolute}>
+              <PetMenu
+                onArchive={() => archivePet(pet.id)}
+                onCancel={() => {
+                  setMenuPetOnly(null);
+                  setScreen("pets");
+                }}
+                onEdit={() => {
+                  setEditingPetOnly({ petId: pet.id });
+                  setMenuPetOnly(null);
+                  setScreen("edit-pet");
+                }}
+                visible
+              />
+            </View>
+          );
+        })()}
+      {screen === "report" && (
+        <View style={styles.absolute}>
+          <ReportScreen
+            pets={pets}
+            logs={logs}
+            onClose={() => setScreen("today")}
+          />
+        </View>
       )}
       {screen === "add" && (
         <AddMedicationScreen
