@@ -403,14 +403,46 @@ function AppContent() {
       )}
       {screen === "settings" && (
         <SettingsScreen
-          onDeleteAccount={() => {
-            setPets([]);
-            setLogs([]);
-            setScreen("today");
-            setToast("Account deleted (demo)");
+          onDeleteAccount={async () => {
+            try {
+              await Promise.all([
+                AsyncStorage.removeItem(PETS_KEY),
+                AsyncStorage.removeItem(LOGS_KEY),
+                AsyncStorage.removeItem(ONBOARDING_KEY),
+              ]);
+              setPets([]);
+              setLogs([]);
+              setScreen("today");
+              setToast("Account deleted");
+            } catch {
+              setToast("Could not delete account");
+            }
           }}
-          onExportData={() => {
-            setToast("Export coming soon — see ROADMAP.md");
+          onExportData={async () => {
+            const payload = JSON.stringify(
+              {
+                version: 1,
+                exportedAtUtc: new Date().toISOString(),
+                pets,
+                logs,
+              },
+              null,
+              2,
+            );
+            try {
+              // We do not yet integrate expo-file-system; the
+              // payload is logged to the console so the user can
+              // copy it out during development. Stage 12-final
+              // will hand it to expo-print or the system share
+              // sheet.
+              // eslint-disable-next-line no-console
+              console.log("[pawpair] export", payload);
+              setToast(
+                `Exported ${pets.length} pets, ${logs.length} logs to console`,
+              );
+            } catch {
+              setToast("Could not export data");
+            }
           }}
         />
       )}
