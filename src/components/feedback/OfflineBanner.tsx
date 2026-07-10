@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, View } from "react-native";
 
 import { colors } from "../../design";
+import { useOnlineStatus } from "./useOnlineStatus";
 
 interface OfflineBannerProps {
   visible: boolean;
@@ -24,6 +25,15 @@ export function OfflineBanner({ visible }: OfflineBannerProps) {
       </Text>
     </View>
   );
+}
+
+/**
+ * Convenience wrapper: shows the banner only when the device
+ * reports offline. Mounted at the App level.
+ */
+export function AutoOfflineBanner() {
+  const online = useOnlineStatus();
+  return <OfflineBanner visible={!online} />;
 }
 
 const styles = StyleSheet.create({

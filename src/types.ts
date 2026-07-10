@@ -16,6 +16,8 @@ export interface Medication {
   stock: number;
   stockUnit: string;
   color: string;
+  /** When true, the medication is paused — no reminders, no Today entries. */
+  paused?: boolean;
 }
 
 export interface Pet {

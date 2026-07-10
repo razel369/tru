@@ -3,6 +3,7 @@ import type { ImageSourcePropType } from "react-native";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { DateStrip } from "../../components/DateStrip";
+import { EmptyTodayState } from "../../components/feedback/EmptyTodayState";
 import { colors } from "../../design";
 import type { ScheduledDose } from "../../types";
 
@@ -60,16 +61,20 @@ export function TodayScreen({
           </Pressable>
         </View>
 
-        <View style={styles.timeline}>
-          {schedule.map((dose, index) => (
-            <DoseCard
-              dose={dose}
-              isLast={index === schedule.length - 1}
-              key={dose.id}
-              onLog={onLog}
-            />
-          ))}
-        </View>
+        {schedule.length === 0 ? (
+          <EmptyTodayState onAddMedication={onAdd} />
+        ) : (
+          <View style={styles.timeline}>
+            {schedule.map((dose, index) => (
+              <DoseCard
+                dose={dose}
+                isLast={index === schedule.length - 1}
+                key={dose.id}
+                onLog={onLog}
+              />
+            ))}
+          </View>
+        )}
 
         <SyncCard />
       </View>

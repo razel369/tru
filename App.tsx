@@ -17,7 +17,8 @@ import {
 import { BottomNav } from "./src/components/BottomNav";
 import { LoadingScreen } from "./src/components/LoadingScreen";
 import { Toast } from "./src/components/Toast";
-import { colors } from "./src/design";
+import { colors, ThemeProvider } from "./src/design";
+import { setLocale as setI18nLocale } from "./src/features/i18n/i18n";
 import { ensureMigrated } from "./src/data/database";
 import { scheduleAllPets } from "./src/features/notifications";
 import { makeExpoBackend } from "./src/features/notifications/expo-backend";
@@ -38,6 +39,8 @@ import { SettingsScreen } from "./src/features/settings/SettingsScreen";
 import { PaywallScreen } from "./src/features/subscriptions/PaywallScreen";
 import { HouseholdScreen } from "./src/features/household/HouseholdScreen";
 import { ReportScreen } from "./src/features/reports/ReportScreen";
+import { AutoOfflineBanner } from "./src/components/feedback/OfflineBanner";
+import { ErrorState } from "./src/components/feedback/ErrorState";
 import {
   addMedicationToPets,
   createDoseLog,
@@ -85,6 +88,7 @@ function AppContent() {
   const [pets, setPets] = useState<Pet[]>(DEMO_PETS);
   const [logs, setLogs] = useState<DoseLog[]>(makeSeedLogs);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [editingMedication, setEditingMedication] = useState<{
     petId: string;
     medicationId: string;
@@ -126,21 +130,32 @@ function AppContent() {
       AsyncStorage.getItem(ONBOARDING_KEY),
     ])
       .then(([savedPets, savedLogs, savedOnboardingFlag]) => {
-        if (savedPets) setPets(JSON.parse(savedPets) as Pet[]);
-        if (savedLogs) setLogs(JSON.parse(savedLogs) as DoseLog[]);
-        if (savedPets) {
-          setOnboardingDone(true);
-        } else if (savedOnboardingFlag === "skipped") {
-          // User already chose "Continue with demo data"; we stored
-          // DEMO_PETS already, so this branch is the demo-data path.
-          setOnboardingDone(true);
-        } else if (savedOnboardingFlag === "completed") {
-          // Edge case: onboarding marked complete but no pets saved
-          // (storage cleared). Treat as not-done so the user can
-          // re-onboard.
-          setOnboardingDone(false);
-        } else {
-          setOnboardingDone(false);
+        try {
+          if (savedPets) setPets(JSON.parse(savedPets) as Pet[]);
+          if (savedLogs) setLogs(JSON.parse(savedLogs) as DoseLog[]);
+          if (savedPets) {
+            setOnboardingDone(true);
+          } else if (savedOnboardingFlag === "skipped") {
+            // User already chose "Continue with demo data"; we stored
+            // DEMO_PETS already, so this branch is the demo-data path.
+            setOnboardingDone(true);
+          } else if (savedOnboardingFlag === "completed") {
+            // Edge case: onboarding marked complete but no pets saved
+            // (storage cleared). Treat as not-done so the user can
+            // re-onboard.
+            setOnboardingDone(false);
+          } else {
+            setOnboardingDone(false);
+          }
+        } catch (parseError) {
+          // Corrupt storage is recoverable: fall back to demo
+          // data and keep the user moving. The next write
+          // overwrites the bad blob.
+          setLoadError(
+            parseError instanceof Error
+              ? parseError.message
+              : "Storage was unreadable; loaded demo data instead.",
+          );
         }
       })
       .finally(() => setLoaded(true));
@@ -157,6 +172,12 @@ function AppContent() {
     const timer = setTimeout(() => setToast(null), 2600);
     return () => clearTimeout(timer);
   }, [toast]);
+
+  // Surface a one-time toast when the hydration step hit a
+  // parse error so the user knows we fell back to demo data.
+  useEffect(() => {
+    if (loadError) setToast(`Storage warning: ${loadError}`);
+  }, [loadError]);
 
   // Reschedule local notifications whenever the pet list changes
   // and the app has finished loading. The web and the no-op
@@ -211,8 +232,37 @@ function AppContent() {
     [logs, pets, selectedDate],
   );
 
+  const [pendingConflict, setPendingConflict] = useState<{
+    dose: ScheduledDose;
+    attemptedStatus: "given" | "skipped";
+    existingBy: string;
+  } | null>(null);
+
   const logDose = (dose: ScheduledDose, status: "given" | "skipped") => {
     if (dose.status === "given" || dose.status === "skipped") return;
+
+    // Conflict detection: if another log already exists for the
+    // exact same dose key (pet + medication + day + time), we
+    // surface a "Already logged" state instead of overwriting.
+    // The user can confirm and we will create the new entry as
+    // a correction.
+    const dateKeyFromDose = `${dose.scheduledTime.slice(0, 5)}`;
+    const conflict = logs.find(
+      (entry) =>
+        entry.petId === dose.pet.id &&
+        entry.medicationId === dose.medication.id &&
+        entry.date === selectedDate.toISOString().slice(0, 10) &&
+        entry.scheduledTime === dateKeyFromDose,
+    );
+    if (conflict) {
+      setPendingConflict({
+        dose,
+        attemptedStatus: status,
+        existingBy: conflict.completedBy,
+      });
+      return;
+    }
+
     void Haptics.notificationAsync(
       status === "given"
         ? Haptics.NotificationFeedbackType.Success
@@ -242,6 +292,44 @@ function AppContent() {
     } else {
       setToast(`Dose marked as skipped`);
     }
+  };
+
+  const resolveConflict = (keepMine: boolean) => {
+    if (!pendingConflict) return;
+    const { dose, attemptedStatus, existingBy } = pendingConflict;
+    setPendingConflict(null);
+    if (!keepMine) {
+      setToast(`${dose.medication.name} already logged by ${existingBy}`);
+      return;
+    }
+    // Confirm: write the new event as a correction. In the
+    // server-side dose_events table the new row carries a
+    // correction_of_event_id pointing at the original. The
+    // prototype log shape does not have that field; the next
+    // migration to SQLite will add it.
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    const nextLog = createDoseLog(dose, attemptedStatus, CAREGIVER);
+    setLogs((current) => [...current, nextLog]);
+    if (attemptedStatus === "given") {
+      setPets((current) =>
+        current.map((pet) =>
+          pet.id !== dose.pet.id
+            ? pet
+            : {
+                ...pet,
+                medications: pet.medications.map((medication) =>
+                  medication.id === dose.medication.id
+                    ? {
+                        ...medication,
+                        stock: Math.max(0, medication.stock - 1),
+                      }
+                    : medication,
+                ),
+              },
+        ),
+      );
+    }
+    setToast(`Logged as correction for ${dose.pet.name}`);
   };
 
   const addMedication = (petId: string, medication: Medication) => {
@@ -407,6 +495,7 @@ function AppContent() {
   return (
     <View style={styles.app}>
       <StatusBar style={screen === "today" ? "light" : "dark"} />
+      <AutoOfflineBanner />
       {screen === "today" && (
         <TodayScreen
           appIcon={require("./assets/pawpair-icon.png")}
@@ -685,10 +774,21 @@ export default function App() {
     return <LoadingScreen icon={require("./assets/pawpair-icon.png")} />;
   }
 
+  // Set the initial app locale. The full i18n switch in
+  // stage 10-final will read the device locale via
+  // expo-localization; the default here is English so the
+  // existing string catalog matches what the rest of the app
+  // expects. To preview Hebrew, set this to "he" and reload.
+  useEffect(() => {
+    setI18nLocale("en");
+  }, []);
+
   return (
-    <SafeAreaProvider>
-      <AppContent />
-    </SafeAreaProvider>
+    <ThemeProvider>
+      <SafeAreaProvider>
+        <AppContent />
+      </SafeAreaProvider>
+    </ThemeProvider>
   );
 }
 
