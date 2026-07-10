@@ -19,3 +19,7 @@ export type { DurationToken } from "./motion";
 
 export { shadow } from "./shadows";
 export type { ShadowToken } from "./shadows";
+
+export { lightTheme, darkTheme, colorsFor } from "./themes";
+export type { ThemeColors, ThemeName } from "./themes";
+export { ThemeProvider, useTheme, __setThemeForTests } from "./ThemeProvider";

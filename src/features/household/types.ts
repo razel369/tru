@@ -106,3 +106,26 @@ export interface DoseConflict {
     completedByDisplayName: string;
   };
 }
+
+/** Schema v1 dose_events row (server-side shape). */
+export interface DoseEventRow {
+  id: string;
+  scheduled_dose_id: string;
+  status: "given" | "skipped";
+  completed_at_utc: string;
+  completed_by_user_id: string | null;
+  note: string | null;
+  correction_of_event_id: string | null;
+}
+
+/** The household-shaped dose log (what the household sync sees). */
+export interface DoseLog {
+  id: string;
+  petId: string;
+  medicationId: string;
+  date: string;
+  scheduledTime: string;
+  status: "given" | "skipped";
+  completedAt: string;
+  completedBy: string;
+}
