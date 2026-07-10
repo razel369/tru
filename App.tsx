@@ -23,6 +23,8 @@ import { makeExpoBackend, scheduleAllPets } from "./src/features/notifications";
 import { __setSchedulingBackend } from "./src/features/notifications/service";
 import { __setDoseLogger, handleNotificationAction } from "./src/features/notifications/bridge";
 import { AddMedicationScreen } from "./src/features/medications/AddMedicationScreen";
+import { MedicationFormScreen } from "./src/features/medications/MedicationFormScreen";
+import { MedicationMenu } from "./src/features/medications/MedicationMenu";
 import { InsightsScreen } from "./src/features/insights/InsightsScreen";
 import { HealthScreen } from "./src/features/notifications/HealthScreen";
 import { OnboardingFlow } from "./src/features/onboarding/OnboardingFlow";
@@ -36,7 +38,14 @@ import {
 } from "./src/schedule";
 import type { DoseLog, Medication, Pet, ScheduledDose } from "./src/types";
 
-type Screen = "today" | "pets" | "insights" | "add" | "health";
+type Screen =
+  | "today"
+  | "pets"
+  | "insights"
+  | "add"
+  | "health"
+  | "edit-medication"
+  | "medication-menu";
 
 const PETS_KEY = "pawpair.pets.v2";
 const LOGS_KEY = "pawpair.logs.v2";
@@ -62,6 +71,14 @@ function AppContent() {
   const [pets, setPets] = useState<Pet[]>(DEMO_PETS);
   const [logs, setLogs] = useState<DoseLog[]>(makeSeedLogs);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [editingMedication, setEditingMedication] = useState<{
+    petId: string;
+    medicationId: string;
+  } | null>(null);
+  const [menuMedication, setMenuMedication] = useState<{
+    petId: string;
+    medicationId: string;
+  } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
   /** `null` while we are reading storage. `true` if onboarding is done, `false` if not. */
@@ -214,6 +231,57 @@ function AppContent() {
     setToast(`${medication.name} added to today’s care plan`);
   };
 
+  const updateMedication = (
+    petId: string,
+    medicationId: string,
+    next: Medication,
+  ) => {
+    setPets((current) =>
+      current.map((pet) =>
+        pet.id !== petId
+          ? pet
+          : {
+              ...pet,
+              medications: pet.medications.map((m) =>
+                m.id === medicationId ? next : m,
+              ),
+            },
+      ),
+    );
+    setScreen("today");
+    setToast(`${next.name} updated`);
+  };
+
+  const archiveMedication = (petId: string, medicationId: string) => {
+    setPets((current) =>
+      current.map((pet) =>
+        pet.id !== petId
+          ? pet
+          : {
+              ...pet,
+              medications: pet.medications.filter(
+                (m) => m.id !== medicationId,
+              ),
+            },
+      ),
+    );
+    setMenuMedication(null);
+    setToast("Medication archived");
+  };
+
+  const editingPet = editingMedication
+    ? pets.find((p) => p.id === editingMedication.petId) ?? null
+    : null;
+  const editingMed = editingPet?.medications.find(
+    (m) => m.id === editingMedication?.medicationId,
+  );
+  const menuPet = menuMedication
+    ? pets.find((p) => p.id === menuMedication.petId) ?? null
+    : null;
+  const menuMed = menuPet?.medications.find(
+    (m) => m.id === menuMedication?.medicationId,
+  );
+
   const finishOnboarding = ({
     pet,
     medication,
@@ -334,15 +402,91 @@ function AppContent() {
           topInset={insets.top}
         />
       )}
-
-      {screen !== "add" && (
-        <BottomNav
-          active={screen}
-          bottomInset={insets.bottom}
-          onAdd={() => setScreen("add")}
-          onChange={setScreen}
+      {screen === "edit-medication" && editingPet && editingMed && (
+        <MedicationFormScreen
+          editing={editingMed}
+          initialDraft={{
+            petId: editingMedication?.petId ?? "",
+            name: editingMed.name,
+            dosage: editingMed.dosage,
+            instructions: editingMed.instructions,
+            form: editingMed.form,
+            times: editingMed.times,
+            startingSupply: editingMed.stock,
+            supplyUnit: editingMed.stockUnit as
+              | "tablets"
+              | "doses"
+              | "softgels"
+              | "ml",
+          }}
+          petImages={{
+            milo: require("./assets/pawpair-milo.png"),
+            luna: require("./assets/pawpair-luna.png"),
+          }}
+          pets={pets}
+          onCancel={() => {
+            setEditingMedication(null);
+            setScreen("pets");
+          }}
+          onSave={(draft) => {
+            const medicationId = editingMedication?.medicationId ?? "";
+            const petId = editingMedication?.petId ?? "";
+            const next: Medication = {
+              id: medicationId,
+              name: draft.name,
+              dosage: draft.dosage,
+              instructions: draft.instructions,
+              form: draft.form,
+              times: draft.times,
+              stock: draft.startingSupply,
+              stockUnit: draft.supplyUnit,
+              color: editingMed.color,
+            };
+            updateMedication(petId, medicationId, next);
+            setEditingMedication(null);
+          }}
         />
       )}
+      {screen === "medication-menu" && menuPet && menuMed && (
+        <View style={styles.absolute}>
+          <MedicationMenu
+            onArchive={() => {
+              if (menuMedication) {
+                archiveMedication(
+                  menuMedication.petId,
+                  menuMedication.medicationId,
+                );
+              }
+              setScreen("pets");
+            }}
+            onCancel={() => {
+              setMenuMedication(null);
+              setScreen("pets");
+            }}
+            onEdit={() => {
+              if (menuMedication) {
+                setEditingMedication(menuMedication);
+                setScreen("edit-medication");
+              } else {
+                setScreen("pets");
+              }
+              setMenuMedication(null);
+            }}
+            visible
+          />
+        </View>
+      )}
+
+      {screen !== "add" &&
+        screen !== "edit-medication" &&
+        screen !== "medication-menu" && (
+          <BottomNav
+            active={screen}
+            bottomInset={insets.bottom}
+            onAdd={() => setScreen("add")}
+            onChange={setScreen}
+          />
+        )}
 
       {toast && <Toast bottomInset={insets.bottom} text={toast} />}
     </View>
@@ -370,5 +514,6 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  absolute: { ...StyleSheet.absoluteFill, backgroundColor: "transparent" },
   app: { backgroundColor: colors.background, flex: 1 },
 });
