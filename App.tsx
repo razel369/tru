@@ -22,6 +22,7 @@ import { InsightsScreen } from "./src/features/insights/InsightsScreen";
 import { PetsScreen } from "./src/features/pets/PetsScreen";
 import { TodayScreen } from "./src/features/today/TodayScreen";
 import { colors } from "./src/design";
+import { ensureMigrated } from "./src/data/database";
 import {
   addMedicationToPets,
   buildSchedule,
@@ -59,6 +60,16 @@ function AppContent() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
+    // Bootstrap the SQLite schema. We don't yet read or write the
+    // app's data through SQLite — the AsyncStorage paths below are
+    // still authoritative for v1 — but we want the migrations
+    // runner to run at app start so that when stage 3f lands the
+    // repositories the database already exists.
+    void ensureMigrated().catch((error) => {
+      // eslint-disable-next-line no-console
+      console.warn("[pawpair] ensureMigrated failed", error);
+    });
+
     Promise.all([AsyncStorage.getItem(PETS_KEY), AsyncStorage.getItem(LOGS_KEY)])
       .then(([savedPets, savedLogs]) => {
         if (savedPets) setPets(JSON.parse(savedPets) as Pet[]);
