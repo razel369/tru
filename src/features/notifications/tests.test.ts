@@ -241,3 +241,41 @@ describe("ensurePermission", () => {
     expect(await ensurePermission()).toBe("granted");
   });
 });
+
+describe("handleNotificationAction integration", () => {
+  it("'skip' invokes the dose logger with status 'skipped' and cancels", async () => {
+    let logged: { status: string; by: string; key: string } | null = null;
+    __setDoseLogger((params) => {
+      logged = {
+        status: params.action,
+        by: params.completedBy,
+        key: params.scheduledDoseKey,
+      };
+    });
+    __setSchedulingBackend({
+      async schedule() {
+        return "p";
+      },
+      async cancel() {
+        return;
+      },
+      async cancelByScheduleId() {
+        return 0;
+      },
+    });
+    await scheduleNotification(makeNotification());
+    await handleNotificationAction({
+      scheduleId: "s-1",
+      scheduledDoseKey: "2026-07-10::08:00",
+      action: "skip",
+      caregiver: "Alex",
+    });
+    expect(logged).toEqual({
+      status: "skipped",
+      by: "Alex",
+      key: "2026-07-10::08:00",
+    });
+    const report = await buildHealthReport("granted");
+    expect(report.scheduled).toBe(0);
+  });
+});

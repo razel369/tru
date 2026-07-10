@@ -21,6 +21,7 @@ import { colors } from "./src/design";
 import { ensureMigrated } from "./src/data/database";
 import { makeExpoBackend, scheduleAllPets } from "./src/features/notifications";
 import { __setSchedulingBackend } from "./src/features/notifications/service";
+import { __setDoseLogger, handleNotificationAction } from "./src/features/notifications/bridge";
 import { AddMedicationScreen } from "./src/features/medications/AddMedicationScreen";
 import { InsightsScreen } from "./src/features/insights/InsightsScreen";
 import { OnboardingFlow } from "./src/features/onboarding/OnboardingFlow";
@@ -130,6 +131,41 @@ function AppContent() {
       // eslint-disable-next-line no-console
       console.warn("[pawpair] scheduleAllPets failed", error);
     });
+  }, [loaded, pets]);
+
+  // Wire the notification action bridge. When the user taps
+  // Given/Skip from a system notification, the dose is logged
+  // here so the host (web or native) keeps a single source of
+  // truth for state.
+  useEffect(() => {
+    __setDoseLogger((params) => {
+      // Translate the notification's "log this dose" intent
+      // into a ScheduledDose-shaped update on the current pet
+      // list. The action only runs on native; the web bundle
+      // never calls this path because the no-op backend never
+      // dispatches.
+      const [petId, medicationId] = params.scheduleId.replace(
+        /^med-/,
+        "",
+      ).split("::");
+      const pet = pets.find((p) => p.id === petId);
+      const medication = pet?.medications.find(
+        (m) => m.id === medicationId,
+      );
+      if (!pet || !medication) return;
+      const dose: ScheduledDose = {
+        id: params.scheduledDoseKey,
+        pet,
+        medication,
+        scheduledTime: new Date(params.atUtc).toISOString().slice(11, 16),
+        status: params.action,
+      };
+      logDose(dose, params.action);
+    });
+    return () => __setDoseLogger(null);
+    // logDose is captured by closure; we only need to set the
+    // logger once after pets first load.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loaded, pets]);
 
   const schedule = useMemo(
