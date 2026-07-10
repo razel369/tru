@@ -23,10 +23,10 @@ import { AddMedicationScreen } from "./src/features/medications/AddMedicationScr
 import { InsightsScreen } from "./src/features/insights/InsightsScreen";
 import { OnboardingFlow } from "./src/features/onboarding/OnboardingFlow";
 import { PetsScreen } from "./src/features/pets/PetsScreen";
+import { buildScheduleFromEngine } from "./src/features/schedules/adapter";
 import { TodayScreen } from "./src/features/today/TodayScreen";
 import {
   addMedicationToPets,
-  buildSchedule,
   createDoseLog,
   DEMO_PETS,
 } from "./src/schedule";
@@ -41,7 +41,7 @@ const CAREGIVER = "Maya";
 
 function makeSeedLogs(): DoseLog[] {
   const now = new Date();
-  const schedule = buildSchedule(DEMO_PETS, [], now, 12 * 60);
+  const schedule = buildScheduleFromEngine(DEMO_PETS, [], now, 12 * 60);
   return schedule.slice(0, 2).map((dose, index) =>
     createDoseLog(
       dose,
@@ -108,7 +108,7 @@ function AppContent() {
   }, [toast]);
 
   const schedule = useMemo(
-    () => buildSchedule(pets, logs, selectedDate),
+    () => buildScheduleFromEngine(pets, logs, selectedDate),
     [logs, pets, selectedDate],
   );
 
