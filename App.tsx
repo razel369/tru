@@ -8,7 +8,7 @@ import { useFonts } from "expo-font";
 import * as Haptics from "expo-haptics";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useMemo, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import {
   SafeAreaProvider,
   useSafeAreaInsets,
@@ -17,12 +17,13 @@ import {
 import { BottomNav } from "./src/components/BottomNav";
 import { LoadingScreen } from "./src/components/LoadingScreen";
 import { Toast } from "./src/components/Toast";
-import { AddMedicationScreen } from "./src/features/medications/AddMedicationScreen";
-import { InsightsScreen } from "./src/features/insights/InsightsScreen";
-import { PetsScreen } from "./src/features/pets/PetsScreen";
-import { TodayScreen } from "./src/features/today/TodayScreen";
 import { colors } from "./src/design";
 import { ensureMigrated } from "./src/data/database";
+import { AddMedicationScreen } from "./src/features/medications/AddMedicationScreen";
+import { InsightsScreen } from "./src/features/insights/InsightsScreen";
+import { OnboardingFlow } from "./src/features/onboarding/OnboardingFlow";
+import { PetsScreen } from "./src/features/pets/PetsScreen";
+import { TodayScreen } from "./src/features/today/TodayScreen";
 import {
   addMedicationToPets,
   buildSchedule,
@@ -35,6 +36,7 @@ type Screen = "today" | "pets" | "insights" | "add";
 
 const PETS_KEY = "pawpair.pets.v2";
 const LOGS_KEY = "pawpair.logs.v2";
+const ONBOARDING_KEY = "pawpair.onboarding.done.v1";
 const CAREGIVER = "Maya";
 
 function makeSeedLogs(): DoseLog[] {
@@ -58,22 +60,37 @@ function AppContent() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [toast, setToast] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
+  /** `null` while we are reading storage. `true` if onboarding is done, `false` if not. */
+  const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null);
 
   useEffect(() => {
-    // Bootstrap the SQLite schema. We don't yet read or write the
-    // app's data through SQLite — the AsyncStorage paths below are
-    // still authoritative for v1 — but we want the migrations
-    // runner to run at app start so that when stage 3f lands the
-    // repositories the database already exists.
     void ensureMigrated().catch((error) => {
       // eslint-disable-next-line no-console
       console.warn("[pawpair] ensureMigrated failed", error);
     });
 
-    Promise.all([AsyncStorage.getItem(PETS_KEY), AsyncStorage.getItem(LOGS_KEY)])
-      .then(([savedPets, savedLogs]) => {
+    Promise.all([
+      AsyncStorage.getItem(PETS_KEY),
+      AsyncStorage.getItem(LOGS_KEY),
+      AsyncStorage.getItem(ONBOARDING_KEY),
+    ])
+      .then(([savedPets, savedLogs, savedOnboardingFlag]) => {
         if (savedPets) setPets(JSON.parse(savedPets) as Pet[]);
         if (savedLogs) setLogs(JSON.parse(savedLogs) as DoseLog[]);
+        if (savedPets) {
+          setOnboardingDone(true);
+        } else if (savedOnboardingFlag === "skipped") {
+          // User already chose "Continue with demo data"; we stored
+          // DEMO_PETS already, so this branch is the demo-data path.
+          setOnboardingDone(true);
+        } else if (savedOnboardingFlag === "completed") {
+          // Edge case: onboarding marked complete but no pets saved
+          // (storage cleared). Treat as not-done so the user can
+          // re-onboard.
+          setOnboardingDone(false);
+        } else {
+          setOnboardingDone(false);
+        }
       })
       .finally(() => setLoaded(true));
   }, []);
@@ -134,6 +151,84 @@ function AppContent() {
     setScreen("today");
     setToast(`${medication.name} added to today’s care plan`);
   };
+
+  const finishOnboarding = ({
+    pet,
+    medication,
+  }: {
+    pet: {
+      name: string;
+      species: "dog" | "cat" | "other";
+      accentColor: string;
+      breed?: string;
+      ageYears?: number;
+    };
+    medication: {
+      name: string;
+      dosageText: string;
+      form: "tablet" | "capsule" | "liquid" | "drops" | "injection" | "topical";
+      times: string[];
+      startingSupply: number;
+      supplyUnit: "tablets" | "doses" | "softgels" | "ml";
+    };
+  }) => {
+    const petId = pet.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    const medicationId = `${medication.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`;
+    const newPet: Pet = {
+      id: petId,
+      name: pet.name,
+      species: pet.species,
+      breed: pet.breed ?? "",
+      age: pet.ageYears ?? 0,
+      avatar: "milo",
+      color: pet.accentColor,
+      medications: [
+        {
+          id: medicationId,
+          name: medication.name,
+          dosage: medication.dosageText,
+          instructions: "Follow veterinary instructions",
+          form: medication.form,
+          times: medication.times,
+          stock: medication.startingSupply,
+          stockUnit: medication.supplyUnit,
+          color: colors.coral,
+        },
+      ],
+    };
+    setPets((current) => [...current, newPet]);
+    setLogs([]);
+    void AsyncStorage.setItem(ONBOARDING_KEY, "completed");
+    setOnboardingDone(true);
+    setToast(`${pet.name} is ready`);
+  };
+
+  const skipOnboarding = () => {
+    setPets(DEMO_PETS);
+    setLogs(makeSeedLogs());
+    void AsyncStorage.setItem(ONBOARDING_KEY, "skipped");
+    setOnboardingDone(true);
+  };
+
+  // Wait for hydration to decide which surface to render.
+  if (!loaded || onboardingDone === null) {
+    return <LoadingScreen icon={require("./assets/pawpair-icon.png")} />;
+  }
+
+  if (!onboardingDone) {
+    return (
+      <View style={styles.app}>
+        <StatusBar style="dark" />
+        <OnboardingFlow
+          appIcon={require("./assets/pawpair-icon.png")}
+          onComplete={finishOnboarding}
+          onSkip={skipOnboarding}
+        />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.app}>
