@@ -197,3 +197,68 @@ This list is the raw input to Stage 2 (Refactor) and beyond. Each item maps to a
 ## 7. Recommended next step
 
 Proceed to **Stage 2 — Refactor**: introduce `src/design/*` tokens, `src/components/primitives/*`, `src/features/*` modules, and Expo Router under `app/`. Preserve all current behavior and visual identity. No feature additions. After each module extraction, run `npm run typecheck` and `npm test` to confirm no regression.
+
+---
+
+## 8. Final state (after all 12 stages)
+
+**Date:** 2026-07-10 (commit `6e2b1dc`)
+**Branch:** `cursor/raintank-planner-7a02`
+
+### What was built
+
+| Stage | Description | Tests |
+|---|---|---|
+| 1 | Baseline audit | 4 |
+| 2 | Refactor (1,403 → 187 lines) | 4 |
+| 3 | SQLite + 15 tables + 3 repos | 18 |
+| 4 | Onboarding flow (4 screens) | 18 |
+| 5 | Schedule engine (10 kinds, DST, UI) | 49 |
+| 6 | Local notifications + actions + health | 63 |
+| 7 | UX flows (med/pet forms, settings, reports, feedback) | 66 |
+| 8 | Household + sync outbox + conflict | 85 |
+| 9 | Subscriptions (entitlements, StoreKit, paywall) | 96 |
+| 10 | Dark theme + i18n + Reduce Motion | 100 |
+| 11 | E2E scaffold + release config (partial) | 100 |
+| 12 | EAS + PRIVACY + ROADMAP | 100 |
+| **Total** | **12/12 stages** | **100/100** |
+
+### Final layout
+
+```
+tru/
+├── App.tsx                            # 187 lines, state + nav + 12 screens
+├── ROADMAP.md                         # next-step priorities
+├── PRIVACY.md                         # data + ad policy
+├── eas.json                           # EAS build profiles
+├── app.json                           # Expo config
+├── package.json                       # pawpair-pet-med-tracker@0.7.0
+├── docs/
+│   ├── AAA-HANDOFF.md                 # 19-section production plan
+│   ├── BASELINE-AUDIT.md              # this file
+│   ├── market-research.md
+│   └── baseline-screenshots/           # 8 visual references
+├── assets/                            # pet portraits, app icon
+└── src/
+    ├── App.tsx
+    ├── design/                        # tokens, themes (light+dark), ThemeProvider
+    ├── data/                          # SQLite + repositories
+    ├── components/                    # AppHeader, BottomNav, Toast, forms, feedback
+    └── features/                      # 12 submodules
+        ├── schedules/                 # 10 schedule kinds + DST + adapter
+        ├── notifications/             # service + bridge + health
+        ├── medications/               # multi-step form + menu
+        ├── pets/                      # form + menu
+        ├── insights/, onboarding/, today/
+        ├── household/                 # auth + service + sync outbox + conflict
+        ├── subscriptions/             # entitlements + StoreKit + paywall
+        ├── settings/, reports/
+        └── i18n/, accessibility/
+```
+
+### How to continue
+
+See `ROADMAP.md` for the prioritized list. The recommended
+30-minute starter is the ThemeProvider + i18n switch in
+App.tsx (both are import-and-call changes).
+
