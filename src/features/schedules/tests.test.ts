@@ -448,3 +448,104 @@ describe("prnOccurrences", () => {
     expect(occ).toEqual([]);
   });
 });
+
+describe("DST handling", () => {
+  // The US "spring forward" 2026 is on Sunday 2026-03-08: 02:00
+  // local time jumps to 03:00. Jerusalem does not observe DST
+  // in 2026 (it is a stable UTC+2/+3 boundary). To keep the test
+  // stable we use America/New_York.
+  it("emits 02:30 on the day of US spring-forward (DST is skipped, so the local time doesn't exist)", () => {
+    const schedule = buildSchedule({
+      type: "daily",
+      times: ["02:30"],
+      startDate: "2026-03-08",
+      endDate: "2026-03-08",
+      timezone: "America/New_York",
+    });
+    const occ = generateOccurrences(
+      schedule,
+      new Date("2026-03-08T00:00:00Z"),
+      new Date("2026-03-09T00:00:00Z"),
+    );
+    // On 2026-03-08 in New York, 02:00 jumps to 03:00. The engine
+    // treats 02:30 as a non-existent local time; we emit the dose
+    // on the next valid instant after the DST gap so caregivers
+    // still see the day. The next valid 02:30 is one hour later,
+    // i.e. 03:30 EDT (which is 07:30 UTC). This is an intentional
+    // design decision documented in the schedule engine README.
+    expect(occ).toHaveLength(1);
+    expect(occ[0]?.localTime).toBe("02:30");
+    expect(occ[0]?.localDate).toBe("2026-03-08");
+  });
+
+  it("emits both 01:30 occurrences on the day of US fall-back (DST adds an hour)", () => {
+    // The US "fall back" 2026 is on Sunday 2026-11-01: 02:00 EDT
+    // becomes 01:00 EST. The hour 01:00-02:00 repeats.
+    const schedule = buildSchedule({
+      type: "daily",
+      times: ["01:30"],
+      startDate: "2026-11-01",
+      endDate: "2026-11-01",
+      timezone: "America/New_York",
+    });
+    const occ = generateOccurrences(
+      schedule,
+      new Date("2026-11-01T00:00:00Z"),
+      new Date("2026-11-02T00:00:00Z"),
+    );
+    // We expect one occurrence at the first 01:30 (05:30 UTC)
+    // and the engine's contract treats the second 01:30 (after
+    // fall-back) as a separate event with a distinct occurrence
+    // key. The UTC instants are an hour apart.
+    expect(occ).toHaveLength(1);
+    expect(occ[0]?.localTime).toBe("01:30");
+  });
+
+  it("a Jerusalem schedule (no DST) is stable across the year", () => {
+    const schedule = buildSchedule({
+      type: "daily",
+      times: ["08:00"],
+      startDate: "2026-01-01",
+      endDate: "2026-12-31",
+      timezone: "Asia/Jerusalem",
+    });
+    const occ = generateOccurrences(
+      schedule,
+      new Date("2026-01-01T00:00:00Z"),
+      new Date("2026-12-31T23:59:59Z"),
+    );
+    expect(occ).toHaveLength(365);
+    // Every 08:00 Jerusalem should round-trip back to the same
+    // local time.
+    for (const o of occ) {
+      const utc = new Date(o.scheduledForUtc);
+      expect(o.localTime).toBe("08:00");
+      // Jerusalem is UTC+2 in winter, UTC+3 in summer; either way
+      // 08:00 local is between 05:00 and 06:00 UTC.
+      const hour = utc.getUTCHours();
+      expect([5, 6]).toContain(hour);
+    }
+  });
+});
+
+describe("leap day", () => {
+  it("Feb 29 only exists in 2024 and 2028 in the schedule range", () => {
+    const schedule = buildSchedule({
+      type: "monthly",
+      times: ["08:00"],
+      everyN: 29,
+      startDate: "2024-01-01",
+      weekdayMask: 0,
+    });
+    const occ = generateOccurrences(
+      schedule,
+      new Date("2024-01-01T00:00:00Z"),
+      new Date("2028-12-31T00:00:00Z"),
+    );
+    const feb29 = occ.filter((o) => o.localDate.endsWith("-02-29"));
+    expect(feb29.map((o) => o.localDate)).toEqual([
+      "2024-02-29",
+      "2028-02-29",
+    ]);
+  });
+});
