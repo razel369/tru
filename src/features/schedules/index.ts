@@ -15,7 +15,13 @@
 
 import { cycleOccurrences } from "./recurrence/cycle";
 import { dailyOccurrences } from "./recurrence/daily";
+import { dateRangeOccurrences } from "./recurrence/date-range";
+import { everyNDaysOccurrences } from "./recurrence/every-n-days";
 import { everyNHoursOccurrences } from "./recurrence/every-n-hours";
+import { monthlyOccurrences } from "./recurrence/monthly";
+import { prnOccurrences } from "./recurrence/prn-as-needed";
+import { taperOccurrences } from "./recurrence/taper";
+import { weeklyOccurrences } from "./recurrence/weekly";
 import { weekdaysOccurrences } from "./recurrence/weekdays";
 import type { Occurrence, Schedule } from "./types";
 
@@ -38,19 +44,27 @@ export function generateOccurrences(
     case "every_n_hours":
       iter = everyNHoursOccurrences(schedule, rangeFrom, rangeTo);
       break;
+    case "every_n_days":
+      iter = everyNDaysOccurrences(schedule, rangeFrom, rangeTo);
+      break;
+    case "weekly":
+      iter = weeklyOccurrences(schedule, rangeFrom, rangeTo);
+      break;
+    case "monthly":
+      iter = monthlyOccurrences(schedule, rangeFrom, rangeTo);
+      break;
+    case "date_range":
+      iter = dateRangeOccurrences(schedule, rangeFrom, rangeTo);
+      break;
+    case "taper":
+      iter = taperOccurrences(schedule, rangeFrom, rangeTo);
+      break;
     case "cycle":
       iter = cycleOccurrences(schedule, rangeFrom, rangeTo);
       break;
-    case "every_n_days":
-    case "weekly":
-    case "monthly":
-    case "date_range":
-    case "taper":
     case "prn":
-      // Reserved for follow-up stages. Returning an empty list
-      // is the contract: the UI shows the user the existing v1
-      // schedule until the new kinds land.
-      return [];
+      iter = prnOccurrences(schedule, rangeFrom, rangeTo);
+      return out;
   }
   for (const occ of iter) {
     out.push(occ);
@@ -70,3 +84,4 @@ export {
   validateLocalDate,
   validateLocalTime,
 } from "./timezone";
+export { isValidTaper } from "./recurrence/taper";

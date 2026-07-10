@@ -18,6 +18,7 @@ import {
   localTimeIn,
   localToUtc,
   isValidTimezone,
+  isValidTaper,
 } from "./index";
 import type { Schedule } from "./types";
 
@@ -279,5 +280,171 @@ describe("schedule engine property tests", () => {
         ).toBe(true);
       }
     }
+  });
+});
+
+describe("everyNDaysOccurrences", () => {
+  it("emits every 2 days starting from the start date", () => {
+    const schedule = buildSchedule({
+      type: "every_n_days",
+      everyN: 2,
+      times: ["08:00"],
+      startDate: "2026-07-10",
+      weekdayMask: 0,
+    });
+    const occ = generateOccurrences(
+      schedule,
+      new Date("2026-07-10T00:00:00Z"),
+      new Date("2026-07-19T00:00:00Z"),
+    );
+    expect(occ.map((o) => o.localDate)).toEqual([
+      "2026-07-10",
+      "2026-07-12",
+      "2026-07-14",
+      "2026-07-16",
+      "2026-07-18",
+    ]);
+  });
+});
+
+describe("weeklyOccurrences", () => {
+  it("emits only on the selected weekday", () => {
+    // Monday. 2026-07-06 is a Monday.
+    const schedule = buildSchedule({
+      type: "weekly",
+      times: ["09:00"],
+      weekdayMask: 1,
+      startDate: "2026-07-06",
+      endDate: null,
+    });
+    const occ = generateOccurrences(
+      schedule,
+      new Date("2026-07-06T00:00:00Z"),
+      new Date("2026-07-26T00:00:00Z"),
+    );
+    expect(occ.map((o) => o.localDate)).toEqual([
+      "2026-07-06",
+      "2026-07-13",
+      "2026-07-20",
+    ]);
+  });
+});
+
+describe("monthlyOccurrences", () => {
+  it("emits on the 1st of every month", () => {
+    const schedule = buildSchedule({
+      type: "monthly",
+      times: ["08:00"],
+      everyN: 1,
+      startDate: "2026-01-01",
+      weekdayMask: 0,
+    });
+    const occ = generateOccurrences(
+      schedule,
+      new Date("2026-01-01T00:00:00Z"),
+      new Date("2026-04-01T00:00:00Z"),
+    );
+    expect(occ.map((o) => o.localDate)).toEqual([
+      "2026-01-01",
+      "2026-02-01",
+      "2026-03-01",
+      "2026-04-01",
+    ]);
+  });
+
+  it("skips Feb 29 in non-leap years and respects the range end", () => {
+    // Range covers Feb 29 2024 through Mar 1 2027. Feb 29 only
+    // exists in 2024 (leap year). For non-leap years we expect
+    // every month except February.
+    const schedule = buildSchedule({
+      type: "monthly",
+      times: ["08:00"],
+      everyN: 29,
+      startDate: "2024-02-29",
+      weekdayMask: 0,
+    });
+    const occ = generateOccurrences(
+      schedule,
+      new Date("2024-02-29T00:00:00Z"),
+      new Date("2027-03-01T00:00:00Z"),
+    );
+    // 2024: 11 months (Mar..Dec) + Feb 29 = 12
+    // 2025: 11 months (skipping Feb, which has 28 days)
+    // 2026: 11 months (skipping Feb, which has 28 days)
+    // 2027: Jan + Feb + Mar 1? Actually Mar 29 > rangeToDate
+    //       (2027-03-01) so only Jan and Feb 29 (skipped) → 1
+    expect(occ.length).toBe(34); // 12 + 11 + 11 = 34; 2027 contributes 0 (Jan/Feb 29 skipped)
+    // Feb 29 occurrences:
+    const feb29 = occ.filter((o) => o.localDate.endsWith("-02-29"));
+    expect(feb29.map((o) => o.localDate)).toEqual(["2024-02-29"]);
+  });
+});
+
+describe("dateRangeOccurrences", () => {
+  it("emits every day in the range with the schedule times", () => {
+    const schedule = buildSchedule({
+      type: "date_range",
+      times: ["09:00", "21:00"],
+      startDate: "2026-07-10",
+      endDate: "2026-07-12",
+      weekdayMask: 0,
+    });
+    const occ = generateOccurrences(
+      schedule,
+      new Date("2026-07-09T00:00:00Z"),
+      new Date("2026-07-15T00:00:00Z"),
+    );
+    expect(occ).toHaveLength(6);
+  });
+});
+
+describe("taperOccurrences", () => {
+  it("emits the right dose at the right time for each phase", () => {
+    const schedule = buildSchedule({
+      type: "taper",
+      times: ["08:00"],
+      startDate: "2026-07-10",
+      endDate: "2026-07-18",
+      weekdayMask: 0,
+      taperPhases: [
+        { startDay: 0, times: ["08:00"], dose: "75 mg" },
+        { startDay: 3, times: ["08:00"], dose: "50 mg" },
+        { startDay: 6, times: ["08:00"], dose: "25 mg" },
+      ],
+    });
+    const occ = generateOccurrences(
+      schedule,
+      new Date("2026-07-10T00:00:00Z"),
+      new Date("2026-07-18T23:59:59Z"),
+    );
+    expect(occ).toHaveLength(8);
+    expect(occ.slice(0, 3).map((o) => o.dose)).toEqual(["75 mg", "75 mg", "75 mg"]);
+    expect(occ.slice(3, 6).map((o) => o.dose)).toEqual(["50 mg", "50 mg", "50 mg"]);
+    expect(occ.slice(6).map((o) => o.dose)).toEqual(["25 mg", "25 mg"]);
+  });
+
+  it("isValidTaper rejects overlapping phases", () => {
+    expect(
+      isValidTaper([
+        { startDay: 0, times: ["08:00"], dose: "75 mg" },
+        { startDay: 0, times: ["08:00"], dose: "50 mg" },
+      ]),
+    ).toBe(false);
+  });
+});
+
+describe("prnOccurrences", () => {
+  it("never emits scheduled occurrences", () => {
+    const schedule = buildSchedule({
+      type: "prn",
+      times: ["08:00"],
+      prnMinIntervalMinutes: 240,
+    });
+    const occ = generateOccurrences(
+      schedule,
+      new Date("2026-07-10T00:00:00Z"),
+      new Date("2026-07-12T00:00:00Z"),
+    );
+    expect(occ).toEqual([]);
   });
 });
