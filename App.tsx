@@ -24,6 +24,7 @@ import { __setSchedulingBackend } from "./src/features/notifications/service";
 import { __setDoseLogger, handleNotificationAction } from "./src/features/notifications/bridge";
 import { AddMedicationScreen } from "./src/features/medications/AddMedicationScreen";
 import { InsightsScreen } from "./src/features/insights/InsightsScreen";
+import { HealthScreen } from "./src/features/notifications/HealthScreen";
 import { OnboardingFlow } from "./src/features/onboarding/OnboardingFlow";
 import { PetsScreen } from "./src/features/pets/PetsScreen";
 import { buildScheduleFromEngine } from "./src/features/schedules/adapter";
@@ -35,7 +36,7 @@ import {
 } from "./src/schedule";
 import type { DoseLog, Medication, Pet, ScheduledDose } from "./src/types";
 
-type Screen = "today" | "pets" | "insights" | "add";
+type Screen = "today" | "pets" | "insights" | "add" | "health";
 
 const PETS_KEY = "pawpair.pets.v2";
 const LOGS_KEY = "pawpair.logs.v2";
@@ -320,6 +321,7 @@ function AppContent() {
       {screen === "insights" && (
         <InsightsScreen logs={logs} pets={pets} topInset={insets.top} />
       )}
+      {screen === "health" && <HealthScreen />}
       {screen === "add" && (
         <AddMedicationScreen
           petImages={{

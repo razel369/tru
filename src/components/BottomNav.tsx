@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { colors } from "../design";
 
-type Screen = "today" | "pets" | "insights" | "add";
+type Screen = "today" | "pets" | "insights" | "add" | "health";
 
 interface BottomNavProps {
   active: Screen;
@@ -61,10 +61,10 @@ export function BottomNav({
         onPress={() => onChange("insights")}
       />
       <NavItem
-        active={false}
-        icon="person-outline"
-        label="Profile"
-        onPress={() => undefined}
+        active={active === "health"}
+        icon="notifications-outline"
+        label="Health"
+        onPress={() => onChange("health")}
       />
     </BlurView>
   );
