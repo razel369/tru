@@ -5,7 +5,15 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { colors } from "../design";
 
-type Screen = "today" | "pets" | "insights" | "add" | "health";
+type Screen =
+  | "today"
+  | "pets"
+  | "insights"
+  | "add"
+  | "health"
+  | "settings"
+  | "paywall"
+  | "household";
 
 interface BottomNavProps {
   active: Screen;

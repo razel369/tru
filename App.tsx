@@ -30,8 +30,13 @@ import { InsightsScreen } from "./src/features/insights/InsightsScreen";
 import { HealthScreen } from "./src/features/notifications/HealthScreen";
 import { OnboardingFlow } from "./src/features/onboarding/OnboardingFlow";
 import { PetsScreen } from "./src/features/pets/PetsScreen";
+import { PetFormScreen } from "./src/features/pets/PetFormScreen";
+import { PetMenu } from "./src/features/pets/PetMenu";
 import { buildScheduleFromEngine } from "./src/features/schedules/adapter";
 import { TodayScreen } from "./src/features/today/TodayScreen";
+import { SettingsScreen } from "./src/features/settings/SettingsScreen";
+import { PaywallScreen } from "./src/features/subscriptions/PaywallScreen";
+import { HouseholdScreen } from "./src/features/household/HouseholdScreen";
 import {
   addMedicationToPets,
   createDoseLog,
@@ -46,7 +51,10 @@ type Screen =
   | "add"
   | "health"
   | "edit-medication"
-  | "medication-menu";
+  | "medication-menu"
+  | "settings"
+  | "paywall"
+  | "household";
 
 const PETS_KEY = "pawpair.pets.v2";
 const LOGS_KEY = "pawpair.logs.v2";
@@ -390,7 +398,34 @@ function AppContent() {
       {screen === "insights" && (
         <InsightsScreen logs={logs} pets={pets} topInset={insets.top} />
       )}
-      {screen === "health" && <HealthScreen />}
+      {screen === "health" && (
+        <HealthScreen onOpenSettings={() => setScreen("settings")} />
+      )}
+      {screen === "settings" && (
+        <SettingsScreen
+          onDeleteAccount={() => {
+            setPets([]);
+            setLogs([]);
+            setScreen("today");
+            setToast("Account deleted (demo)");
+          }}
+          onExportData={() => {
+            setToast("Export coming soon — see ROADMAP.md");
+          }}
+        />
+      )}
+      {screen === "paywall" && (
+        <PaywallScreen
+          onClose={() => setScreen("today")}
+          onSubscribed={() => {
+            setScreen("today");
+            setToast("PawPair Plus unlocked (demo)");
+          }}
+        />
+      )}
+      {screen === "household" && (
+        <HouseholdScreen onClose={() => setScreen("today")} />
+      )}
       {screen === "add" && (
         <AddMedicationScreen
           petImages={{

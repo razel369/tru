@@ -1,0 +1,272 @@
+import { Ionicons } from "@expo/vector-icons";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { AppHeader } from "../../components/AppHeader";
+import { colors } from "../../design";
+import { currentUser } from "./auth";
+import {
+  acceptInvite,
+  createHousehold,
+  createInvite,
+  listHouseholdsForUser,
+  listMembers,
+} from "./service";
+import { useState } from "react";
+
+interface HouseholdScreenProps {
+  onClose: () => void;
+}
+
+/**
+ * Household management — the user sees the households they
+ * belong to, the members of each, and can create new invites.
+ * Stage 8 ships the in-memory state machine; the real Supabase
+ * implementation lands in stage 8-final.
+ */
+export function HouseholdScreen({ onClose }: HouseholdScreenProps) {
+  const insets = useSafeAreaInsets();
+  const [inviteCode, setInviteCode] = useState<string | null>(null);
+
+  const me = currentUser();
+  const households = me ? listHouseholdsForUser() : [];
+  const active = households[0];
+  const members = active ? listMembers(active.id) : [];
+
+  return (
+    <View style={[styles.container, { paddingTop: insets.top + 14 }]}>
+      <AppHeader
+        actionIcon="close-outline"
+        eyebrow="CAREGIVERS"
+        onAction={onClose}
+        title="Household"
+      />
+      <ScrollView
+        contentContainerStyle={[
+          styles.content,
+          { paddingBottom: 100 + insets.bottom },
+        ]}
+      >
+        {households.length === 0 && (
+          <View style={styles.card}>
+            <Ionicons
+              color={colors.muted}
+              name="people-outline"
+              size={28}
+            />
+            <Text style={styles.title}>No household yet</Text>
+            <Text style={styles.body}>
+              Create one to invite caregivers and sync doses
+              across devices.
+            </Text>
+            <Pressable
+              onPress={() => {
+                if (!me) return;
+                createHousehold(`${me.displayName}'s household`);
+              }}
+              style={styles.primaryButton}
+            >
+              <Text style={styles.primaryButtonText}>Create household</Text>
+            </Pressable>
+          </View>
+        )}
+
+        {active && (
+          <View style={styles.card}>
+            <Text style={styles.label}>HOUSEHOLD</Text>
+            <Text style={styles.title}>{active.name}</Text>
+
+            <Text style={styles.label}>MEMBERS</Text>
+            {members.length === 0 ? (
+              <Text style={styles.body}>Just you so far.</Text>
+            ) : (
+              members.map((m) => (
+                <View key={m.id} style={styles.memberRow}>
+                  <View style={styles.memberAvatar}>
+                    <Text style={styles.memberInitial}>
+                      {m.userId === me?.id
+                        ? me.displayName.slice(0, 1)
+                        : m.userId.slice(-2).toUpperCase()}
+                    </Text>
+                  </View>
+                  <View style={styles.flex}>
+                    <Text style={styles.memberName}>
+                      {m.userId === me?.id ? me.displayName : `Caregiver ${m.userId.slice(-3)}`}
+                    </Text>
+                    <Text style={styles.memberRole}>
+                      {m.role.charAt(0).toUpperCase() + m.role.slice(1)}
+                    </Text>
+                  </View>
+                </View>
+              ))
+            )}
+
+            <Text style={styles.label}>INVITE</Text>
+            {inviteCode ? (
+              <View style={styles.codeBlock}>
+                <Text style={styles.codeText}>{inviteCode}</Text>
+                <Text style={styles.codeHint}>
+                  Share this code. It expires in 24 hours and
+                  can only be used once.
+                </Text>
+              </View>
+            ) : (
+              <Pressable
+                onPress={() => {
+                  if (!active) return;
+                  const invite = createInvite(active.id, "caregiver");
+                  setInviteCode(invite.token);
+                }}
+                style={styles.primaryButton}
+              >
+                <Text style={styles.primaryButtonText}>Generate invite</Text>
+              </Pressable>
+            )}
+
+            <Text style={styles.label}>JOIN EXISTING</Text>
+            <Pressable
+              onPress={() => {
+                if (!inviteCode) return;
+                acceptInvite(inviteCode);
+                setInviteCode(null);
+              }}
+              style={styles.secondaryButton}
+            >
+              <Text style={styles.secondaryButtonText}>
+                Try accepting the code above
+              </Text>
+            </Pressable>
+          </View>
+        )}
+
+        <Text style={styles.footer}>
+          Real Supabase sync is wired in stage 8-final. This
+          screen uses an in-memory store so the UI is ready
+          to swap in once a project is configured.
+        </Text>
+      </ScrollView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  body: {
+    color: colors.muted,
+    fontFamily: "Manrope_400Regular",
+    fontSize: 12,
+    lineHeight: 18,
+    marginTop: 8,
+  },
+  card: {
+    backgroundColor: colors.paper,
+    borderColor: colors.line,
+    borderRadius: 20,
+    borderWidth: 1,
+    marginBottom: 12,
+    padding: 16,
+  },
+  codeBlock: {
+    backgroundColor: colors.background,
+    borderColor: colors.coral,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    marginTop: 8,
+    padding: 16,
+  },
+  codeHint: {
+    color: colors.muted,
+    fontFamily: "Manrope_400Regular",
+    fontSize: 11,
+    marginTop: 6,
+  },
+  codeText: {
+    color: colors.ink,
+    fontFamily: "Manrope_800ExtraBold",
+    fontSize: 18,
+    letterSpacing: 1.5,
+  },
+  container: { backgroundColor: colors.background, flex: 1 },
+  content: { paddingHorizontal: 18, paddingTop: 8 },
+  flex: { flex: 1 },
+  footer: {
+    color: colors.muted,
+    fontFamily: "Manrope_400Regular",
+    fontSize: 11,
+    lineHeight: 16,
+    marginTop: 16,
+    textAlign: "center",
+  },
+  label: {
+    color: colors.muted,
+    fontFamily: "Manrope_800ExtraBold",
+    fontSize: 9,
+    letterSpacing: 1.4,
+    marginBottom: 6,
+    marginTop: 16,
+  },
+  memberAvatar: {
+    alignItems: "center",
+    backgroundColor: colors.coral,
+    borderRadius: 18,
+    height: 36,
+    justifyContent: "center",
+    marginRight: 12,
+    width: 36,
+  },
+  memberInitial: {
+    color: colors.white,
+    fontFamily: "Manrope_800ExtraBold",
+    fontSize: 13,
+  },
+  memberName: {
+    color: colors.ink,
+    fontFamily: "Manrope_700Bold",
+    fontSize: 13,
+  },
+  memberRole: {
+    color: colors.muted,
+    fontFamily: "Manrope_600SemiBold",
+    fontSize: 11,
+    marginTop: 2,
+  },
+  memberRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    marginBottom: 10,
+  },
+  primaryButton: {
+    alignItems: "center",
+    backgroundColor: colors.coral,
+    borderRadius: 14,
+    marginTop: 14,
+    minHeight: 46,
+    paddingVertical: 12,
+  },
+  primaryButtonText: {
+    color: colors.white,
+    fontFamily: "Manrope_800ExtraBold",
+    fontSize: 13,
+  },
+  secondaryButton: {
+    alignItems: "center",
+    backgroundColor: colors.paper,
+    borderColor: colors.line,
+    borderRadius: 14,
+    borderWidth: 1,
+    marginTop: 8,
+    minHeight: 40,
+    paddingVertical: 8,
+  },
+  secondaryButtonText: {
+    color: colors.muted,
+    fontFamily: "Manrope_700Bold",
+    fontSize: 12,
+  },
+  title: {
+    color: colors.ink,
+    fontFamily: "Fraunces_700Bold",
+    fontSize: 22,
+    marginBottom: 6,
+    marginTop: 6,
+  },
+});

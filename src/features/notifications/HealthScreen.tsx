@@ -20,7 +20,11 @@ import type { NotificationHealthReport } from "./types";
  * current schedule count and any failures, so caregivers can
  * see at a glance whether reminders will fire.
  */
-export function HealthScreen() {
+interface HealthScreenProps {
+  onOpenSettings?: () => void;
+}
+
+export function HealthScreen({ onOpenSettings }: HealthScreenProps = {}) {
   const insets = useSafeAreaInsets();
   const [report, setReport] = useState<NotificationHealthReport | null>(null);
 
@@ -131,6 +135,14 @@ export function HealthScreen() {
             reminders and trigger a reschedule.
           </Text>
         </View>
+
+        {onOpenSettings && (
+          <Pressable onPress={onOpenSettings} style={styles.secondaryButton}>
+            <Text style={styles.secondaryButtonText}>
+              Open app settings
+            </Text>
+          </Pressable>
+        )}
       </ScrollView>
     </View>
   );
@@ -196,4 +208,20 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   valueDanger: { color: colors.danger },
+  secondaryButton: {
+    alignItems: "center",
+    backgroundColor: colors.paper,
+    borderColor: colors.line,
+    borderRadius: 16,
+    borderWidth: 1,
+    marginTop: 12,
+    minHeight: 44,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  secondaryButtonText: {
+    color: colors.ink,
+    fontFamily: "Manrope_700Bold",
+    fontSize: 12,
+  },
 });
