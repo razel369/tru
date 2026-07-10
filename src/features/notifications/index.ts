@@ -29,3 +29,4 @@ export {
 } from "./bridge";
 export type { DoseLogger } from "./bridge";
 export { makeExpoBackend } from "./expo-backend";
+export { scheduleAllPets, DEFAULT_HORIZON_DAYS } from "./scheduler";

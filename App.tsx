@@ -19,6 +19,8 @@ import { LoadingScreen } from "./src/components/LoadingScreen";
 import { Toast } from "./src/components/Toast";
 import { colors } from "./src/design";
 import { ensureMigrated } from "./src/data/database";
+import { makeExpoBackend, scheduleAllPets } from "./src/features/notifications";
+import { __setSchedulingBackend } from "./src/features/notifications/service";
 import { AddMedicationScreen } from "./src/features/medications/AddMedicationScreen";
 import { InsightsScreen } from "./src/features/insights/InsightsScreen";
 import { OnboardingFlow } from "./src/features/onboarding/OnboardingFlow";
@@ -69,6 +71,16 @@ function AppContent() {
       console.warn("[pawpair] ensureMigrated failed", error);
     });
 
+    // Wire the production notification backend. The web and test
+    // environments keep the no-op default; iOS and Android get the
+    // expo-notifications adapter.
+    void makeExpoBackend()
+      .then(__setSchedulingBackend)
+      .catch((error) => {
+        // eslint-disable-next-line no-console
+        console.warn("[pawpair] expo backend unavailable", error);
+      });
+
     Promise.all([
       AsyncStorage.getItem(PETS_KEY),
       AsyncStorage.getItem(LOGS_KEY),
@@ -106,6 +118,19 @@ function AppContent() {
     const timer = setTimeout(() => setToast(null), 2600);
     return () => clearTimeout(timer);
   }, [toast]);
+
+  // Reschedule local notifications whenever the pet list changes
+  // and the app has finished loading. The web and the no-op
+  // backend (tests) both make this a no-op; on a real device the
+  // notifications are scheduled through expo-notifications.
+  useEffect(() => {
+    if (!loaded) return;
+    if (pets.length === 0) return;
+    void scheduleAllPets(pets, new Date()).catch((error) => {
+      // eslint-disable-next-line no-console
+      console.warn("[pawpair] scheduleAllPets failed", error);
+    });
+  }, [loaded, pets]);
 
   const schedule = useMemo(
     () => buildScheduleFromEngine(pets, logs, selectedDate),
