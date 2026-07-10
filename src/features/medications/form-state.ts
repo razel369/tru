@@ -42,6 +42,7 @@ export interface MedicationDraft {
   times: string[];
   startingSupply: number;
   supplyUnit: "tablets" | "doses" | "softgels" | "ml";
+  paused?: boolean;
 }
 
 export const EMPTY_DRAFT: MedicationDraft = {
@@ -53,6 +54,7 @@ export const EMPTY_DRAFT: MedicationDraft = {
   times: ["08:00"],
   startingSupply: 30,
   supplyUnit: "tablets",
+  paused: false,
 };
 
 export function validateStep(

@@ -112,6 +112,14 @@ function AppContent() {
     void ensureMigrated().catch((error) => {
       // eslint-disable-next-line no-console
       console.warn("[pawpair] ensureMigrated failed", error);
+      // Surface a toast so the user knows the on-device store
+      // did not initialize. The app keeps working from in-memory
+      // state; the next launch retries the migration.
+      setLoadError(
+        error instanceof Error
+          ? `Local store could not initialize: ${error.message}`
+          : "Local store could not initialize.",
+      );
     });
 
     // Wire the production notification backend. The web and test
@@ -686,6 +694,7 @@ function AppContent() {
               | "doses"
               | "softgels"
               | "ml",
+            paused: editingMed.paused === true,
           }}
           petImages={{
             milo: require("./assets/pawpair-milo.png"),
@@ -709,6 +718,7 @@ function AppContent() {
               stock: draft.startingSupply,
               stockUnit: draft.supplyUnit,
               color: editingMed.color,
+              paused: draft.paused === true,
             };
             updateMedication(petId, medicationId, next);
             setEditingMedication(null);

@@ -14,6 +14,7 @@ import { useMemo, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { colors } from "../../design";
+import { ScheduleEditor } from "./ScheduleEditor";
 import type { Medication, Pet } from "../../types";
 import {
   EMPTY_DRAFT,
@@ -154,6 +155,15 @@ export function MedicationFormScreen({
             draft={draft}
             petName={pets.find((p) => p.id === draft.petId)?.name ?? ""}
           />
+        )}
+        {editing && step === "review" && (
+          <View style={styles.scheduleBlock}>
+            <ScheduleEditor
+              paused={draft.paused === true}
+              times={draft.times}
+              onTogglePause={() => update({ paused: !draft.paused })}
+            />
+          </View>
         )}
 
         <View style={styles.cta}>
@@ -566,6 +576,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 16,
   },
+  scheduleBlock: { marginTop: 12 },
   reviewLabel: {
     color: colors.muted,
     fontFamily: "Manrope_700Bold",
