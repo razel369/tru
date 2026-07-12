@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
-import { colors } from "../../design";
+import { colors, shadow } from "../../design";
 
 interface FormInputProps {
   label: string;
@@ -11,10 +11,7 @@ interface FormInputProps {
   onChange: (value: string) => void;
 }
 
-/**
- * Labeled text input used in the Add Medication form.
- * Extracted verbatim from App.tsx in stage 2.
- */
+/** Labeled clay text input for medication / pet forms. */
 export function FormInput({
   label,
   value,
@@ -47,40 +44,38 @@ export function FormLabel({ label }: { label: string }) {
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
   formInput: {
     color: colors.ink,
     flex: 1,
-    fontFamily: "Manrope_700Bold",
+    fontFamily: "Nunito_700Bold",
     fontSize: 14,
     padding: 0,
   },
   formInputGroup: { marginBottom: 15 },
   formInputLabel: {
     color: colors.ink,
-    fontFamily: "Manrope_800ExtraBold",
-    fontSize: 11,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 12,
     marginBottom: 7,
   },
   formInputShell: {
     alignItems: "center",
-    backgroundColor: colors.background,
-    borderColor: colors.line,
-    borderRadius: 13,
-    borderWidth: 1,
+    backgroundColor: colors.paper,
+    borderRadius: 20,
     flexDirection: "row",
-    height: 50,
-    paddingHorizontal: 13,
+    height: 52,
+    paddingHorizontal: 14,
+    ...shadow.subtle,
   },
   formInputSuffix: {
     color: colors.muted,
-    fontFamily: "Manrope_700Bold",
-    fontSize: 11,
+    fontFamily: "Nunito_700Bold",
+    fontSize: 12,
   },
   formLabel: {
     color: colors.ink,
-    fontFamily: "Manrope_800ExtraBold",
-    fontSize: 12,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 13,
     marginBottom: 10,
   },
 });

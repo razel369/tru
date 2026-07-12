@@ -89,11 +89,13 @@ const styles = StyleSheet.create({
   card: {
     alignItems: "center",
     backgroundColor: colors.paper,
-    borderColor: colors.line,
-    borderRadius: 20,
-    borderWidth: 1,
+    borderRadius: 24,
     marginBottom: 12,
     padding: 16,
+    shadowColor: "#2A3A4A",
+    shadowOffset: { height: 8, width: 0 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
   },
   code: {
     color: colors.muted,
@@ -105,11 +107,13 @@ const styles = StyleSheet.create({
   content: { paddingHorizontal: 18, paddingTop: 8 },
   previewCard: {
     backgroundColor: colors.paper,
-    borderColor: colors.line,
-    borderRadius: 20,
-    borderWidth: 1,
+    borderRadius: 24,
     marginBottom: 12,
     padding: 16,
+    shadowColor: "#2A3A4A",
+    shadowOffset: { height: 8, width: 0 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
   },
   previewHint: {
     color: colors.muted,
@@ -126,8 +130,9 @@ const styles = StyleSheet.create({
   },
   title: {
     color: colors.ink,
-    fontFamily: "Fraunces_700Bold",
+    fontFamily: "Manrope_800ExtraBold",
     fontSize: 22,
+    letterSpacing: -0.3,
     marginTop: 8,
   },
 });

@@ -14,6 +14,8 @@ import type {
 
 export interface OnboardingFlowProps {
   appIcon: ImageSourcePropType;
+  companionImage?: ImageSourcePropType;
+  heroScene?: ImageSourcePropType;
   onComplete: (result: { pet: OnboardingPetDraft; medication: OnboardingMedicationDraft }) => void;
   /** When set, the "Continue with demo data" button is offered. */
   onSkip?: () => void;
@@ -32,6 +34,8 @@ export interface OnboardingFlowProps {
  */
 export function OnboardingFlow({
   appIcon,
+  companionImage,
+  heroScene,
   onComplete,
   onSkip,
   initialStep = "welcome",
@@ -61,7 +65,9 @@ export function OnboardingFlow({
     return (
       <WelcomeScreen
         appIcon={appIcon}
-        onSkip={onSkip ?? (() => undefined)}
+        companionImage={companionImage}
+        heroScene={heroScene}
+        onSkip={onSkip}
         onStart={() => setStep("createPet")}
       />
     );

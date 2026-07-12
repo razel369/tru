@@ -1,14 +1,9 @@
-import { Ionicons } from "@expo/vector-icons";
 import type { ImageSourcePropType } from "react-native";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
-import { DateStrip } from "../../components/DateStrip";
 import { EmptyTodayState } from "../../components/feedback/EmptyTodayState";
-import { colors } from "../../design";
-import type { ScheduledDose } from "../../types";
+import type { Pet, ScheduledDose } from "../../types";
 
-import { DoseCard } from "./DoseCard";
-import { SyncCard } from "./SyncCard";
 import { TodayHero } from "./TodayHero";
 
 interface TodayScreenProps {
@@ -17,106 +12,79 @@ interface TodayScreenProps {
   topInset: number;
   appIcon: ImageSourcePropType;
   heroPet: ImageSourcePropType;
+  petImages: Record<Pet["avatar"], ImageSourcePropType>;
+  companionImage?: ImageSourcePropType;
+  roomImage?: ImageSourcePropType;
+  heroScene?: ImageSourcePropType;
   onDateChange: (date: Date) => void;
   onLog: (dose: ScheduledDose, status: "given" | "skipped") => void;
   onAdd: () => void;
+  onMenu?: () => void;
 }
 
 /**
- * Today screen — the home tab. Composes the navy hero, the sticky date
- * strip, the dose timeline, and a sync illustration. Extracted from
- * App.tsx in stage 2 with all original style values preserved.
+ * Today — confirm the next real dose for a real pet.
  */
 export function TodayScreen({
   schedule,
-  selectedDate,
   topInset,
-  appIcon,
   heroPet,
-  onDateChange,
+  petImages,
+  companionImage,
+  roomImage,
+  heroScene,
   onLog,
   onAdd,
+  onMenu,
 }: TodayScreenProps) {
+  const nextDue = schedule.find(
+    (dose) =>
+      dose.status === "due" ||
+      dose.status === "missed" ||
+      dose.status === "upcoming",
+  );
+  const focusPet = nextDue?.pet ?? schedule[0]?.pet;
+  const petImage = focusPet
+    ? petImages[focusPet.avatar] ?? heroPet
+    : heroPet;
+  const petName = focusPet?.name ?? "your pet";
+
   return (
-    <ScrollView
-      contentContainerStyle={styles.todayContent}
-      showsVerticalScrollIndicator={false}
-      stickyHeaderIndices={[1]}
-    >
-      <TodayHero petImage={heroPet} schedule={schedule} topInset={topInset} />
-
-      <DateStrip
-        selectedDate={selectedDate}
-        onDateChange={onDateChange}
+    <View style={styles.root}>
+      <TodayHero
+        canConfirm={nextDue !== undefined}
+        companionImage={companionImage}
+        heroScene={heroScene}
+        nextDose={nextDue}
+        onConfirmNext={
+          nextDue ? () => onLog(nextDue, "given") : undefined
+        }
+        onLog={onLog}
+        onMenu={onMenu}
+        petImage={petImage}
+        petName={petName}
+        roomImage={roomImage}
+        schedule={schedule}
+        topInset={topInset}
       />
-
-      <View style={styles.contentSection}>
-        <View style={styles.sectionHeadingRow}>
-          <View>
-            <Text style={styles.sectionKicker}>CARE PLAN</Text>
-            <Text style={styles.sectionTitle}>Today’s doses</Text>
-          </View>
-          <Pressable onPress={onAdd} style={styles.roundAddButton}>
-            <Ionicons name="add" size={22} color={colors.coral} />
-          </Pressable>
-        </View>
-
-        {schedule.length === 0 ? (
+      {schedule.length === 0 ? (
+        <View style={styles.emptyOverlay}>
           <EmptyTodayState onAddMedication={onAdd} />
-        ) : (
-          <View style={styles.timeline}>
-            {schedule.map((dose, index) => (
-              <DoseCard
-                dose={dose}
-                isLast={index === schedule.length - 1}
-                key={dose.id}
-                onLog={onLog}
-              />
-            ))}
-          </View>
-        )}
-
-        <SyncCard />
-      </View>
-    </ScrollView>
+        </View>
+      ) : null}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  app: { backgroundColor: colors.background, flex: 1 },
-  contentSection: {
-    paddingBottom: 28,
-    paddingHorizontal: 18,
-    paddingTop: 22,
+  emptyOverlay: {
+    bottom: 118,
+    left: 20,
+    position: "absolute",
+    right: 20,
   },
-  roundAddButton: {
-    alignItems: "center",
-    backgroundColor: colors.paper,
-    borderColor: colors.line,
-    borderRadius: 15,
-    borderWidth: 1,
-    height: 38,
-    justifyContent: "center",
-    width: 38,
+  root: {
+    backgroundColor: "#C9B59A",
+    flex: 1,
   },
-  sectionHeadingRow: {
-    alignItems: "flex-end",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 14,
-  },
-  sectionKicker: {
-    color: colors.muted,
-    fontFamily: "Manrope_800ExtraBold",
-    fontSize: 9,
-    letterSpacing: 1.4,
-  },
-  sectionTitle: {
-    color: colors.ink,
-    fontFamily: "Fraunces_700Bold",
-    fontSize: 24,
-    marginTop: 2,
-  },
-  timeline: { marginTop: 4 },
-  todayContent: { paddingBottom: 100 },
 });

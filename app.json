@@ -6,21 +6,57 @@
     "icon": "./assets/pawpair-icon.png",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/pawpair-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F7F1E8"
+    },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "app.pawpair.medtracker"
+      "bundleIdentifier": "app.pawpair.medtracker",
+      "infoPlist": {
+        "NSUserNotificationsUsageDescription": "PawPair sends local reminders so you can confirm pet medication doses on time.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "app.pawpair.medtracker",
       "adaptiveIcon": {
         "foregroundImage": "./assets/pawpair-icon.png",
-        "backgroundColor": "#F7F4EE"
-      }
+        "backgroundColor": "#F7F1E8"
+      },
+      "permissions": [
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE",
+        "SCHEDULE_EXACT_ALARM",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE",
+        "SCHEDULE_EXACT_ALARM"
+      ]
     },
     "plugins": [
       "expo-status-bar",
       "expo-font",
-      "expo-sqlite"
-    ]
+      "expo-sqlite",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/pawpair-icon.png",
+          "color": "#FF7F6A",
+          "sounds": []
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "cf604bac-300f-4ce7-b632-72593cef6674"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/cf604bac-300f-4ce7-b632-72593cef6674"
+    }
   }
 }

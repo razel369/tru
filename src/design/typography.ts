@@ -1,26 +1,21 @@
 /**
  * PawPair — typography tokens.
  *
- * Two families:
- * - Fraunces (serif) — emotional display moments only (greetings, hero stats).
- * - Manrope (sans)   — navigation, labels, controls, data, body text.
- *
- * Variants match the JSX usage in the original App.tsx so the refactor is
- * purely structural. Weights are loaded via @expo-google-fonts.
+ * Clay UI uses Nunito for almost everything.
+ * Fraunces remains available for rare display moments.
  */
 
 import type { TextStyle } from "react-native";
 
 export const fontFamily = {
-  display: "Fraunces_700Bold", // serif
-  body: "Manrope_400Regular", // sans
-  medium: "Manrope_600SemiBold",
-  bold: "Manrope_700Bold",
-  extraBold: "Manrope_800ExtraBold",
+  display: "Fraunces_700Bold",
+  body: "Nunito_600SemiBold",
+  medium: "Nunito_600SemiBold",
+  bold: "Nunito_700Bold",
+  extraBold: "Nunito_800ExtraBold",
 } as const;
 
 export const typography = {
-  // Display (Fraunces) — used in greeting + hero numbers
   displayLg: {
     fontFamily: fontFamily.display,
     fontSize: 32,
@@ -31,8 +26,6 @@ export const typography = {
     fontSize: 26,
     lineHeight: 32,
   } satisfies TextStyle,
-
-  // UI sans (Manrope)
   title: {
     fontFamily: fontFamily.extraBold,
     fontSize: 22,

@@ -57,9 +57,7 @@ const styles = StyleSheet.create({
   cancelButton: {
     alignItems: "center",
     backgroundColor: colors.paper,
-    borderColor: colors.line,
-    borderRadius: 12,
-    borderWidth: 1,
+    borderRadius: 999,
     flex: 1,
     paddingVertical: 10,
   },
@@ -70,9 +68,7 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: colors.coralSoft,
-    borderColor: colors.coral,
-    borderRadius: 16,
-    borderWidth: 1,
+    borderRadius: 24,
     marginHorizontal: 18,
     marginTop: 12,
     padding: 14,
@@ -85,7 +81,7 @@ const styles = StyleSheet.create({
   keepButton: {
     alignItems: "center",
     backgroundColor: colors.coral,
-    borderRadius: 12,
+    borderRadius: 999,
     flex: 1,
     paddingVertical: 10,
   },

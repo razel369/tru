@@ -4,11 +4,14 @@ import { Manrope_400Regular } from "@expo-google-fonts/manrope/400Regular";
 import { Manrope_600SemiBold } from "@expo-google-fonts/manrope/600SemiBold";
 import { Manrope_700Bold } from "@expo-google-fonts/manrope/700Bold";
 import { Manrope_800ExtraBold } from "@expo-google-fonts/manrope/800ExtraBold";
+import { Nunito_600SemiBold } from "@expo-google-fonts/nunito/600SemiBold";
+import { Nunito_700Bold } from "@expo-google-fonts/nunito/700Bold";
+import { Nunito_800ExtraBold } from "@expo-google-fonts/nunito/800ExtraBold";
 import { useFonts } from "expo-font";
 import * as Haptics from "expo-haptics";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useMemo, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, Text, Share, View } from "react-native";
 import {
   SafeAreaProvider,
   useSafeAreaInsets,
@@ -37,8 +40,17 @@ import { buildScheduleFromEngine } from "./src/features/schedules/adapter";
 import { TodayScreen } from "./src/features/today/TodayScreen";
 import { SettingsScreen } from "./src/features/settings/SettingsScreen";
 import { PaywallScreen } from "./src/features/subscriptions/PaywallScreen";
+import {
+  canAddMedication,
+  canAddPet,
+  canPerform,
+  defaultFreeEntitlement,
+} from "./src/features/subscriptions/entitlements";
 import { HouseholdScreen } from "./src/features/household/HouseholdScreen";
 import { ReportScreen } from "./src/features/reports/ReportScreen";
+import { LegalDocumentScreen } from "./src/features/settings/LegalDocumentScreen";
+import { PRIVACY_POLICY } from "./src/legal/privacy";
+import { TERMS_OF_SERVICE } from "./src/legal/terms";
 import { AutoOfflineBanner } from "./src/components/feedback/OfflineBanner";
 import { ErrorState } from "./src/components/feedback/ErrorState";
 import {
@@ -62,12 +74,16 @@ type Screen =
   | "add-pet"
   | "edit-pet"
   | "pet-menu"
-  | "report";
+  | "report"
+  | "privacy"
+  | "terms";
 
 const PETS_KEY = "pawpair.pets.v2";
 const LOGS_KEY = "pawpair.logs.v2";
 const ONBOARDING_KEY = "pawpair.onboarding.done.v1";
-const CAREGIVER = "Maya";
+const CAREGIVER = "You";
+/** Demo household is for local development only — never production. */
+const ALLOW_DEMO = typeof __DEV__ !== "undefined" && __DEV__;
 
 function makeSeedLogs(): DoseLog[] {
   const now = new Date();
@@ -76,7 +92,7 @@ function makeSeedLogs(): DoseLog[] {
     createDoseLog(
       dose,
       "given",
-      index === 0 ? "Alex" : CAREGIVER,
+      index === 0 ? "Alex (demo)" : CAREGIVER,
       new Date(now.getFullYear(), now.getMonth(), now.getDate(), 8, index * 4),
     ),
   );
@@ -85,8 +101,8 @@ function makeSeedLogs(): DoseLog[] {
 function AppContent() {
   const insets = useSafeAreaInsets();
   const [screen, setScreen] = useState<Screen>("today");
-  const [pets, setPets] = useState<Pet[]>(DEMO_PETS);
-  const [logs, setLogs] = useState<DoseLog[]>(makeSeedLogs);
+  const [pets, setPets] = useState<Pet[]>([]);
+  const [logs, setLogs] = useState<DoseLog[]>([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [loadError, setLoadError] = useState<string | null>(null);
   const [editingMedication, setEditingMedication] = useState<{
@@ -112,9 +128,6 @@ function AppContent() {
     void ensureMigrated().catch((error) => {
       // eslint-disable-next-line no-console
       console.warn("[pawpair] ensureMigrated failed", error);
-      // Surface a toast so the user knows the on-device store
-      // did not initialize. The app keeps working from in-memory
-      // state; the next launch retries the migration.
       setLoadError(
         error instanceof Error
           ? `Local store could not initialize: ${error.message}`
@@ -122,9 +135,6 @@ function AppContent() {
       );
     });
 
-    // Wire the production notification backend. The web and test
-    // environments keep the no-op default; iOS and Android get the
-    // expo-notifications adapter.
     void makeExpoBackend()
       .then(__setSchedulingBackend)
       .catch((error) => {
@@ -139,32 +149,51 @@ function AppContent() {
     ])
       .then(([savedPets, savedLogs, savedOnboardingFlag]) => {
         try {
-          if (savedPets) setPets(JSON.parse(savedPets) as Pet[]);
-          if (savedLogs) setLogs(JSON.parse(savedLogs) as DoseLog[]);
-          if (savedPets) {
+          const parsedPets = savedPets
+            ? (JSON.parse(savedPets) as Pet[])
+            : [];
+          const parsedLogs = savedLogs
+            ? (JSON.parse(savedLogs) as DoseLog[])
+            : [];
+
+          if (Array.isArray(parsedPets) && parsedPets.length > 0) {
+            setPets(parsedPets);
+            setLogs(Array.isArray(parsedLogs) ? parsedLogs : []);
             setOnboardingDone(true);
-          } else if (savedOnboardingFlag === "skipped") {
-            // User already chose "Continue with demo data"; we stored
-            // DEMO_PETS already, so this branch is the demo-data path.
-            setOnboardingDone(true);
-          } else if (savedOnboardingFlag === "completed") {
-            // Edge case: onboarding marked complete but no pets saved
-            // (storage cleared). Treat as not-done so the user can
-            // re-onboard.
-            setOnboardingDone(false);
-          } else {
-            setOnboardingDone(false);
+            return;
           }
+
+          if (ALLOW_DEMO && savedOnboardingFlag === "skipped") {
+            setPets(DEMO_PETS);
+            setLogs(makeSeedLogs());
+            setOnboardingDone(true);
+            return;
+          }
+
+          // No pets — send to onboarding (even if a stale "completed" flag exists).
+          setPets([]);
+          setLogs([]);
+          setOnboardingDone(false);
         } catch (parseError) {
-          // Corrupt storage is recoverable: fall back to demo
-          // data and keep the user moving. The next write
-          // overwrites the bad blob.
+          setPets([]);
+          setLogs([]);
+          setOnboardingDone(false);
           setLoadError(
             parseError instanceof Error
               ? parseError.message
-              : "Storage was unreadable; loaded demo data instead.",
+              : "Storage was unreadable. Starting fresh.",
           );
         }
+      })
+      .catch((error) => {
+        setPets([]);
+        setLogs([]);
+        setOnboardingDone(false);
+        setLoadError(
+          error instanceof Error
+            ? error.message
+            : "Could not read local storage.",
+        );
       })
       .finally(() => setLoaded(true));
   }, []);
@@ -239,6 +268,7 @@ function AppContent() {
     () => buildScheduleFromEngine(pets, logs, selectedDate),
     [logs, pets, selectedDate],
   );
+  const entitlement = useMemo(() => defaultFreeEntitlement(), []);
 
   const [pendingConflict, setPendingConflict] = useState<{
     dose: ScheduledDose;
@@ -296,9 +326,9 @@ function AppContent() {
               },
         ),
       );
-      setToast(`${dose.medication.name} logged for ${dose.pet.name}`);
+      setToast(`You logged ${dose.medication.name} for ${dose.pet.name}`);
     } else {
-      setToast(`Dose marked as skipped`);
+      setToast(`You skipped ${dose.medication.name}`);
     }
   };
 
@@ -341,6 +371,15 @@ function AppContent() {
   };
 
   const addMedication = (petId: string, medication: Medication) => {
+    const activeMedCount = pets.reduce(
+      (sum, pet) => sum + pet.medications.length,
+      0,
+    );
+    if (!canAddMedication(entitlement, activeMedCount)) {
+      setToast("Free plan includes up to 2 active medications. Plus is coming soon.");
+      setScreen("paywall");
+      return;
+    }
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setPets((current) => addMedicationToPets(current, petId, medication));
     setScreen("today");
@@ -386,6 +425,11 @@ function AppContent() {
   };
 
   const addPet = (pet: Pet) => {
+    if (!canAddPet(entitlement, pets.length)) {
+      setToast("Free plan includes 1 pet. Plus is coming soon.");
+      setScreen("paywall");
+      return;
+    }
     setPets((current) => [...current, pet]);
     setScreen("pets");
     setToast(`${pet.name} added to your family`);
@@ -468,18 +512,20 @@ function AppContent() {
         },
       ],
     };
-    setPets((current) => [...current, newPet]);
+    setPets([newPet]);
     setLogs([]);
     void AsyncStorage.setItem(ONBOARDING_KEY, "completed");
     setOnboardingDone(true);
-    setToast(`${pet.name} is ready`);
+    setToast(`${pet.name} is ready on this phone`);
   };
 
   const skipOnboarding = () => {
+    if (!ALLOW_DEMO) return;
     setPets(DEMO_PETS);
     setLogs(makeSeedLogs());
     void AsyncStorage.setItem(ONBOARDING_KEY, "skipped");
     setOnboardingDone(true);
+    setToast("Exploring sample household (Milo & Luna)");
   };
 
   // Wait for hydration to decide which surface to render.
@@ -493,8 +539,10 @@ function AppContent() {
         <StatusBar style="dark" />
         <OnboardingFlow
           appIcon={require("./assets/pawpair-icon.png")}
+          companionImage={require("./assets/pawpair-companion-buddy.png")}
+          heroScene={require("./assets/pawpair-hero-clean.png")}
           onComplete={finishOnboarding}
-          onSkip={skipOnboarding}
+          onSkip={ALLOW_DEMO ? skipOnboarding : undefined}
         />
       </View>
     );
@@ -502,15 +550,22 @@ function AppContent() {
 
   return (
     <View style={styles.app}>
-      <StatusBar style={screen === "today" ? "light" : "dark"} />
+      <StatusBar style="dark" />
       <AutoOfflineBanner />
       {screen === "today" && (
         <TodayScreen
           appIcon={require("./assets/pawpair-icon.png")}
+          companionImage={require("./assets/pawpair-companion-buddy.png")}
           heroPet={require("./assets/pawpair-milo.png")}
+          heroScene={require("./assets/pawpair-hero-clean.png")}
           onAdd={() => setScreen("add")}
           onDateChange={setSelectedDate}
           onLog={logDose}
+          onMenu={() => setScreen("settings")}
+          petImages={{
+            milo: require("./assets/pawpair-milo.png"),
+            luna: require("./assets/pawpair-luna.png"),
+          }}
           schedule={schedule}
           selectedDate={selectedDate}
           topInset={insets.top}
@@ -522,8 +577,28 @@ function AppContent() {
             milo: require("./assets/pawpair-milo.png"),
             luna: require("./assets/pawpair-luna.png"),
           }}
-          onAdd={() => setScreen("add")}
-          onAddPet={() => setScreen("add-pet")}
+          onAdd={() => {
+            const activeMedCount = pets.reduce(
+              (sum, pet) => sum + pet.medications.length,
+              0,
+            );
+            if (!canAddMedication(entitlement, activeMedCount)) {
+              setToast(
+                "Free plan includes up to 2 active medications. Plus is coming soon.",
+              );
+              setScreen("paywall");
+              return;
+            }
+            setScreen("add");
+          }}
+          onAddPet={() => {
+            if (!canAddPet(entitlement, pets.length)) {
+              setToast("Free plan includes 1 pet. Plus is coming soon.");
+              setScreen("paywall");
+              return;
+            }
+            setScreen("add-pet");
+          }}
           onEditPet={(petId) => {
             setEditingPetOnly({ petId });
             setScreen("edit-pet");
@@ -540,7 +615,14 @@ function AppContent() {
             setMenuMedication({ petId, medicationId });
             setScreen("medication-menu");
           }}
-          onOpenReport={() => setScreen("report")}
+          onOpenReport={() => {
+            if (!canPerform(entitlement, "report")) {
+              setToast("Care reports are part of PawPair Plus — coming soon.");
+              setScreen("paywall");
+              return;
+            }
+            setScreen("report");
+          }}
           pets={pets}
           topInset={insets.top}
         />
@@ -550,7 +632,6 @@ function AppContent() {
       )}
       {screen === "health" && (
         <HealthScreen
-          onOpenHousehold={() => setScreen("household")}
           onOpenPaywall={() => setScreen("paywall")}
           onOpenSettings={() => setScreen("settings")}
         />
@@ -566,8 +647,9 @@ function AppContent() {
               ]);
               setPets([]);
               setLogs([]);
+              setOnboardingDone(false);
               setScreen("today");
-              setToast("Account deleted");
+              setToast("Account deleted — start fresh when you’re ready");
             } catch {
               setToast("Could not delete account");
             }
@@ -584,30 +666,35 @@ function AppContent() {
               2,
             );
             try {
-              // We do not yet integrate expo-file-system; the
-              // payload is logged to the console so the user can
-              // copy it out during development. Stage 12-final
-              // will hand it to expo-print or the system share
-              // sheet.
-              // eslint-disable-next-line no-console
-              console.log("[pawpair] export", payload);
-              setToast(
-                `Exported ${pets.length} pets, ${logs.length} logs to console`,
-              );
+              await Share.share({
+                message: payload,
+                title: "PawPair care export",
+              });
+              setToast("Export ready to share");
             } catch {
               setToast("Could not export data");
             }
           }}
+          onOpenPrivacy={() => setScreen("privacy")}
+          onOpenTerms={() => setScreen("terms")}
+        />
+      )}
+      {screen === "privacy" && (
+        <LegalDocumentScreen
+          body={PRIVACY_POLICY}
+          onClose={() => setScreen("settings")}
+          title="Privacy policy"
+        />
+      )}
+      {screen === "terms" && (
+        <LegalDocumentScreen
+          body={TERMS_OF_SERVICE}
+          onClose={() => setScreen("settings")}
+          title="Terms of service"
         />
       )}
       {screen === "paywall" && (
-        <PaywallScreen
-          onClose={() => setScreen("today")}
-          onSubscribed={() => {
-            setScreen("today");
-            setToast("PawPair Plus unlocked (demo)");
-          }}
-        />
+        <PaywallScreen onClose={() => setScreen("health")} />
       )}
       {screen === "household" && (
         <HouseholdScreen onClose={() => setScreen("today")} />
@@ -757,14 +844,54 @@ function AppContent() {
 
       {screen !== "add" &&
         screen !== "edit-medication" &&
-        screen !== "medication-menu" && (
+        screen !== "medication-menu" &&
+        screen !== "privacy" &&
+        screen !== "terms" &&
+        screen !== "paywall" &&
+        screen !== "household" &&
+        screen !== "report" && (
           <BottomNav
-            active={screen}
+            active={
+              screen === "settings" ||
+              screen === "add-pet" ||
+              screen === "edit-pet" ||
+              screen === "pet-menu"
+                ? "health"
+                : screen
+            }
             bottomInset={insets.bottom}
             onAdd={() => setScreen("add")}
             onChange={setScreen}
           />
         )}
+
+      {pendingConflict && (
+        <View style={styles.conflictWrap}>
+          <View style={styles.conflictCard}>
+            <Text style={styles.conflictTitle}>Already logged</Text>
+            <Text style={styles.conflictBody}>
+              {pendingConflict.existingBy} already logged{" "}
+              {pendingConflict.dose.medication.name} for{" "}
+              {pendingConflict.dose.pet.name}. Discard your tap, or save it as
+              a correction.
+            </Text>
+            <View style={styles.conflictRow}>
+              <Pressable
+                onPress={() => resolveConflict(false)}
+                style={styles.conflictCancel}
+              >
+                <Text style={styles.conflictCancelText}>Discard</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => resolveConflict(true)}
+                style={styles.conflictKeep}
+              >
+                <Text style={styles.conflictKeepText}>Log correction</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      )}
 
       {toast && <Toast bottomInset={insets.bottom} text={toast} />}
     </View>
@@ -778,11 +905,10 @@ export default function App() {
     Manrope_600SemiBold,
     Manrope_700Bold,
     Manrope_800ExtraBold,
+    Nunito_600SemiBold,
+    Nunito_700Bold,
+    Nunito_800ExtraBold,
   });
-
-  if (!fontsLoaded) {
-    return <LoadingScreen icon={require("./assets/pawpair-icon.png")} />;
-  }
 
   // Set the initial app locale. The full i18n switch in
   // stage 10-final will read the device locale via
@@ -792,6 +918,10 @@ export default function App() {
   useEffect(() => {
     setI18nLocale("en");
   }, []);
+
+  if (!fontsLoaded) {
+    return <LoadingScreen icon={require("./assets/pawpair-icon.png")} />;
+  }
 
   return (
     <ThemeProvider>
@@ -805,4 +935,53 @@ export default function App() {
 const styles = StyleSheet.create({
   absolute: { ...StyleSheet.absoluteFill, backgroundColor: "transparent" },
   app: { backgroundColor: colors.background, flex: 1 },
+  conflictBody: {
+    color: colors.muted,
+    fontFamily: "Nunito_600SemiBold",
+    fontSize: 13,
+    lineHeight: 19,
+    marginTop: 8,
+  },
+  conflictCancel: {
+    alignItems: "center",
+    backgroundColor: colors.paper,
+    borderRadius: 999,
+    flex: 1,
+    paddingVertical: 12,
+  },
+  conflictCancelText: {
+    color: colors.ink,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 13,
+  },
+  conflictCard: {
+    backgroundColor: colors.coralSoft,
+    borderRadius: 28,
+    padding: 18,
+  },
+  conflictKeep: {
+    alignItems: "center",
+    backgroundColor: colors.coral,
+    borderRadius: 999,
+    flex: 1,
+    paddingVertical: 12,
+  },
+  conflictKeepText: {
+    color: colors.white,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 13,
+  },
+  conflictRow: { flexDirection: "row", gap: 10, marginTop: 14 },
+  conflictTitle: {
+    color: colors.ink,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 18,
+  },
+  conflictWrap: {
+    bottom: 110,
+    left: 18,
+    position: "absolute",
+    right: 18,
+    zIndex: 40,
+  },
 });

@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { colors } from "../../design";
+import { colors, shadow } from "../../design";
 
 interface DoseActionsSheetProps {
   visible: boolean;
@@ -13,11 +13,7 @@ interface DoseActionsSheetProps {
 }
 
 /**
- * Per docs/AAA-HANDOFF.md §8 the Today timeline supports
- * long-press overflow: notes, reschedule, skip reason, and
- * correction. Each opens a follow-up surface (text input,
- * time picker, reason picker, picker of past event). The
- * host wires those follow-ups; this component is the menu.
+ * Today long-press overflow: notes, reschedule, skip reason, correction.
  */
 export function DoseActionsSheet({
   visible,
@@ -66,40 +62,37 @@ const styles = StyleSheet.create({
   cancelRow: {
     alignItems: "center",
     backgroundColor: colors.paper,
-    borderColor: colors.line,
-    borderRadius: 16,
-    borderWidth: 1,
+    borderRadius: 999,
     marginTop: 8,
     paddingVertical: 14,
   },
   cancelText: {
     color: colors.muted,
-    fontFamily: "Manrope_800ExtraBold",
+    fontFamily: "Nunito_800ExtraBold",
     fontSize: 13,
   },
   dismiss: { flex: 1 },
   row: {
     alignItems: "center",
     backgroundColor: colors.paper,
-    borderColor: colors.line,
-    borderRadius: 14,
-    borderWidth: 1,
+    borderRadius: 22,
     flexDirection: "row",
     gap: 12,
     marginBottom: 8,
     paddingHorizontal: 16,
     paddingVertical: 14,
+    ...shadow.card,
   },
   rowText: {
     color: colors.ink,
-    fontFamily: "Manrope_700Bold",
+    fontFamily: "Nunito_700Bold",
     fontSize: 14,
   },
   sheet: { padding: 18, paddingBottom: 32 },
   sheetTitle: {
-    color: colors.muted,
-    fontFamily: "Manrope_800ExtraBold",
-    fontSize: 10,
+    color: colors.sky,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 11,
     letterSpacing: 1.2,
     marginBottom: 12,
     textAlign: "center",

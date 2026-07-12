@@ -2,7 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { colors } from "../../design";
+import { colors, shadow } from "../../design";
+import { requestPermissionIfNeeded } from "../notifications/permission";
 import type {
   OnboardingMedicationDraft,
   OnboardingPetDraft,
@@ -15,11 +16,7 @@ interface PreviewDoseScreenProps {
 }
 
 /**
- * Stage 4, step 5: preview the next scheduled dose.
- *
- * Per docs/AAA-HANDOFF.md §8: "Preview the next scheduled dose."
- * For v1 this is the earliest of the entered times. Stage 5 will
- * compute this from the recurrence engine.
+ * Preview next dose + ask for reminder permission before Today.
  */
 export function PreviewDoseScreen({
   pet,
@@ -28,6 +25,15 @@ export function PreviewDoseScreen({
 }: PreviewDoseScreenProps) {
   const insets = useSafeAreaInsets();
   const earliest = [...medication.times].sort()[0] ?? "08:00";
+
+  const finish = async () => {
+    try {
+      await requestPermissionIfNeeded();
+    } catch {
+      // Permission failures should not block finishing onboarding.
+    }
+    onFinish();
+  };
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + 24 }]}>
@@ -38,9 +44,8 @@ export function PreviewDoseScreen({
           {pet.name} is ready for {medication.name}.
         </Text>
         <Text style={styles.copy}>
-          At {earliest} PawPair will surface a calm, one-tap
-          confirmation. You can also open the app and log it from
-          the Today screen.
+          At {earliest} you can confirm the dose on Today with one tap. If you
+          allow notifications, PawPair can also remind you on this device.
         </Text>
       </View>
 
@@ -61,9 +66,12 @@ export function PreviewDoseScreen({
       </View>
 
       <View style={styles.cta}>
-        <Pressable onPress={onFinish} style={styles.primaryButton}>
-          <Text style={styles.primaryButtonText}>Open Today</Text>
+        <Pressable onPress={() => void finish()} style={styles.primaryButton}>
+          <Text style={styles.primaryButtonText}>Enable reminders & open Today</Text>
           <Ionicons color={colors.white} name="arrow-forward" size={18} />
+        </Pressable>
+        <Pressable onPress={onFinish} style={styles.secondaryButton}>
+          <Text style={styles.secondaryText}>Skip reminders for now</Text>
         </Pressable>
       </View>
     </View>
@@ -71,11 +79,15 @@ export function PreviewDoseScreen({
 }
 
 const styles = StyleSheet.create({
-  center: { alignItems: "center", marginTop: 32, paddingHorizontal: 24 },
-  container: { backgroundColor: colors.background, flex: 1, paddingHorizontal: 24 },
+  center: { alignItems: "center", marginTop: 32, paddingHorizontal: 8 },
+  container: {
+    backgroundColor: colors.background,
+    flex: 1,
+    paddingHorizontal: 24,
+  },
   copy: {
     color: colors.muted,
-    fontFamily: "Manrope_400Regular",
+    fontFamily: "Nunito_600SemiBold",
     fontSize: 14,
     lineHeight: 22,
     marginTop: 12,
@@ -90,19 +102,18 @@ const styles = StyleSheet.create({
     width: 12,
   },
   eyebrow: {
-    color: colors.muted,
-    fontFamily: "Manrope_800ExtraBold",
+    color: colors.sky,
+    fontFamily: "Nunito_800ExtraBold",
     fontSize: 10,
     letterSpacing: 1.6,
   },
   flex: { flex: 1 },
   previewCard: {
     backgroundColor: colors.paper,
-    borderColor: colors.line,
-    borderRadius: 20,
-    marginHorizontal: 16,
-    marginTop: 32,
+    borderRadius: 24,
+    marginTop: 28,
     padding: 16,
+    ...shadow.card,
   },
   previewCheck: {
     alignItems: "center",
@@ -113,52 +124,61 @@ const styles = StyleSheet.create({
     width: 28,
   },
   previewDivider: {
-    backgroundColor: colors.line,
+    backgroundColor: colors.skySoft,
     height: 36,
     marginHorizontal: 12,
-    width: 1,
+    width: 2,
   },
   previewMeta: {
     color: colors.muted,
-    fontFamily: "Manrope_600SemiBold",
-    fontSize: 11,
+    fontFamily: "Nunito_600SemiBold",
+    fontSize: 12,
     marginTop: 2,
   },
   previewName: {
     color: colors.ink,
-    fontFamily: "Manrope_800ExtraBold",
-    fontSize: 14,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 15,
   },
-  previewRow: {
-    alignItems: "center",
-    flexDirection: "row",
-  },
+  previewRow: { alignItems: "center", flexDirection: "row" },
   previewTime: {
-    color: colors.ink,
-    fontFamily: "Manrope_800ExtraBold",
-    fontSize: 18,
+    color: colors.sky,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 16,
   },
   primaryButton: {
     alignItems: "center",
     backgroundColor: colors.coral,
-    borderRadius: 18,
+    borderRadius: 999,
     flexDirection: "row",
-    gap: 8,
+    gap: 10,
     justifyContent: "center",
     minHeight: 56,
     paddingHorizontal: 18,
+    ...shadow.fab,
   },
   primaryButtonText: {
     color: colors.white,
-    fontFamily: "Manrope_800ExtraBold",
+    fontFamily: "Nunito_800ExtraBold",
     fontSize: 14,
+  },
+  secondaryButton: {
+    alignItems: "center",
+    marginTop: 12,
+    minHeight: 44,
+    paddingVertical: 10,
+  },
+  secondaryText: {
+    color: colors.muted,
+    fontFamily: "Nunito_700Bold",
+    fontSize: 13,
   },
   title: {
     color: colors.ink,
-    fontFamily: "Fraunces_700Bold",
-    fontSize: 28,
-    lineHeight: 34,
-    marginTop: 12,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 26,
+    letterSpacing: -0.4,
+    marginTop: 8,
     textAlign: "center",
   },
 });

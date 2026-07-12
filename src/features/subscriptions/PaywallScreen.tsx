@@ -1,7 +1,9 @@
+/**
+ * Local-first launch paywall — no fake purchases.
+ * Explains free limits and that Plus is coming later.
+ */
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
 import {
-  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -11,56 +13,15 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AppHeader } from "../../components/AppHeader";
-import { colors } from "../../design";
-import { PLUS_BENEFITS } from "./types";
-import { purchasePlus, restorePurchases } from "./storekit";
+import { colors, shadow } from "../../design";
+import { FREE_TIER_LIMITS, PLUS_BENEFITS } from "./types";
 
 interface PaywallScreenProps {
   onClose: () => void;
-  onSubscribed: () => void;
 }
 
-/**
- * docs/AAA-HANDOFF.md §9 paywall requirements:
- * - Clear terms and renewal copy
- * - Restore purchases must be visible
- * - Never block access to previously entered health records
- * - Test StoreKit sandbox purchase, restore, expiration, billing
- *   retry, refund, offline entitlement cache, Family Sharing
- *
- * The screen surfaces the benefits list, a Subscribe CTA, and
- * a Restore button at the bottom. The text is intentionally
- * plain and avoids urgency language.
- */
-export function PaywallScreen({ onClose, onSubscribed }: PaywallScreenProps) {
+export function PaywallScreen({ onClose }: PaywallScreenProps) {
   const insets = useSafeAreaInsets();
-  const [working, setWorking] = useState(false);
-
-  const onSubscribe = async () => {
-    setWorking(true);
-    const result = await purchasePlus();
-    setWorking(false);
-    if (result.ok) onSubscribed();
-    else
-      Alert.alert(
-        "Purchase did not complete",
-        result.reason === "user-cancelled"
-          ? "No charge was made."
-          : "Please try again or contact support@rmalk.co.il.",
-      );
-  };
-
-  const onRestore = async () => {
-    setWorking(true);
-    const result = await restorePurchases();
-    setWorking(false);
-    if (result.ok) onSubscribed();
-    else
-      Alert.alert(
-        "Restore did not find a purchase",
-        "We could not find a PawPair Plus purchase on this Apple ID.",
-      );
-  };
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + 14 }]}>
@@ -68,54 +29,50 @@ export function PaywallScreen({ onClose, onSubscribed }: PaywallScreenProps) {
         actionIcon="close-outline"
         eyebrow="PAWPAIR PLUS"
         onAction={onClose}
-        title="Subscription"
+        title="Coming soon"
       />
       <ScrollView
         contentContainerStyle={[
           styles.content,
-          { paddingBottom: 100 + insets.bottom },
+          { paddingBottom: 40 + insets.bottom },
         ]}
       >
         <Text style={styles.title}>
-          Care works better together.
+          Your free plan is ready for launch.
         </Text>
-        <Text style={styles.body}>
-          PawPair Plus unlocks caregiver sync, reports, and
-          full history. The core dose confirmation stays free
-          forever.
+        <Text style={styles.copy}>
+          This release is local-first on one device. You can track{" "}
+          {FREE_TIER_LIMITS.maxPets} pet and up to{" "}
+          {FREE_TIER_LIMITS.maxActiveMedications} active medications, with dose
+          confirmation that stays trustworthy offline.
         </Text>
-        <View style={styles.benefits}>
-          {PLUS_BENEFITS.map((b) => (
-            <View key={b.title} style={styles.benefitRow}>
-              <Ionicons color={colors.sage} name="checkmark" size={16} />
-              <View style={styles.benefitText}>
-                <Text style={styles.benefitTitle}>{b.title}</Text>
-                <Text style={styles.benefitBody}>{b.body}</Text>
-              </View>
-            </View>
+
+        <View style={styles.card}>
+          <Text style={styles.cardKicker}>INCLUDED NOW</Text>
+          <Text style={styles.cardLine}>• Today dose confirmation</Text>
+          <Text style={styles.cardLine}>• Local reminders (when allowed)</Text>
+          <Text style={styles.cardLine}>• Export and delete on this device</Text>
+        </View>
+
+        <View style={styles.card}>
+          <Text style={styles.cardKicker}>COMING WITH PLUS</Text>
+          {PLUS_BENEFITS.slice(0, 4).map((benefit) => (
+            <Text key={benefit.title} style={styles.cardLine}>
+              • {benefit.title}
+            </Text>
           ))}
         </View>
-        <Text style={styles.terms}>
-          Subscription auto-renews monthly until cancelled in
-          Settings. Cancel any time. Your previously entered
-          records remain available even if the subscription
-          expires.
-        </Text>
-        <Pressable
-          disabled={working}
-          onPress={onSubscribe}
-          style={[styles.cta, working && styles.ctaDisabled]}
-        >
-          <Text style={styles.ctaText}>
-            {working ? "Working…" : "Subscribe — ₪29.90 / month"}
+
+        <View style={styles.notice}>
+          <Ionicons color={colors.sky} name="information-circle" size={20} />
+          <Text style={styles.noticeText}>
+            Purchases are not available yet. We will not charge you or unlock a
+            demo subscription.
           </Text>
-        </Pressable>
-        <Pressable
-          disabled={working}
-          onPress={onRestore}
-          style={styles.restore}
-        >
-          <Text style={styles.restoreText}>Restore purchases</Text>
+        </View>
+
+        <Pressable onPress={onClose} style={styles.primaryButton}>
+          <Text style={styles.primaryButtonText}>Back to care</Text>
         </Pressable>
       </ScrollView>
     </View>
@@ -123,73 +80,69 @@ export function PaywallScreen({ onClose, onSubscribed }: PaywallScreenProps) {
 }
 
 const styles = StyleSheet.create({
-  benefitBody: {
-    color: colors.muted,
-    fontFamily: "Manrope_400Regular",
-    fontSize: 12,
-    lineHeight: 18,
-    marginTop: 2,
-  },
-  benefitRow: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 10,
+  card: {
+    backgroundColor: colors.paper,
+    borderRadius: 24,
     marginBottom: 14,
+    padding: 18,
+    ...shadow.card,
   },
-  benefitText: { flex: 1 },
-  benefitTitle: {
+  cardKicker: {
+    color: colors.sky,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 10,
+    letterSpacing: 1.2,
+    marginBottom: 10,
+  },
+  cardLine: {
     color: colors.ink,
-    fontFamily: "Manrope_700Bold",
-    fontSize: 13,
-  },
-  benefits: { marginTop: 12 },
-  body: {
-    color: colors.muted,
-    fontFamily: "Manrope_400Regular",
-    fontSize: 13,
-    lineHeight: 20,
-    marginTop: 12,
+    fontFamily: "Nunito_600SemiBold",
+    fontSize: 14,
+    lineHeight: 22,
   },
   container: { backgroundColor: colors.background, flex: 1 },
   content: { paddingHorizontal: 18, paddingTop: 8 },
-  cta: {
+  copy: {
+    color: colors.muted,
+    fontFamily: "Nunito_600SemiBold",
+    fontSize: 14,
+    lineHeight: 22,
+    marginBottom: 18,
+    marginTop: 8,
+  },
+  notice: {
+    alignItems: "flex-start",
+    backgroundColor: colors.skySoft,
+    borderRadius: 20,
+    flexDirection: "row",
+    gap: 10,
+    marginBottom: 18,
+    padding: 14,
+  },
+  noticeText: {
+    color: colors.ink,
+    flex: 1,
+    fontFamily: "Nunito_600SemiBold",
+    fontSize: 13,
+    lineHeight: 19,
+  },
+  primaryButton: {
     alignItems: "center",
     backgroundColor: colors.coral,
-    borderRadius: 18,
-    marginTop: 24,
-    minHeight: 56,
-    paddingHorizontal: 20,
-    paddingVertical: 14,
+    borderRadius: 999,
+    minHeight: 54,
+    justifyContent: "center",
+    ...shadow.fab,
   },
-  ctaDisabled: { opacity: 0.6 },
-  ctaText: {
+  primaryButtonText: {
     color: colors.white,
-    fontFamily: "Manrope_800ExtraBold",
-    fontSize: 14,
-  },
-  restore: {
-    alignItems: "center",
-    marginTop: 8,
-    minHeight: 44,
-    paddingVertical: 10,
-  },
-  restoreText: {
-    color: colors.coral,
-    fontFamily: "Manrope_800ExtraBold",
-    fontSize: 13,
-  },
-  terms: {
-    color: colors.muted,
-    fontFamily: "Manrope_400Regular",
-    fontSize: 11,
-    lineHeight: 16,
-    marginTop: 16,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 15,
   },
   title: {
     color: colors.ink,
-    fontFamily: "Fraunces_700Bold",
-    fontSize: 28,
-    lineHeight: 34,
-    marginTop: 12,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 26,
+    letterSpacing: -0.4,
   },
 });

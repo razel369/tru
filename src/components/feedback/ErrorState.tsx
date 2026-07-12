@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { colors } from "../../design";
+import { colors, shadow } from "../../design";
 
 interface ErrorStateProps {
   title: string;
@@ -10,12 +10,7 @@ interface ErrorStateProps {
   retryLabel?: string;
 }
 
-/**
- * Generic error state. Used by screens that fail to load
- * (network, permission denial, missing data). The retry action
- * is optional — for non-recoverable states we render the
- * message without a button.
- */
+/** Soft clay error state for load failures. */
 export function ErrorState({
   title,
   body,
@@ -39,7 +34,7 @@ export function ErrorState({
 const styles = StyleSheet.create({
   body: {
     color: colors.muted,
-    fontFamily: "Manrope_400Regular",
+    fontFamily: "Nunito_600SemiBold",
     fontSize: 13,
     lineHeight: 20,
     marginTop: 8,
@@ -48,28 +43,30 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: "center",
+    paddingBottom: 32,
     paddingHorizontal: 24,
     paddingTop: 32,
-    paddingBottom: 32,
   },
   cta: {
     alignItems: "center",
     backgroundColor: colors.coral,
-    borderRadius: 16,
+    borderRadius: 999,
     marginTop: 20,
-    minHeight: 44,
-    paddingHorizontal: 18,
-    paddingVertical: 10,
+    minHeight: 48,
+    paddingHorizontal: 22,
+    paddingVertical: 12,
+    ...shadow.fab,
   },
   ctaText: {
     color: colors.white,
-    fontFamily: "Manrope_800ExtraBold",
+    fontFamily: "Nunito_800ExtraBold",
     fontSize: 13,
   },
   title: {
     color: colors.ink,
-    fontFamily: "Fraunces_700Bold",
+    fontFamily: "Nunito_800ExtraBold",
     fontSize: 20,
+    letterSpacing: -0.3,
     marginTop: 12,
   },
 });

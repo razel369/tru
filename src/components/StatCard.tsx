@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, View } from "react-native";
 
-import { colors } from "../design";
+import { colors, shadow } from "../design";
 
 interface StatCardProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -9,15 +9,12 @@ interface StatCardProps {
   value: string;
 }
 
-/**
- * Compact metric card used on the Insights screen.
- * Extracted verbatim from App.tsx in stage 2.
- */
+/** Compact clay metric card for Insights. */
 export function StatCard({ icon, label, value }: StatCardProps) {
   return (
     <View style={styles.statCard}>
       <View style={styles.statIcon}>
-        <Ionicons name={icon} size={17} color={colors.sage} />
+        <Ionicons color={colors.sky} name={icon} size={17} />
       </View>
       <Text style={styles.statValue}>{value}</Text>
       <Text style={styles.statLabel}>{label}</Text>
@@ -29,30 +26,29 @@ const styles = StyleSheet.create({
   statCard: {
     alignItems: "center",
     backgroundColor: colors.paper,
-    borderColor: colors.line,
-    borderRadius: 22,
-    borderWidth: 1,
+    borderRadius: 26,
     flex: 1,
     paddingVertical: 16,
+    ...shadow.card,
   },
   statIcon: {
     alignItems: "center",
-    backgroundColor: colors.sageSoft,
-    borderRadius: 12,
-    height: 32,
+    backgroundColor: colors.skySoft,
+    borderRadius: 14,
+    height: 34,
     justifyContent: "center",
     marginBottom: 6,
-    width: 32,
+    width: 34,
   },
   statLabel: {
     color: colors.muted,
-    fontFamily: "Manrope_600SemiBold",
-    fontSize: 9,
+    fontFamily: "Nunito_600SemiBold",
+    fontSize: 10,
     marginTop: 2,
   },
   statValue: {
     color: colors.ink,
-    fontFamily: "Manrope_800ExtraBold",
-    fontSize: 20,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 22,
   },
 });

@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { colors } from "../../design";
+import { colors, shadow } from "../../design";
 import { formatTime } from "../../schedule";
 import type { Medication } from "../../types";
 
@@ -11,13 +11,7 @@ interface MedicationCardProps {
   onLongPress?: () => void;
 }
 
-/**
- * A medication row inside the active plan list on the Pets screen.
- * Extracted verbatim from App.tsx in stage 2. The optional
- * onPress / onLongPress props let the host wire a single tap
- * to edit and a long press to the action menu without changing
- * the visual.
- */
+/** Clay medication row for the Pets active plan. */
 export function MedicationCard({
   medication,
   onPress,
@@ -51,24 +45,21 @@ export function MedicationCard({
             ]}
           />
           <Text
-            style={[
-              styles.stockText,
-              lowStock && { color: colors.coral },
-            ]}
+            style={[styles.stockText, lowStock && { color: colors.coral }]}
           >
             {medication.stock} {medication.stockUnit} left
             {lowStock ? " · Refill soon" : ""}
           </Text>
         </View>
       </View>
-      <Ionicons name="chevron-forward" size={19} color={colors.muted} />
+      <Ionicons color={colors.muted} name="chevron-forward" size={19} />
     </View>
   );
   if (onPress === undefined && onLongPress === undefined) return content;
   return (
     <Pressable
-      onPress={onPress}
       onLongPress={onLongPress}
+      onPress={onPress}
       style={({ pressed }) => pressed && styles.pressed}
     >
       {content}
@@ -78,41 +69,45 @@ export function MedicationCard({
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  pressed: { opacity: 0.85 },
   medicationCard: {
     alignItems: "center",
     backgroundColor: colors.paper,
-    borderColor: colors.line,
-    borderRadius: 19,
-    borderWidth: 1,
+    borderRadius: 26,
     flexDirection: "row",
     gap: 12,
-    marginBottom: 10,
+    marginBottom: 12,
     padding: 15,
+    ...shadow.card,
   },
   medicationIconLarge: {
     alignItems: "center",
-    borderRadius: 15,
+    borderRadius: 18,
     height: 50,
     justifyContent: "center",
     width: 50,
   },
   medicationMeta: {
     color: colors.muted,
-    fontFamily: "Manrope_400Regular",
-    fontSize: 10,
+    fontFamily: "Nunito_600SemiBold",
+    fontSize: 11,
     marginTop: 4,
   },
   medicationTitle: {
     color: colors.ink,
-    fontFamily: "Manrope_800ExtraBold",
-    fontSize: 14,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 15,
   },
+  pressed: { opacity: 0.85 },
   stockDot: { borderRadius: 3, height: 6, width: 6 },
-  stockRow: { alignItems: "center", flexDirection: "row", gap: 6, marginTop: 6 },
+  stockRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 6,
+    marginTop: 6,
+  },
   stockText: {
     color: colors.muted,
-    fontFamily: "Manrope_600SemiBold",
-    fontSize: 10,
+    fontFamily: "Nunito_700Bold",
+    fontSize: 11,
   },
 });

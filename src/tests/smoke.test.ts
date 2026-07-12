@@ -11,7 +11,8 @@ import { describe, expect, it } from "vitest";
 
 import { DEMO_PETS, buildSchedule, createDoseLog } from "../schedule";
 import { buildScheduleFromEngine } from "../features/schedules/adapter";
-import { canAddMedication, canAddPet } from "../features/subscriptions/entitlements";
+import { canAddMedication, canAddPet, defaultFreeEntitlement } from "../features/subscriptions/entitlements";
+import type { SubscriptionEntitlement } from "../features/subscriptions/types";
 import type { DoseLog, Pet } from "../types";
 
 describe("smoke: end-to-end app logic", () => {
@@ -43,7 +44,7 @@ describe("smoke: end-to-end app logic", () => {
   });
 
   it("the free tier blocks a third pet and a third medication", () => {
-    const free = { tier: "free" as const };
+    const free = defaultFreeEntitlement();
     expect(canAddPet(free, 0)).toBe(true);
     expect(canAddPet(free, 1)).toBe(false);
     expect(canAddMedication(free, 0)).toBe(true);
@@ -51,7 +52,12 @@ describe("smoke: end-to-end app logic", () => {
   });
 
   it("Plus lifts the cap", () => {
-    const plus = { tier: "plus" as const };
+    const plus: SubscriptionEntitlement = {
+      tier: "plus",
+      productId: "pawpair.plus",
+      expiresAtUtc: null,
+      hasBeenPlus: true,
+    };
     expect(canAddPet(plus, 5)).toBe(true);
     expect(canAddMedication(plus, 17)).toBe(true);
   });

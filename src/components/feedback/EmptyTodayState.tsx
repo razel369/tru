@@ -1,33 +1,58 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 
-import { colors } from "../../design";
+import { assets, colors, shadow } from "../../design";
+import { AmbientStickers } from "../AmbientStickers";
+import { PressScale } from "../PressScale";
 
 interface EmptyTodayStateProps {
   onAddMedication: () => void;
 }
 
-/**
- * Per docs/AAA-HANDOFF.md §8: "Empty-day state with useful next
- * action." Shown when the day has no scheduled doses. The CTA
- * is the same color as the FAB so the action is discoverable.
- */
+/** Empty day — Buddy peeks in; clear next action. */
 export function EmptyTodayState({ onAddMedication }: EmptyTodayStateProps) {
   return (
     <View style={styles.container}>
-      <View style={styles.iconWrap}>
-        <Ionicons color={colors.sage} name="checkmark-circle" size={48} />
-      </View>
-      <Text style={styles.title}>All done for today.</Text>
+      <AmbientStickers
+        items={[
+          {
+            source: assets.stickers.sun,
+            size: 44,
+            top: -18,
+            right: -8,
+            rotate: "12deg",
+            delay: 80,
+          },
+          {
+            source: assets.stickers.paw,
+            size: 36,
+            top: 8,
+            left: -14,
+            rotate: "-14deg",
+            delay: 160,
+            amplitude: 5,
+          },
+        ]}
+      />
+      <Image
+        accessibilityLabel="Buddy peeking"
+        resizeMode="contain"
+        source={assets.emptyBuddyPeek}
+        style={styles.buddy}
+      />
+      <Text style={styles.title}>No doses today</Text>
       <Text style={styles.body}>
-        Every dose is logged. If you have a new medication, you
-        can add it now and it will appear on the next reminder
+        Add a medication to your pet’s plan and it will show up here when it’s
         time.
       </Text>
-      <Pressable onPress={onAddMedication} style={styles.cta}>
+      <PressScale
+        onPress={onAddMedication}
+        scaleTo={0.96}
+        style={styles.cta}
+      >
         <Ionicons color={colors.white} name="add" size={18} />
         <Text style={styles.ctaText}>Add medication</Text>
-      </Pressable>
+      </PressScale>
     </View>
   );
 }
@@ -35,47 +60,47 @@ export function EmptyTodayState({ onAddMedication }: EmptyTodayStateProps) {
 const styles = StyleSheet.create({
   body: {
     color: colors.muted,
-    fontFamily: "Manrope_400Regular",
+    fontFamily: "Nunito_600SemiBold",
     fontSize: 13,
-    lineHeight: 20,
+    lineHeight: 19,
     marginTop: 8,
-    paddingHorizontal: 32,
     textAlign: "center",
+  },
+  buddy: {
+    height: 112,
+    marginTop: -4,
+    width: 112,
   },
   container: {
     alignItems: "center",
-    paddingHorizontal: 32,
-    paddingTop: 24,
-    paddingBottom: 32,
+    backgroundColor: "rgba(255,252,247,0.97)",
+    borderRadius: 28,
+    overflow: "visible",
+    paddingHorizontal: 22,
+    paddingVertical: 20,
+    ...shadow.card,
   },
   cta: {
     alignItems: "center",
     backgroundColor: colors.coral,
-    borderRadius: 18,
+    borderRadius: 999,
     flexDirection: "row",
     gap: 8,
     justifyContent: "center",
-    marginTop: 20,
-    minHeight: 48,
-    paddingHorizontal: 20,
+    marginTop: 16,
+    minHeight: 52,
+    paddingHorizontal: 24,
+    ...shadow.fab,
   },
   ctaText: {
     color: colors.white,
-    fontFamily: "Manrope_800ExtraBold",
-    fontSize: 13,
-  },
-  iconWrap: {
-    alignItems: "center",
-    backgroundColor: colors.sageSoft,
-    borderRadius: 36,
-    height: 72,
-    justifyContent: "center",
-    width: 72,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 15,
   },
   title: {
     color: colors.ink,
-    fontFamily: "Fraunces_700Bold",
-    fontSize: 22,
-    marginTop: 14,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 20,
+    marginTop: 4,
   },
 });

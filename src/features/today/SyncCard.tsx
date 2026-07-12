@@ -1,15 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, View } from "react-native";
 
-import { colors } from "../../design";
+import { colors, shadow } from "../../design";
 
 /**
- * Two-caregiver sync illustration row shown under the Today timeline.
- * Extracted verbatim from App.tsx in stage 2.
- *
- * Note: this is presentational-only at the prototype stage. The "Alex can
- * see every dose" copy anticipates the household sync model described in
- * docs/AAA-HANDOFF.md §5 but does not perform any sync by itself.
+ * Soft clay sync strip under Today's dose stickers.
  */
 export function SyncCard() {
   return (
@@ -22,7 +17,7 @@ export function SyncCard() {
           <Text style={styles.personText}>A</Text>
         </View>
         <View style={styles.syncBadge}>
-          <Ionicons name="sync" size={13} color={colors.sage} />
+          <Ionicons color={colors.sage} name="heart" size={12} />
         </View>
       </View>
       <View style={styles.flex}>
@@ -31,7 +26,7 @@ export function SyncCard() {
           Alex can see every dose you log, instantly.
         </Text>
       </View>
-      <Ionicons name="chevron-forward" size={20} color={colors.muted} />
+      <Ionicons color={colors.muted} name="chevron-forward" size={20} />
     </View>
   );
 }
@@ -49,8 +44,12 @@ const styles = StyleSheet.create({
     width: 34,
   },
   personBubbleFirst: { backgroundColor: colors.coral, left: 2 },
-  personBubbleSecond: { backgroundColor: colors.sage, left: 26 },
-  personText: { color: colors.white, fontSize: 11, fontWeight: "900" },
+  personBubbleSecond: { backgroundColor: colors.sky, left: 26 },
+  personText: {
+    color: colors.white,
+    fontFamily: "Manrope_800ExtraBold",
+    fontSize: 11,
+  },
   syncBadge: {
     alignItems: "center",
     backgroundColor: colors.paper,
@@ -65,13 +64,12 @@ const styles = StyleSheet.create({
   syncCard: {
     alignItems: "center",
     backgroundColor: colors.paper,
-    borderColor: colors.line,
-    borderRadius: 22,
-    borderWidth: 1,
+    borderRadius: 24,
     flexDirection: "row",
     gap: 14,
-    marginTop: 12,
+    marginTop: 14,
     padding: 16,
+    ...shadow.card,
   },
   syncCopy: {
     color: colors.muted,

@@ -1,69 +1,94 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 
-import { colors } from "../design";
+import { assets, colors, shadow } from "../design";
+import { PressScale } from "./PressScale";
 
 interface AppHeaderProps {
   eyebrow: string;
   title: string;
   actionIcon?: keyof typeof Ionicons.glyphMap;
   onAction?: () => void;
+  /** Soft clay accent beside the title. */
+  accent?: "sun" | "paw" | "plant" | "heart" | "pill";
 }
 
 /**
- * Section header with eyebrow + Fraunces title + optional action button.
- * Used at the top of Pets, Insights, and other secondary screens.
- * Extracted verbatim from App.tsx in stage 2.
+ * Clay section header — Nunito wordmark energy for secondary screens.
  */
 export function AppHeader({
   eyebrow,
   title,
   actionIcon,
   onAction,
+  accent = "paw",
 }: AppHeaderProps) {
+  const accentSource = assets.stickers[accent];
+
   return (
     <View style={styles.appHeader}>
       <View style={styles.flex}>
-        <Text style={styles.sectionKicker}>{eyebrow}</Text>
+        <View style={styles.kickerRow}>
+          <Text style={styles.sectionKicker}>{eyebrow}</Text>
+          <Image
+            accessibilityIgnoresInvertColors
+            resizeMode="contain"
+            source={accentSource}
+            style={styles.accent}
+          />
+        </View>
         <Text style={styles.pageTitle}>{title}</Text>
       </View>
-      {actionIcon && (
-        <Pressable onPress={onAction} style={styles.headerAction}>
-          <Ionicons name={actionIcon} size={21} color={colors.ink} />
-        </Pressable>
-      )}
+      {actionIcon ? (
+        <PressScale
+          accessibilityLabel={title + " action"}
+          onPress={onAction}
+          style={styles.headerAction}
+        >
+          <Ionicons color={colors.ink} name={actionIcon} size={21} />
+        </PressScale>
+      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  accent: {
+    height: 22,
+    marginLeft: 4,
+    marginTop: -2,
+    width: 22,
+  },
   appHeader: {
     alignItems: "center",
     flexDirection: "row",
-    marginBottom: 24,
+    marginBottom: 22,
   },
   flex: { flex: 1 },
   headerAction: {
     alignItems: "center",
     backgroundColor: colors.paper,
-    borderColor: colors.line,
-    borderRadius: 15,
-    borderWidth: 1,
-    height: 44,
+    borderRadius: 22,
+    height: 46,
     justifyContent: "center",
-    width: 44,
+    width: 46,
+    ...shadow.subtle,
+  },
+  kickerRow: {
+    alignItems: "center",
+    flexDirection: "row",
   },
   pageTitle: {
     color: colors.ink,
-    fontFamily: "Fraunces_700Bold",
+    fontFamily: "Nunito_800ExtraBold",
     fontSize: 32,
-    letterSpacing: -0.7,
+    letterSpacing: -0.9,
     marginTop: 2,
   },
   sectionKicker: {
-    color: colors.muted,
-    fontFamily: "Manrope_800ExtraBold",
-    fontSize: 9,
-    letterSpacing: 1.4,
+    color: colors.sky,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 10,
+    letterSpacing: 1.5,
   },
 });

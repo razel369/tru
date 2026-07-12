@@ -88,11 +88,13 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: colors.paper,
-    borderColor: colors.line,
-    borderRadius: 20,
-    borderWidth: 1,
+    borderRadius: 24,
     marginVertical: 8,
     padding: 16,
+    shadowColor: "#2A3A4A",
+    shadowOffset: { height: 8, width: 0 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
   },
   divider: {
     backgroundColor: colors.line,
@@ -106,17 +108,15 @@ const styles = StyleSheet.create({
   },
   flex: { flex: 1 },
   label: {
-    color: colors.muted,
+    color: colors.sky,
     fontFamily: "Manrope_800ExtraBold",
     fontSize: 9,
     letterSpacing: 1.4,
   },
   row: { gap: 6 },
   timePill: {
-    backgroundColor: colors.background,
-    borderColor: colors.line,
-    borderRadius: 12,
-    borderWidth: 1,
+    backgroundColor: colors.skySoft,
+    borderRadius: 14,
     paddingHorizontal: 10,
     paddingVertical: 6,
   },
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   times: { flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 6 },
   toggle: {
     alignItems: "center",
-    borderRadius: 14,
+    borderRadius: 999,
     flexDirection: "row",
     gap: 6,
     paddingHorizontal: 14,
@@ -136,9 +136,7 @@ const styles = StyleSheet.create({
   },
   toggleActive: { backgroundColor: colors.coral },
   togglePaused: {
-    backgroundColor: colors.paper,
-    borderColor: colors.coral,
-    borderWidth: 1,
+    backgroundColor: colors.coralSoft,
   },
   toggleText: {
     fontFamily: "Manrope_800ExtraBold",

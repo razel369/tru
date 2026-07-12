@@ -1,9 +1,17 @@
 import { Ionicons } from "@expo/vector-icons";
-import { BlurView } from "expo-blur";
-import { LinearGradient } from "expo-linear-gradient";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useEffect, useRef } from "react";
+import {
+  Animated,
+  Image,
+  type ImageSourcePropType,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
-import { colors } from "../design";
+import { assets, colors, shadow } from "../design";
+import { usePrefersReducedMotion } from "../features/accessibility/motion";
 
 type Screen =
   | "today"
@@ -23,62 +31,50 @@ interface BottomNavProps {
   active: Screen;
   bottomInset: number;
   onChange: (screen: Screen) => void;
-  onAdd: () => void;
+  onAdd?: () => void;
 }
 
 /**
- * Bottom tab bar with a centered coral FAB. Extracted verbatim
- * from App.tsx in stage 2. The fourth "Profile" item is non-functional
- * per docs/AAA-HANDOFF.md §2 (Profile tab is intentionally non-functional).
+ * Soft floating tab bar — clay stickers peek above the active tab.
  */
 export function BottomNav({
   active,
   bottomInset,
   onChange,
-  onAdd,
 }: BottomNavProps) {
   return (
-    <BlurView
-      intensity={88}
-      style={[
-        styles.bottomNav,
-        { paddingBottom: Math.max(bottomInset, 10) },
-      ]}
-      tint="light"
-    >
-      <NavItem
-        active={active === "today"}
-        icon="home-outline"
-        label="Today"
-        onPress={() => onChange("today")}
-      />
-      <NavItem
-        active={active === "pets"}
-        icon="paw-outline"
-        label="Pets"
-        onPress={() => onChange("pets")}
-      />
-      <Pressable onPress={onAdd} style={styles.navAdd}>
-        <LinearGradient
-          colors={["#F28A70", "#E96D58"]}
-          style={styles.navAddGradient}
-        >
-          <Ionicons name="add" size={27} color={colors.white} />
-        </LinearGradient>
-      </Pressable>
-      <NavItem
-        active={active === "insights"}
-        icon="stats-chart-outline"
-        label="Insights"
-        onPress={() => onChange("insights")}
-      />
-      <NavItem
-        active={active === "health"}
-        icon="notifications-outline"
-        label="Health"
-        onPress={() => onChange("health")}
-      />
-    </BlurView>
+    <View style={[styles.wrap, { paddingBottom: Math.max(bottomInset, 12) }]}>
+      <View style={styles.bottomNav}>
+        <NavItem
+          active={active === "today"}
+          icon="home"
+          label="Today"
+          onPress={() => onChange("today")}
+          sticker={assets.stickers.paw}
+        />
+        <NavItem
+          active={active === "pets"}
+          icon="paw"
+          label="Pets"
+          onPress={() => onChange("pets")}
+          sticker={assets.stickers.bone}
+        />
+        <NavItem
+          active={active === "insights"}
+          icon="stats-chart"
+          label="Insights"
+          onPress={() => onChange("insights")}
+          sticker={assets.stickers.sun}
+        />
+        <NavItem
+          active={active === "health"}
+          icon="people"
+          label="Home"
+          onPress={() => onChange("health")}
+          sticker={assets.stickers.heart}
+        />
+      </View>
+    </View>
   );
 }
 
@@ -87,67 +83,138 @@ interface NavItemProps {
   icon: keyof typeof Ionicons.glyphMap;
   label: string;
   onPress: () => void;
+  sticker: ImageSourcePropType;
 }
 
-function NavItem({ active, icon, label, onPress }: NavItemProps) {
+function NavItem({ active, icon, label, onPress, sticker }: NavItemProps) {
+  const reduceMotion = usePrefersReducedMotion();
+  const scale = useRef(new Animated.Value(active ? 1.08 : 1)).current;
+  const press = useRef(new Animated.Value(1)).current;
+  const stickerY = useRef(new Animated.Value(active ? 0 : 8)).current;
+  const stickerOpacity = useRef(new Animated.Value(active ? 1 : 0)).current;
+
+  useEffect(() => {
+    if (reduceMotion) {
+      scale.setValue(active ? 1.08 : 1);
+      stickerY.setValue(0);
+      stickerOpacity.setValue(active ? 1 : 0);
+      return;
+    }
+    Animated.spring(scale, {
+      toValue: active ? 1.12 : 1,
+      friction: 6,
+      tension: 160,
+      useNativeDriver: true,
+    }).start();
+    Animated.parallel([
+      Animated.spring(stickerY, {
+        toValue: active ? 0 : 10,
+        friction: 7,
+        tension: 140,
+        useNativeDriver: true,
+      }),
+      Animated.timing(stickerOpacity, {
+        toValue: active ? 1 : 0,
+        duration: 180,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [active, reduceMotion, scale, stickerOpacity, stickerY]);
+
   return (
-    <Pressable onPress={onPress} style={styles.navItem}>
-      <View style={[styles.navIconWrap, active && styles.navIconWrapActive]}>
+    <Pressable
+      accessibilityLabel={label}
+      accessibilityRole="tab"
+      accessibilityState={{ selected: active }}
+      onPress={onPress}
+      onPressIn={() => {
+        if (reduceMotion) return;
+        Animated.spring(press, {
+          toValue: 0.9,
+          friction: 7,
+          tension: 220,
+          useNativeDriver: true,
+        }).start();
+      }}
+      onPressOut={() => {
+        if (reduceMotion) return;
+        Animated.spring(press, {
+          toValue: 1,
+          friction: 5,
+          tension: 180,
+          useNativeDriver: true,
+        }).start();
+      }}
+      style={styles.navItem}
+    >
+      <Animated.View
+        style={{
+          alignItems: "center",
+          gap: 3,
+          transform: [{ scale: Animated.multiply(scale, press) }],
+        }}
+      >
+        <Animated.View
+          style={{
+            height: 22,
+            marginBottom: -2,
+            opacity: stickerOpacity,
+            transform: [{ translateY: stickerY }],
+          }}
+        >
+          <Image
+            accessibilityIgnoresInvertColors
+            resizeMode="contain"
+            source={sticker}
+            style={styles.navSticker}
+          />
+        </Animated.View>
         <Ionicons
-          color={active ? colors.coral : "#97A1A6"}
-          name={
-            active
-              ? (icon.replace("-outline", "") as keyof typeof Ionicons.glyphMap)
-              : icon
-          }
-          size={21}
+          color={active ? colors.sky : "#A8B2BA"}
+          name={icon}
+          size={24}
         />
-      </View>
-      <Text style={[styles.navLabel, active && styles.navLabelActive]}>
-        {label}
-      </Text>
+        <Text style={[styles.navLabel, active && styles.navLabelActive]}>
+          {label}
+        </Text>
+      </Animated.View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   bottomNav: {
-    alignItems: "flex-end",
-    backgroundColor: "rgba(255,253,249,0.82)",
-    borderTopColor: "rgba(231,226,217,0.78)",
-    borderTopWidth: 1,
+    alignItems: "center",
+    backgroundColor: "rgba(255,252,247,0.96)",
+    borderRadius: 30,
     flexDirection: "row",
-    overflow: "visible",
-    paddingHorizontal: 8,
+    marginHorizontal: 18,
+    paddingBottom: 10,
+    paddingHorizontal: 6,
     paddingTop: 8,
+    ...shadow.card,
   },
-  navAdd: {
+  navItem: {
     alignItems: "center",
     flex: 1,
-    marginTop: -24,
+    gap: 3,
   },
-  navAddGradient: {
-    alignItems: "center",
-    borderColor: colors.paper,
-    borderRadius: 25,
-    borderWidth: 4,
-    height: 54,
-    justifyContent: "center",
-    shadowColor: colors.coral,
-    shadowOffset: { height: 6, width: 0 },
-    shadowOpacity: 0.26,
-    shadowRadius: 8,
-    width: 54,
+  navLabel: {
+    color: "#A8B2BA",
+    fontFamily: "Nunito_700Bold",
+    fontSize: 11,
   },
-  navIconWrap: {
-    alignItems: "center",
-    borderRadius: 11,
-    height: 29,
-    justifyContent: "center",
-    width: 39,
+  navLabelActive: {
+    color: colors.sky,
   },
-  navIconWrapActive: { backgroundColor: colors.coralSoft },
-  navItem: { alignItems: "center", flex: 1, gap: 2 },
-  navLabel: { color: "#97A1A6", fontFamily: "Manrope_700Bold", fontSize: 8 },
-  navLabelActive: { color: colors.coral },
+  navSticker: {
+    height: 22,
+    width: 22,
+  },
+  wrap: {
+    bottom: 0,
+    left: 0,
+    position: "absolute",
+    right: 0,
+  },
 });

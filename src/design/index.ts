@@ -20,6 +20,9 @@ export type { DurationToken } from "./motion";
 export { shadow } from "./shadows";
 export type { ShadowToken } from "./shadows";
 
+export { assets } from "./assets";
+export type { StickerKey } from "./assets";
+
 export { lightTheme, darkTheme, colorsFor } from "./themes";
 export type { ThemeColors, ThemeName } from "./themes";
 export { ThemeProvider, useTheme, __setThemeForTests } from "./ThemeProvider";

@@ -1,7 +1,8 @@
-import { Ionicons } from "@expo/vector-icons";
-import { StyleSheet, Text, View } from "react-native";
+import { useEffect, useRef } from "react";
+import { Animated, Easing, Image, StyleSheet, Text } from "react-native";
 
-import { colors } from "../design";
+import { assets, colors, shadow } from "../design";
+import { usePrefersReducedMotion } from "../features/accessibility/motion";
 
 interface ToastProps {
   text: string;
@@ -9,18 +10,63 @@ interface ToastProps {
 }
 
 /**
- * Confirming toast shown above the bottom nav for ~2.6s after a
- * successful dose log or medication add. Extracted verbatim from
- * App.tsx in stage 2.
+ * Soft clay toast above the bottom nav after a dose log or add.
+ * Springs up so confirmation feels like a response, not a static banner.
  */
 export function Toast({ text, bottomInset }: ToastProps) {
+  const reduceMotion = usePrefersReducedMotion();
+  const opacity = useRef(new Animated.Value(0)).current;
+  const y = useRef(new Animated.Value(16)).current;
+
+  useEffect(() => {
+    opacity.setValue(0);
+    y.setValue(16);
+    if (reduceMotion) {
+      opacity.setValue(1);
+      y.setValue(0);
+      return;
+    }
+    Animated.parallel([
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 220,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.spring(y, {
+        toValue: 0,
+        friction: 7,
+        tension: 120,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [text, reduceMotion, opacity, y]);
+
   return (
-    <View style={[styles.toast, { bottom: 92 + bottomInset }]}>
-      <View style={styles.toastCheck}>
-        <Ionicons color={colors.white} name="checkmark" size={15} />
-      </View>
+    <Animated.View
+      style={[
+        styles.toast,
+        {
+          bottom: 92 + bottomInset,
+          opacity,
+          transform: [{ translateY: y }],
+        },
+      ]}
+    >
+      <Image
+        accessibilityIgnoresInvertColors
+        resizeMode="contain"
+        source={assets.stickers.heart}
+        style={styles.toastArt}
+      />
       <Text style={styles.toastText}>{text}</Text>
-    </View>
+      <Image
+        accessibilityIgnoresInvertColors
+        resizeMode="contain"
+        source={assets.stickers.check}
+        style={styles.toastCheckArt}
+      />
+    </Animated.View>
   );
 }
 
@@ -28,31 +74,28 @@ const styles = StyleSheet.create({
   toast: {
     alignItems: "center",
     backgroundColor: colors.ink,
-    borderRadius: 16,
+    borderRadius: 999,
     flexDirection: "row",
-    gap: 9,
+    gap: 10,
     left: 18,
-    paddingHorizontal: 16,
-    paddingVertical: 13,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
     position: "absolute",
     right: 18,
-    shadowColor: colors.ink,
-    shadowOffset: { height: 8, width: 0 },
-    shadowOpacity: 0.18,
-    shadowRadius: 14,
+    ...shadow.card,
   },
-  toastCheck: {
-    alignItems: "center",
-    backgroundColor: colors.sage,
-    borderRadius: 12,
-    height: 22,
-    justifyContent: "center",
-    width: 22,
+  toastArt: {
+    height: 28,
+    width: 28,
+  },
+  toastCheckArt: {
+    height: 26,
+    width: 26,
   },
   toastText: {
     color: colors.white,
     flex: 1,
-    fontFamily: "Manrope_700Bold",
-    fontSize: 12,
+    fontFamily: "Nunito_700Bold",
+    fontSize: 13,
   },
 });

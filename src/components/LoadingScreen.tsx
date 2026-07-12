@@ -7,36 +7,45 @@ interface LoadingScreenProps {
   icon: ImageSourcePropType;
 }
 
-/**
- * Brand-marked loading state shown while custom fonts load.
- * Extracted verbatim from App.tsx in stage 2.
- */
+/** Brand-marked loading state while custom fonts load. */
 export function LoadingScreen({ icon }: LoadingScreenProps) {
   return (
     <View style={styles.loadingScreen}>
       <Image source={icon} style={styles.loadingMark} />
-      <Text style={styles.loadingWordmark}>PawPair</Text>
+      <View style={styles.wordmark}>
+        <Text style={styles.wordPaw}>Paw</Text>
+        <Text style={styles.wordPair}>Pair</Text>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   loadingMark: {
-    borderRadius: 18,
-    height: 54,
-    transform: [{ rotate: "-5deg" }],
-    width: 54,
+    borderRadius: 22,
+    height: 64,
+    width: 64,
   },
   loadingScreen: {
     alignItems: "center",
     backgroundColor: colors.background,
     flex: 1,
-    gap: 14,
+    gap: 16,
     justifyContent: "center",
   },
-  loadingWordmark: {
-    color: colors.ink,
-    fontFamily: "Fraunces_700Bold",
-    fontSize: 24,
+  wordmark: {
+    flexDirection: "row",
+  },
+  wordPair: {
+    color: colors.coral,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 28,
+    letterSpacing: -0.6,
+  },
+  wordPaw: {
+    color: colors.sky,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 28,
+    letterSpacing: -0.6,
   },
 });

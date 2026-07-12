@@ -12,7 +12,8 @@ import {
 import { useState } from "react";
 
 import { AppHeader } from "../../components/AppHeader";
-import { colors } from "../../design";
+import { PressScale } from "../../components/PressScale";
+import { colors, shadow } from "../../design";
 import type { Pet } from "../../types";
 
 import { MedicationCard } from "./MedicationCard";
@@ -31,9 +32,7 @@ interface PetsScreenProps {
 }
 
 /**
- * Pets screen — list of household pets with the active plan per pet.
- * Extracted verbatim from App.tsx in stage 2. Profile tab is
- * intentionally non-functional per docs/AAA-HANDOFF.md §2.
+ * Pets — clay family roster with soft profile plate and plan list.
  */
 export function PetsScreen({
   pets,
@@ -57,11 +56,13 @@ export function PetsScreen({
         { paddingTop: topInset + 14 },
       ]}
       showsVerticalScrollIndicator={false}
+      style={styles.screen}
     >
       <AppHeader
+        accent="plant"
         actionIcon="add"
         eyebrow="YOUR FAMILY"
-        onAction={onAdd}
+        onAction={onAddPet ?? onAdd}
         title="Pets"
       />
 
@@ -73,9 +74,10 @@ export function PetsScreen({
         {pets.map((item) => {
           const active = item.id === pet?.id;
           return (
-            <Pressable
+            <PressScale
               key={item.id}
               onPress={() => setSelectedPet(item.id)}
+              scaleTo={0.94}
               style={[
                 styles.petSelectorItem,
                 active && styles.petSelectorActive,
@@ -101,15 +103,21 @@ export function PetsScreen({
               >
                 {item.name}
               </Text>
-            </Pressable>
+            </PressScale>
           );
         })}
+        {onAddPet ? (
+          <Pressable onPress={onAddPet} style={styles.addPetChip}>
+            <Ionicons color={colors.coral} name="add" size={18} />
+            <Text style={styles.addPetText}>Add pet</Text>
+          </Pressable>
+        ) : null}
       </ScrollView>
 
       {pet && (
         <>
           <LinearGradient
-            colors={[`${pet.color}32`, `${pet.color}10`]}
+            colors={["#FFF8F1", "#F3E4D4"]}
             style={styles.petProfileCard}
           >
             <View style={styles.petProfileAvatar}>
@@ -160,11 +168,7 @@ export function PetsScreen({
               onPress={() => onEditPet(pet.id)}
               style={styles.editPetButton}
             >
-              <Ionicons
-                color={colors.ink}
-                name="create-outline"
-                size={14}
-              />
+              <Ionicons color={colors.ink} name="create-outline" size={14} />
               <Text style={styles.editPetButtonText}>
                 Edit {pet.name}'s profile
               </Text>
@@ -203,7 +207,7 @@ export function PetsScreen({
               </Text>
             </View>
             <View style={styles.proPill}>
-              <Text style={styles.proPillText}>PRO</Text>
+              <Text style={styles.proPillText}>SOON</Text>
             </View>
           </View>
         </>
@@ -213,6 +217,37 @@ export function PetsScreen({
 }
 
 const styles = StyleSheet.create({
+  addPetChip: {
+    alignItems: "center",
+    backgroundColor: colors.coralSoft,
+    borderRadius: 22,
+    flexDirection: "row",
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
+  addPetText: {
+    color: colors.coral,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 12,
+  },
+  editPetButton: {
+    alignItems: "center",
+    backgroundColor: colors.paper,
+    borderRadius: 20,
+    flexDirection: "row",
+    gap: 6,
+    justifyContent: "center",
+    marginBottom: 14,
+    marginTop: -8,
+    paddingVertical: 12,
+    ...shadow.subtle,
+  },
+  editPetButtonText: {
+    color: colors.ink,
+    fontFamily: "Nunito_700Bold",
+    fontSize: 12,
+  },
   flex: { flex: 1 },
   healthyDot: {
     backgroundColor: colors.sage,
@@ -222,41 +257,43 @@ const styles = StyleSheet.create({
   },
   moreButton: {
     alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.56)",
-    borderRadius: 12,
-    height: 38,
+    backgroundColor: "rgba(255,252,247,0.92)",
+    borderRadius: 14,
+    height: 40,
     justifyContent: "center",
-    width: 38,
+    width: 40,
+    ...shadow.subtle,
   },
   petProfileAvatar: {
     alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.68)",
-    borderRadius: 30,
-    height: 66,
+    backgroundColor: "rgba(255,255,255,0.8)",
+    borderRadius: 32,
+    height: 68,
     justifyContent: "center",
     marginRight: 14,
-    width: 66,
+    width: 68,
+    ...shadow.subtle,
   },
   petProfileCard: {
     alignItems: "center",
-    borderColor: "rgba(255,255,255,0.75)",
-    borderRadius: 24,
-    borderWidth: 1,
-    elevation: 1,
+    borderRadius: 30,
     flexDirection: "row",
     marginBottom: 24,
     padding: 18,
-    shadowColor: colors.ink,
-    shadowOffset: { height: 6, width: 0 },
-    shadowOpacity: 0.05,
-    shadowRadius: 14,
+    ...shadow.card,
   },
   petProfileImage: { borderRadius: 31, height: 62, width: 62 },
-  petProfileMeta: { color: colors.muted, fontSize: 11, marginTop: 4 },
+  petProfileMeta: {
+    color: colors.muted,
+    fontFamily: "Nunito_600SemiBold",
+    fontSize: 12,
+    marginTop: 4,
+  },
   petProfileName: {
     color: colors.ink,
-    fontFamily: "Fraunces_700Bold",
-    fontSize: 24,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 26,
+    letterSpacing: -0.4,
   },
   petProfileStatus: {
     alignItems: "center",
@@ -266,14 +303,13 @@ const styles = StyleSheet.create({
   },
   petProfileStatusText: {
     color: colors.sage,
-    fontSize: 9,
-    fontWeight: "800",
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 11,
   },
-  petSelector: { gap: 14, paddingBottom: 18 },
+  petSelector: { gap: 12, paddingBottom: 18 },
   petSelectorActive: {
     backgroundColor: colors.paper,
-    borderColor: colors.line,
-    borderWidth: 1,
+    ...shadow.card,
   },
   petSelectorAvatar: {
     alignItems: "center",
@@ -285,32 +321,31 @@ const styles = StyleSheet.create({
   petSelectorImage: { borderRadius: 22, height: 44, width: 44 },
   petSelectorItem: {
     alignItems: "center",
-    borderColor: "transparent",
-    borderRadius: 18,
-    borderWidth: 1,
+    borderRadius: 22,
     flexDirection: "row",
     gap: 8,
-    paddingHorizontal: 9,
-    paddingVertical: 7,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
   },
   petSelectorName: {
     color: colors.muted,
-    fontFamily: "Manrope_800ExtraBold",
-    fontSize: 12,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 13,
   },
-  petSelectorNameActive: { color: colors.coral },
+  petSelectorNameActive: { color: colors.sky },
   proPill: {
     backgroundColor: colors.butterSoft,
-    borderRadius: 9,
-    paddingHorizontal: 9,
-    paddingVertical: 4,
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
   },
   proPillText: {
     color: "#9B7A0F",
-    fontFamily: "Manrope_800ExtraBold",
-    fontSize: 9,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 10,
     letterSpacing: 0.6,
   },
+  screen: { backgroundColor: colors.background, flex: 1 },
   sectionHeadingRow: {
     alignItems: "flex-end",
     flexDirection: "row",
@@ -318,67 +353,50 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   sectionKicker: {
-    color: colors.muted,
-    fontFamily: "Manrope_800ExtraBold",
-    fontSize: 9,
+    color: colors.sky,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 10,
     letterSpacing: 1.4,
   },
   sectionTitle: {
     color: colors.ink,
-    fontFamily: "Fraunces_700Bold",
+    fontFamily: "Nunito_800ExtraBold",
     fontSize: 22,
+    letterSpacing: -0.3,
     marginTop: 2,
   },
   standardContent: { paddingBottom: 110, paddingHorizontal: 18 },
   textAction: {
     color: colors.coral,
-    fontFamily: "Manrope_800ExtraBold",
-    fontSize: 11,
-  },
-  editPetButton: {
-    alignItems: "center",
-    backgroundColor: colors.paper,
-    borderColor: colors.line,
-    borderRadius: 12,
-    borderWidth: 1,
-    flexDirection: "row",
-    gap: 6,
-    justifyContent: "center",
-    marginTop: -8,
-    marginBottom: 14,
-    paddingVertical: 8,
-  },
-  editPetButtonText: {
-    color: colors.ink,
-    fontFamily: "Manrope_700Bold",
-    fontSize: 11,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 13,
   },
   vetCard: {
     alignItems: "center",
     backgroundColor: colors.sageSoft,
-    borderRadius: 19,
+    borderRadius: 24,
     flexDirection: "row",
     gap: 12,
     marginTop: 18,
-    padding: 15,
+    padding: 16,
   },
   vetCopy: {
     color: colors.muted,
-    fontFamily: "Manrope_400Regular",
-    fontSize: 11,
+    fontFamily: "Nunito_600SemiBold",
+    fontSize: 12,
     marginTop: 4,
   },
   vetIcon: {
     alignItems: "center",
     backgroundColor: colors.paper,
-    borderRadius: 14,
-    height: 46,
+    borderRadius: 16,
+    height: 48,
     justifyContent: "center",
-    width: 46,
+    width: 48,
   },
   vetTitle: {
     color: colors.ink,
-    fontFamily: "Manrope_800ExtraBold",
-    fontSize: 13,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 14,
   },
 });
