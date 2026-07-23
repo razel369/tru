@@ -9,13 +9,13 @@ This directory contains the release copy, App Store Connect answers and signed-a
 - Bundle ID: app.pawpair.medtracker
 - EAS project: @razellll/pawpair-pet-med-tracker
 - Distribution: App Store
-- Submission candidate: none while source and visual QA continue
-- Historical build: build 7 uploaded, superseded, and not eligible for review
-- Historical signed IPA audit: build 7 passed 27 of 27 checks
+- Submission candidate: none while final native QA and Apple-side configuration continue
+- Historical builds: all builds through build 11 predate the current launch checkpoint and are not eligible for review
+- Historical signed IPA audits: retained as evidence only
 - Native iPhone and iPad QA: pending on the final build
-- Current ASO artwork: iPhone Model B prepared at 1320x2868; final iPhone and iPad captures must be replaced from the final binary
+- Current ASO artwork: iPhone Model B prepared at 1320x2868; five branded iPad screenshots remain the automated launch-verifier blockers
 
-Build 7 no longer contains the current source and must not be selected for App Review. Keep submission frozen. Create one replacement production build only after source QA is complete, then audit and test that exact binary before screenshots or review submission.
+Builds through 11 do not contain commit `6a2cb27` plus the subsequent Auth hardening and must not be selected for App Review. Keep submission frozen. Create one replacement production build only after Apple and RevenueCat configuration are verified, then audit and test that exact binary before screenshots or review submission.
 
 ## Files
 

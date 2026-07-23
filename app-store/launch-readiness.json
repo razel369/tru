@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-07-23T18:22:26.650Z",
+  "generatedAt": "2026-07-23T19:40:10.295Z",
   "status": "BLOCKED",
-  "passed": 27,
+  "passed": 28,
   "total": 33,
-  "blockerCount": 6,
+  "blockerCount": 5,
   "checks": [
     {
       "name": "Universal iPhone and iPad target",
@@ -133,9 +133,9 @@
     },
     {
       "name": "RevenueCat production key",
-      "pass": false,
+      "pass": true,
       "blocking": true,
-      "detail": "missing; EAS production environment may still provide it"
+      "detail": "configured"
     },
     {
       "name": "Screenshot 01-pet-care-ai.png",

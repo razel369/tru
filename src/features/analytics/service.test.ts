@@ -27,7 +27,7 @@ vi.mock("../../data/database/uuid", () => ({
   uuid: () => "test-uuid",
 }));
 
-import { setAnalyticsConsent } from "./service";
+import { initializeAnalytics, setAnalyticsConsent } from "./service";
 
 function deletionClient(error: Error | null) {
   const eq = vi.fn().mockResolvedValue({ error });
@@ -76,5 +76,47 @@ describe("setAnalyticsConsent", () => {
 
     await expect(setAnalyticsConsent(false)).resolves.toBe(false);
     expect(mocks.multiRemove).toHaveBeenCalledTimes(1);
+  });
+
+  it("replaces a stale anonymous session before creating an installation", async () => {
+    mocks.getItem.mockImplementation(async (key: string) => {
+      if (key === "pawpair.analytics.consent.v1") {
+        return "2026-07-23T19:00:00.000Z";
+      }
+      return null;
+    });
+    const upsert = vi.fn().mockResolvedValue({ error: null });
+    const signOut = vi.fn().mockResolvedValue({ error: null });
+    const signInAnonymously = vi.fn().mockResolvedValue({
+      data: {
+        session: { user: { id: "replacement-user" } },
+      },
+      error: null,
+    });
+    const client = {
+      auth: {
+        getSession: vi.fn().mockResolvedValue({
+          data: { session: { user: { id: "stale-user" } } },
+          error: null,
+        }),
+        getUser: vi.fn().mockResolvedValue({
+          data: { user: null },
+          error: new Error("deleted"),
+        }),
+        signInAnonymously,
+        signOut,
+      },
+      from: vi.fn(() => ({ upsert })),
+    };
+    mocks.getSupabaseClient.mockReturnValue(client);
+
+    await expect(initializeAnalytics()).resolves.toBe(true);
+
+    expect(signOut).toHaveBeenCalledWith({ scope: "local" });
+    expect(signInAnonymously).toHaveBeenCalledTimes(1);
+    expect(upsert).toHaveBeenCalledWith(
+      expect.objectContaining({ user_id: "replacement-user" }),
+      { onConflict: "id" },
+    );
   });
 });

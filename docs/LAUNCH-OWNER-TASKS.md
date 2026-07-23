@@ -2,6 +2,15 @@
 
 Everything in this file requires access to Apple or RevenueCat. The repository handles the rest.
 
+## Verified on July 23, 2026
+
+- EAS production contains the RevenueCat iOS public SDK key.
+- RevenueCat offering `default` returns the annual and monthly PawPair packages.
+- Supabase anonymous sign-in, consented analytics insertion and account deletion pass against production.
+- Supabase limits anonymous sign-ins to 30 per hour per IP and runs a daily 30-day abandoned-user cleanup.
+- The public Privacy, Terms, Support and homepage deployment is current.
+- App Store Connect still requires an interactive Apple sign-in before the remaining Apple-side fields can be audited or changed.
+
 ## 1. Create the two App Store subscriptions
 
 In App Store Connect, open PawPair > Monetization > Subscriptions.
@@ -22,7 +31,10 @@ In RevenueCat Product catalog:
 - Create entitlement `premium` and attach both products.
 - Create offering `default` with annual and monthly packages.
 - Copy the public iOS SDK key that starts with `appl_`.
-- Add it to the EAS `production` environment as `EXPO_PUBLIC_REVENUECAT_IOS_API_KEY`.
+- Confirm entitlement `premium` is attached to both products. The live
+  offering and product identifiers are already verified.
+- The EAS `production` environment already contains
+  `EXPO_PUBLIC_REVENUECAT_IOS_API_KEY`.
 
 Never place an App Store private key or RevenueCat secret API key in `.env`.
 
@@ -52,17 +64,17 @@ In App Store Connect App Review Information, enter a reachable name, email and p
 
 In the PawPair Supabase project only:
 
-- Open Authentication > Sign In / Providers and enable Anonymous Sign-Ins.
-- Verify the native opt-in flow creates an anonymous session and the opt-out flow deletes it.
-- Add mobile-compatible bot protection before launch. If CAPTCHA is not yet supported by the native flow, keep anonymous sign-up rate limits conservative, monitor Auth growth and define a scheduled cleanup policy for abandoned anonymous users.
+- Anonymous Sign-Ins are enabled.
+- The production service path creates a consented analytics identity, accepts an allowlisted event and deletes the account. Repeat opt-in and opt-out on the exact final binary.
+- The current mobile-safe abuse policy is 30 anonymous sign-ins per hour per IP, restrictive RLS for non-analytics tables, and daily cleanup of abandoned anonymous users older than 30 days.
 - Do not enable a CAPTCHA challenge that the native client cannot complete; that would break analytics opt-in.
 
 ## 7. Publish the synchronized legal site
 
-- Deploy `pawpair-site/`.
-- Confirm the public Privacy and Terms pages show **Effective July 23, 2026**.
-- Confirm the homepage says optional anonymous analytics is off by default.
-- Confirm the Privacy page explains retryable cloud deletion and the 45-day raw-event retention window.
+- `pawpair-site/` is deployed to `https://pawpair-site.vercel.app/`.
+- The public Privacy and Terms pages show **Effective July 23, 2026**.
+- The homepage says optional anonymous analytics is off by default.
+- The Privacy page explains retryable cloud deletion and the 45-day raw-event retention window.
 
 ## 8. Final TestFlight check
 

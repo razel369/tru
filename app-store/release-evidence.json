@@ -6,76 +6,91 @@
     "bundleId": "app.pawpair.medtracker",
     "platform": "IOS",
     "distribution": "STORE",
-    "status": "SUBMISSION_FROZEN_BUILD_7_SUPERSEDED_BY_SOURCE_CHANGES"
+    "status": "PREBUILD_APPLE_AND_PHYSICAL_DEVICE_GATES"
   },
   "currentSourceReadiness": {
-    "asOf": "2026-07-21",
+    "asOf": "2026-07-23",
+    "launchCheckpointCommit": "6a2cb27353a42ee70a6086cc8205586c8a95235f",
     "typescript": "PASS",
-    "testSuite": "PASS_33_FILES_173_TESTS",
-    "expoDoctor": "PENDING_CURRENT_SOURCE_RECHECK",
+    "eslint": "PASS_ZERO_WARNINGS",
+    "testSuite": "PASS_36_FILES_185_TESTS",
+    "expoDoctor": "PASS_20_OF_20",
     "expoSdk": "57.0.0",
     "motionRuntimePacks": 67,
     "motionPngAssets": 201,
     "motionAuditIssues": 0,
-    "productionDependencyAudit": "12_MODERATE_0_HIGH_0_CRITICAL_EXPO_BUILD_TOOLCHAIN_ONLY_NO_SAFE_NONBREAKING_FIX",
-    "signedProductionBuild": "STALE_BUILD_7_SUPERSEDED",
-    "screenshots": "ASO_MODEL_B_PREPARED_FINAL_BINARY_CONFIRMATION_PENDING",
-    "targetDeviceFamily": "IPHONE_ONLY_BUILD_8_SOURCE",
-    "revenueCat": "PAYWALL_HARDENED_DASHBOARD_CONFIGURATION_PENDING"
-  },
-  "latestAuditedSignedArtifact": {
-    "version": "1.0.0",
-    "build": "7",
-    "scope": "HISTORICAL_SIGNED_ARTIFACT_SUPERSEDED_BY_CURRENT_SOURCE",
-    "easBuildId": "f8859acc-d82b-4bc9-9e3f-1ebc7195fa95",
-    "buildPage": "https://expo.dev/accounts/razellll/projects/pawpair-pet-med-tracker/builds/f8859acc-d82b-4bc9-9e3f-1ebc7195fa95",
-    "artifactUrl": "https://expo.dev/artifacts/eas/P10gVK5md2BEZYjOA5voDw3AAoALvMM-iyGgnOr4VL8.ipa",
-    "fingerprint": "d4a3885fc378b93e956d85edce77f20d55e0f0b1",
-    "auditFile": "ipa-audit-build7.json",
-    "backupEvidenceFile": "ipa-backup-evidence-build7.json",
-    "allAuditChecksPass": true,
-    "auditCheckCount": 27,
-    "ipaBytes": 183760140,
-    "ipaMiB": 175.25,
-    "minimumOSVersion": "16.4",
-    "sdk": "iphoneos26.5",
-    "xcode": "2660",
-    "xcodeBuild": "17F113",
-    "deviceFamilies": [
-      1,
-      2
+    "launchReadiness": "BLOCKED_28_OF_33",
+    "launchReadinessBlockers": [
+      "FINAL_IPAD_ASO_SCREENSHOT_01",
+      "FINAL_IPAD_ASO_SCREENSHOT_02",
+      "FINAL_IPAD_ASO_SCREENSHOT_03",
+      "FINAL_IPAD_ASO_SCREENSHOT_04",
+      "FINAL_IPAD_ASO_SCREENSHOT_05"
     ],
-    "orientationPolicy": "IPHONE_PORTRAIT_ONLY_IPAD_ADAPTIVE_LANDSCAPE_SUPPORTED",
-    "appStoreProvisioning": "PASS",
-    "privacyManifest": "PASS",
-    "notificationCapability": "PRODUCTION_NO_BACKGROUND_REMOTE_MODE",
-    "backupAndRestoreEvidence": "PASS",
+    "signedProductionBuild": "PENDING_AFTER_APPLE_CONFIGURATION",
+    "revenueCat": "PRODUCTION_KEY_AND_DEFAULT_OFFERING_PRODUCTS_VERIFIED_ENTITLEMENT_AND_STOREKIT_PENDING"
+  },
+  "externalServices": {
+    "supabase": {
+      "projectId": "bmtemofvyrnqrhiefvqp",
+      "status": "ACTIVE_HEALTHY",
+      "anonymousSignIn": "PASS_PRODUCTION_SMOKE",
+      "analyticsInsert": "PASS_PRODUCTION_SMOKE",
+      "clientEventAccess": "INSERT_ONLY_PASS",
+      "accountDeletion": "PASS_PRODUCTION_SMOKE",
+      "anonymousRateLimit": "30_PER_HOUR_PER_IP",
+      "abandonedUserCleanup": "ACTIVE_DAILY_30_DAYS",
+      "anonymousCloudSyncRestriction": "PASS_FOUR_RESTRICTIVE_RLS_POLICIES",
+      "smokeDataCleanup": "PASS_ZERO_REMAINING_ROWS"
+    },
+    "revenueCat": {
+      "easProductionPublicKey": "PRESENT",
+      "currentOffering": "default",
+      "annualPackage": "app.pawpair.medtracker.premium.annual",
+      "monthlyPackage": "app.pawpair.medtracker.premium.monthly",
+      "entitlementAttachment": "PENDING_DASHBOARD_OR_PURCHASE_VERIFICATION",
+      "storeKitPricesAndTrial": "PENDING_PHYSICAL_DEVICE"
+    },
+    "publicSite": {
+      "project": "pawpair-site",
+      "deploymentId": "dpl_9cYySkAZMs9ZDjxJvTpDP2pYv2De",
+      "url": "https://pawpair-site.vercel.app/",
+      "privacyTermsEffectiveDate": "PASS_2026_07_23",
+      "securityHeaders": "PASS"
+    },
+    "appStoreConnect": {
+      "ascAppId": "6789938403",
+      "integration": "EAS_UPLOAD_CONNECTED",
+      "interactiveAudit": "BLOCKED_APPLE_SIGN_IN_REQUIRED",
+      "paidAgreement": "PENDING_VERIFICATION",
+      "bankingAndTax": "PENDING_VERIFICATION",
+      "appPrivacy": "PENDING_VERIFICATION",
+      "ageRating": "PENDING_VERIFICATION",
+      "reviewContact": "PENDING_VERIFICATION"
+    }
+  },
+  "latestHistoricalSignedArtifact": {
+    "version": "1.0.0",
+    "build": "11",
+    "scope": "HISTORICAL_SIGNED_ARTIFACT_SUPERSEDED_BY_CURRENT_SOURCE",
+    "easBuildId": "451f6ff8-4232-482d-a1fd-0694d3ee1ee3",
+    "auditFile": "ipa-audit-build11.json",
+    "allAuditChecksPass": true,
+    "auditCheckCount": 16,
+    "ipaBytes": 204955504,
+    "deviceFamilies": [
+      1
+    ],
     "currentSourceIncluded": false
   },
-  "publicPages": {
-    "checkedAt": "2026-07-19",
-    "supportUrl": "PASS_WITH_CONTACT_EMAIL",
-    "privacyPolicyUrl": "PASS"
-  },
   "submissionGates": {
+    "appStoreConnectConfiguration": "PENDING_INTERACTIVE_SIGN_IN",
+    "revenueCatEntitlementAndStoreKit": "PENDING",
+    "finalProductionBuild": "PENDING",
     "finalNativeIphoneQa": "PENDING",
-    "finalNativeIpadQa": "NOT_REQUIRED_IPHONE_ONLY",
-    "finalProductionBuild": "PENDING_AFTER_SOURCE_AND_NATIVE_QA",
-    "finalSignedIpaAudit": "PENDING_FOR_FINAL_BUILD_BUILD_7_HISTORICAL_PASS_27_OF_27",
-    "finalScreenshotCapture": "PENDING",
-    "appStoreConnectUpload": "BUILD_7_UPLOADED_BUT_SUPERSEDED_DO_NOT_SELECT",
-    "appStoreReviewSubmission": "FROZEN_UNTIL_FINAL_QA_SCREENSHOTS_AND_EXPLICIT_APPROVAL"
-  },
-  "appStoreConnect": {
-    "ascAppId": "6789938403",
-    "appleUrl": "https://appstoreconnect.apple.com/apps/6789938403/distribution",
-    "integration": "CONNECTED",
-    "apiKeyId": "3X6AV8DLHU",
-    "submissionId": "2396ca6c-3c36-4e3c-af97-cb15c9c83f82",
-    "submissionUrl": "https://expo.dev/accounts/razellll/projects/pawpair-pet-med-tracker/submissions/2396ca6c-3c36-4e3c-af97-cb15c9c83f82",
-    "submissionStatus": "FINISHED",
-    "submissionCreatedAt": "2026-07-20T07:29:01.670Z",
-    "submissionUpdatedAt": "2026-07-20T07:29:17.854Z",
-    "submissionError": null
+    "finalNativeIpadQa": "PENDING",
+    "finalSignedIpaAudit": "PENDING",
+    "finalIpadScreenshots": "PENDING_FIVE",
+    "appStoreReviewSubmission": "FROZEN_UNTIL_FINAL_QA_AND_EXPLICIT_APPROVAL"
   }
 }

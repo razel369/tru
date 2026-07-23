@@ -136,14 +136,24 @@ async function ensureIdentity(): Promise<AnalyticsIdentity | null> {
     const supabase = getSupabaseClient();
     if (!supabase) return null;
 
-    let { data } = await supabase.auth.getSession();
-    if (!data.session) {
+    const sessionResult = await supabase.auth.getSession();
+    if (sessionResult.error) return null;
+
+    let session = sessionResult.data.session;
+    if (session) {
+      const verified = await supabase.auth.getUser();
+      if (verified.error || !verified.data.user) {
+        await supabase.auth.signOut({ scope: "local" }).catch(() => undefined);
+        session = null;
+      }
+    }
+    if (!session) {
       const signedIn = await supabase.auth.signInAnonymously();
       if (signedIn.error || !signedIn.data.session) return null;
-      data = { session: signedIn.data.session };
+      session = signedIn.data.session;
     }
 
-    const userId = data.session.user.id;
+    const userId = session.user.id;
     let installationId = await AsyncStorage.getItem(INSTALLATION_KEY);
     if (!installationId) {
       installationId = uuid();
