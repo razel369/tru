@@ -1,0 +1,18 @@
+{
+  "ipa": "C:\\Users\\rmalk\\AppData\\Local\\Temp\\PawPair-1.0.0-6.ipa",
+  "bundleCount": 1,
+  "evidence": {
+    "Payload/PawPair.app/main.jsbundle": {
+      "bytes": 2533574,
+      "strings": {
+        "pawpair-portable-backup": true,
+        "pawpair-archive://": true,
+        "Create portable backup": true,
+        "Restore from backup": true,
+        "manifest.json": true,
+        "Backup files can contain health and contact information": true
+      }
+    }
+  },
+  "allBackupStringsPresent": true
+}

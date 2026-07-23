@@ -1,17 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useEffect, useRef } from "react";
-import {
-  Animated,
-  Image,
-  type ImageSourcePropType,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
-import { assets, colors, shadow } from "../design";
-import { usePrefersReducedMotion } from "../features/accessibility/motion";
+import { MotionPressable } from "./motion";
 
 type Screen =
   | "today"
@@ -34,187 +24,121 @@ interface BottomNavProps {
   onAdd?: () => void;
 }
 
-/**
- * Soft floating tab bar — clay stickers peek above the active tab.
- */
 export function BottomNav({
   active,
   bottomInset,
   onChange,
 }: BottomNavProps) {
   return (
-    <View style={[styles.wrap, { paddingBottom: Math.max(bottomInset, 12) }]}>
+    <View style={[styles.wrap, { paddingBottom: Math.max(bottomInset, 8) }]}>
       <View style={styles.bottomNav}>
         <NavItem
           active={active === "today"}
-          icon="home"
+          icon="today"
           label="Today"
           onPress={() => onChange("today")}
-          sticker={assets.stickers.paw}
         />
         <NavItem
           active={active === "pets"}
           icon="paw"
           label="Pets"
           onPress={() => onChange("pets")}
-          sticker={assets.stickers.bone}
         />
         <NavItem
           active={active === "insights"}
           icon="stats-chart"
           label="Insights"
           onPress={() => onChange("insights")}
-          sticker={assets.stickers.sun}
         />
         <NavItem
           active={active === "health"}
-          icon="people"
+          icon="home"
           label="Home"
           onPress={() => onChange("health")}
-          sticker={assets.stickers.heart}
         />
       </View>
     </View>
   );
 }
 
-interface NavItemProps {
+function NavItem({
+  active,
+  icon,
+  label,
+  onPress,
+}: {
   active: boolean;
   icon: keyof typeof Ionicons.glyphMap;
   label: string;
   onPress: () => void;
-  sticker: ImageSourcePropType;
-}
-
-function NavItem({ active, icon, label, onPress, sticker }: NavItemProps) {
-  const reduceMotion = usePrefersReducedMotion();
-  const scale = useRef(new Animated.Value(active ? 1.08 : 1)).current;
-  const press = useRef(new Animated.Value(1)).current;
-  const stickerY = useRef(new Animated.Value(active ? 0 : 8)).current;
-  const stickerOpacity = useRef(new Animated.Value(active ? 1 : 0)).current;
-
-  useEffect(() => {
-    if (reduceMotion) {
-      scale.setValue(active ? 1.08 : 1);
-      stickerY.setValue(0);
-      stickerOpacity.setValue(active ? 1 : 0);
-      return;
-    }
-    Animated.spring(scale, {
-      toValue: active ? 1.12 : 1,
-      friction: 6,
-      tension: 160,
-      useNativeDriver: true,
-    }).start();
-    Animated.parallel([
-      Animated.spring(stickerY, {
-        toValue: active ? 0 : 10,
-        friction: 7,
-        tension: 140,
-        useNativeDriver: true,
-      }),
-      Animated.timing(stickerOpacity, {
-        toValue: active ? 1 : 0,
-        duration: 180,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, [active, reduceMotion, scale, stickerOpacity, stickerY]);
-
+}) {
   return (
-    <Pressable
+    <MotionPressable
       accessibilityLabel={label}
       accessibilityRole="tab"
       accessibilityState={{ selected: active }}
       onPress={onPress}
-      onPressIn={() => {
-        if (reduceMotion) return;
-        Animated.spring(press, {
-          toValue: 0.9,
-          friction: 7,
-          tension: 220,
-          useNativeDriver: true,
-        }).start();
-      }}
-      onPressOut={() => {
-        if (reduceMotion) return;
-        Animated.spring(press, {
-          toValue: 1,
-          friction: 5,
-          tension: 180,
-          useNativeDriver: true,
-        }).start();
-      }}
-      style={styles.navItem}
+      style={({ pressed }) => [
+        styles.navItem,
+        pressed && styles.pressed,
+      ]}
     >
-      <Animated.View
-        style={{
-          alignItems: "center",
-          gap: 3,
-          transform: [{ scale: Animated.multiply(scale, press) }],
-        }}
-      >
-        <Animated.View
-          style={{
-            height: 22,
-            marginBottom: -2,
-            opacity: stickerOpacity,
-            transform: [{ translateY: stickerY }],
-          }}
-        >
-          <Image
-            accessibilityIgnoresInvertColors
-            resizeMode="contain"
-            source={sticker}
-            style={styles.navSticker}
-          />
-        </Animated.View>
-        <Ionicons
-          color={active ? colors.sky : "#A8B2BA"}
-          name={icon}
-          size={24}
-        />
-        <Text style={[styles.navLabel, active && styles.navLabelActive]}>
-          {label}
-        </Text>
-      </Animated.View>
-    </Pressable>
+      <Ionicons
+        color={active ? "#EF7064" : "#9AA5AA"}
+        name={icon}
+        size={25}
+      />
+      <Text style={[styles.navLabel, active && styles.navLabelActive]}>
+        {label}
+      </Text>
+      <View style={[styles.activeLine, active && styles.activeLineVisible]} />
+    </MotionPressable>
   );
 }
 
 const styles = StyleSheet.create({
-  bottomNav: {
-    alignItems: "center",
-    backgroundColor: "rgba(255,252,247,0.96)",
-    borderRadius: 30,
-    flexDirection: "row",
-    marginHorizontal: 18,
-    paddingBottom: 10,
-    paddingHorizontal: 6,
-    paddingTop: 8,
-    ...shadow.card,
-  },
-  navItem: {
-    alignItems: "center",
-    flex: 1,
-    gap: 3,
-  },
-  navLabel: {
-    color: "#A8B2BA",
-    fontFamily: "Nunito_700Bold",
-    fontSize: 11,
-  },
-  navLabelActive: {
-    color: colors.sky,
-  },
-  navSticker: {
-    height: 22,
-    width: 22,
-  },
   wrap: {
     bottom: 0,
     left: 0,
     position: "absolute",
     right: 0,
+    backgroundColor: "rgba(255,253,249,0.99)",
+    borderTopColor: "rgba(42,65,68,0.08)",
+    borderTopWidth: 1,
+  },
+  bottomNav: {
+    height: 82,
+    paddingHorizontal: 16,
+    paddingTop: 10,
+    flexDirection: "row",
+    alignItems: "flex-start",
+  },
+  navItem: {
+    flex: 1,
+    minHeight: 60,
+    alignItems: "center",
+    justifyContent: "flex-start",
+  },
+  pressed: {
+    opacity: 0.72,
+  },
+  navLabel: {
+    marginTop: 5,
+    color: "#9AA5AA",
+    fontFamily: "Nunito_700Bold",
+    fontSize: 11,
+  },
+  navLabelActive: {
+    color: "#EF7064",
+  },
+  activeLine: {
+    width: 24,
+    height: 3,
+    marginTop: 5,
+    borderRadius: 2,
+    backgroundColor: "transparent",
+  },
+  activeLineVisible: {
+    backgroundColor: "#EF7064",
   },
 });

@@ -9,7 +9,7 @@
 
 import { describe, expect, it } from "vitest";
 
-import { DEMO_PETS, buildSchedule, createDoseLog } from "../schedule";
+import { DEMO_PETS, createDoseLog } from "../schedule";
 import { buildScheduleFromEngine } from "../features/schedules/adapter";
 import { canAddMedication, canAddPet, defaultFreeEntitlement } from "../features/subscriptions/entitlements";
 import type { SubscriptionEntitlement } from "../features/subscriptions/types";
@@ -68,7 +68,7 @@ describe("smoke: end-to-end app logic", () => {
     if (!milo) return;
     // The Pet shape is stable. Any future change to Pet must
     // update the smoke test so the UI knows the contract.
-    const required: Array<keyof Pet> = [
+    const required: (keyof Pet)[] = [
       "id",
       "name",
       "species",

@@ -27,16 +27,15 @@ export function* dailyOccurrences(
 
   if (effectiveStart > effectiveEnd) return;
 
-  // Iterate one calendar day at a time in the schedule timezone.
-  // We use a Date walk in UTC at noon to avoid DST landing on the
-  // wrong calendar day. The schedule engine treats the timezone as
-  // a wall-clock projection; a midnight UTC walk is the simplest
-  // way to keep the day count stable.
+  // Iterate one calendar day at a time. The cursor encodes a local
+  // calendar date at UTC noon, so its ISO date is the intended local
+  // date regardless of DST. Avoid projecting it through the schedule
+  // timezone again for every occurrence.
   let cursor = new Date(effectiveStart + "T12:00:00Z");
   const endDate = new Date(effectiveEnd + "T12:00:00Z");
 
   while (cursor.getTime() <= endDate.getTime()) {
-    const localDate = localDateIn(cursor, schedule.timezone);
+    const localDate = cursor.toISOString().slice(0, 10);
     for (const time of schedule.times) {
       const utc = localToUtc(localDate, time, schedule.timezone);
       yield {

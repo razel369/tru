@@ -18,7 +18,8 @@ export function buildPetFromDraft(
     species: draft.species,
     breed: draft.breed ?? "",
     age: draft.ageYears ?? 0,
-    avatar: draft.avatarSeed === "luna" ? "luna" : "milo",
+    avatar: draft.avatarSeed,
+    visualProfile: draft.visualProfile,
     color: draft.accentColor,
     medications: [],
   };

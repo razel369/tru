@@ -1,4 +1,13 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+const storage = vi.hoisted(() => ({
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+}));
+
+vi.mock("@react-native-async-storage/async-storage", () => ({
+  default: storage,
+}));
 
 import {
   __resetStoreKitForTests,
@@ -18,6 +27,11 @@ const plus: SubscriptionEntitlement = {
   expiresAtUtc: "2026-08-10T00:00:00.000Z",
   hasBeenPlus: true,
 };
+
+beforeEach(() => {
+  storage.getItem.mockResolvedValue(null);
+  storage.setItem.mockResolvedValue(undefined);
+});
 
 function makeBackend(opts: {
   purchase?: StoreKitBackend["purchase"];
@@ -88,6 +102,21 @@ describe("storekit wrapper", () => {
     __setStoreKitBackend(makeBackend({}));
     const next = await refreshEntitlement();
     expect(next.tier).toBe("plus");
+  });
+
+  it("keeps an unexpired paid cache when RevenueCat is temporarily unavailable", async () => {
+    storage.getItem.mockResolvedValue(JSON.stringify(plus));
+    __setStoreKitBackend(
+      makeBackend({
+        current: async () => {
+          throw new Error("offline");
+        },
+      }),
+    );
+
+    const next = await refreshEntitlement();
+
+    expect(next).toEqual(plus);
   });
 
   it("honors a __setEntitlementForTests override", () => {

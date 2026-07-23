@@ -1,10 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AppHeader } from "../../components/AppHeader";
+import { MotionPressable } from "../../components/motion";
 import { colors } from "../../design";
-import { currentUser } from "./auth";
+import { currentUser, signIn } from "./auth";
 import {
   acceptInvite,
   createHousehold,
@@ -12,7 +13,7 @@ import {
   listHouseholdsForUser,
   listMembers,
 } from "./service";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface HouseholdScreenProps {
   onClose: () => void;
@@ -27,8 +28,15 @@ interface HouseholdScreenProps {
 export function HouseholdScreen({ onClose }: HouseholdScreenProps) {
   const insets = useSafeAreaInsets();
   const [inviteCode, setInviteCode] = useState<string | null>(null);
+  const [, setRevision] = useState(0);
+  const [previewUser, setPreviewUser] = useState(currentUser());
 
-  const me = currentUser();
+  useEffect(() => {
+    if (previewUser) return;
+    void signIn("local-dev").then((session) => setPreviewUser(session.user));
+  }, [previewUser]);
+
+  const me = previewUser;
   const households = me ? listHouseholdsForUser() : [];
   const active = households[0];
   const members = active ? listMembers(active.id) : [];
@@ -59,15 +67,16 @@ export function HouseholdScreen({ onClose }: HouseholdScreenProps) {
               Create one to invite caregivers and sync doses
               across devices.
             </Text>
-            <Pressable
+            <MotionPressable
               onPress={() => {
                 if (!me) return;
                 createHousehold(`${me.displayName}'s household`);
+                setRevision((value) => value + 1);
               }}
               style={styles.primaryButton}
             >
               <Text style={styles.primaryButtonText}>Create household</Text>
-            </Pressable>
+            </MotionPressable>
           </View>
         )}
 
@@ -111,7 +120,7 @@ export function HouseholdScreen({ onClose }: HouseholdScreenProps) {
                 </Text>
               </View>
             ) : (
-              <Pressable
+              <MotionPressable
                 onPress={() => {
                   if (!active) return;
                   const invite = createInvite(active.id, "caregiver");
@@ -120,29 +129,28 @@ export function HouseholdScreen({ onClose }: HouseholdScreenProps) {
                 style={styles.primaryButton}
               >
                 <Text style={styles.primaryButtonText}>Generate invite</Text>
-              </Pressable>
+              </MotionPressable>
             )}
 
             <Text style={styles.label}>JOIN EXISTING</Text>
-            <Pressable
+            <MotionPressable
               onPress={() => {
                 if (!inviteCode) return;
                 acceptInvite(inviteCode);
                 setInviteCode(null);
+                setRevision((value) => value + 1);
               }}
               style={styles.secondaryButton}
             >
               <Text style={styles.secondaryButtonText}>
                 Try accepting the code above
               </Text>
-            </Pressable>
+            </MotionPressable>
           </View>
         )}
 
         <Text style={styles.footer}>
-          Real Supabase sync is wired in stage 8-final. This
-          screen uses an in-memory store so the UI is ready
-          to swap in once a project is configured.
+          Design preview uses a local household. Invites and members reset when the app restarts.
         </Text>
       </ScrollView>
     </View>

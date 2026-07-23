@@ -19,7 +19,7 @@ import {
   recordDelivery,
   rescheduleForSchedule,
   scheduleNotification,
-} from "./service";
+ ensurePermission } from "./service";
 import {
   __setPermissionBackend,
   getPermissionState,
@@ -27,7 +27,7 @@ import {
 } from "./permission";
 import type { ScheduledNotification } from "./types";
 import { handleNotificationAction, __setDoseLogger } from "./bridge";
-import { ensurePermission } from "./service";
+
 
 function makeNotification(overrides: Partial<ScheduledNotification> = {}): ScheduledNotification {
   return {

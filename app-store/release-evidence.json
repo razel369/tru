@@ -1,0 +1,81 @@
+{
+  "release": {
+    "name": "PawPair",
+    "version": "1.0.0",
+    "submissionCandidateBuild": null,
+    "bundleId": "app.pawpair.medtracker",
+    "platform": "IOS",
+    "distribution": "STORE",
+    "status": "SUBMISSION_FROZEN_BUILD_7_SUPERSEDED_BY_SOURCE_CHANGES"
+  },
+  "currentSourceReadiness": {
+    "asOf": "2026-07-21",
+    "typescript": "PASS",
+    "testSuite": "PASS_33_FILES_173_TESTS",
+    "expoDoctor": "PENDING_CURRENT_SOURCE_RECHECK",
+    "expoSdk": "57.0.0",
+    "motionRuntimePacks": 67,
+    "motionPngAssets": 201,
+    "motionAuditIssues": 0,
+    "productionDependencyAudit": "12_MODERATE_0_HIGH_0_CRITICAL_EXPO_BUILD_TOOLCHAIN_ONLY_NO_SAFE_NONBREAKING_FIX",
+    "signedProductionBuild": "STALE_BUILD_7_SUPERSEDED",
+    "screenshots": "ASO_MODEL_B_PREPARED_FINAL_BINARY_CONFIRMATION_PENDING",
+    "targetDeviceFamily": "IPHONE_ONLY_BUILD_8_SOURCE",
+    "revenueCat": "PAYWALL_HARDENED_DASHBOARD_CONFIGURATION_PENDING"
+  },
+  "latestAuditedSignedArtifact": {
+    "version": "1.0.0",
+    "build": "7",
+    "scope": "HISTORICAL_SIGNED_ARTIFACT_SUPERSEDED_BY_CURRENT_SOURCE",
+    "easBuildId": "f8859acc-d82b-4bc9-9e3f-1ebc7195fa95",
+    "buildPage": "https://expo.dev/accounts/razellll/projects/pawpair-pet-med-tracker/builds/f8859acc-d82b-4bc9-9e3f-1ebc7195fa95",
+    "artifactUrl": "https://expo.dev/artifacts/eas/P10gVK5md2BEZYjOA5voDw3AAoALvMM-iyGgnOr4VL8.ipa",
+    "fingerprint": "d4a3885fc378b93e956d85edce77f20d55e0f0b1",
+    "auditFile": "ipa-audit-build7.json",
+    "backupEvidenceFile": "ipa-backup-evidence-build7.json",
+    "allAuditChecksPass": true,
+    "auditCheckCount": 27,
+    "ipaBytes": 183760140,
+    "ipaMiB": 175.25,
+    "minimumOSVersion": "16.4",
+    "sdk": "iphoneos26.5",
+    "xcode": "2660",
+    "xcodeBuild": "17F113",
+    "deviceFamilies": [
+      1,
+      2
+    ],
+    "orientationPolicy": "IPHONE_PORTRAIT_ONLY_IPAD_ADAPTIVE_LANDSCAPE_SUPPORTED",
+    "appStoreProvisioning": "PASS",
+    "privacyManifest": "PASS",
+    "notificationCapability": "PRODUCTION_NO_BACKGROUND_REMOTE_MODE",
+    "backupAndRestoreEvidence": "PASS",
+    "currentSourceIncluded": false
+  },
+  "publicPages": {
+    "checkedAt": "2026-07-19",
+    "supportUrl": "PASS_WITH_CONTACT_EMAIL",
+    "privacyPolicyUrl": "PASS"
+  },
+  "submissionGates": {
+    "finalNativeIphoneQa": "PENDING",
+    "finalNativeIpadQa": "NOT_REQUIRED_IPHONE_ONLY",
+    "finalProductionBuild": "PENDING_AFTER_SOURCE_AND_NATIVE_QA",
+    "finalSignedIpaAudit": "PENDING_FOR_FINAL_BUILD_BUILD_7_HISTORICAL_PASS_27_OF_27",
+    "finalScreenshotCapture": "PENDING",
+    "appStoreConnectUpload": "BUILD_7_UPLOADED_BUT_SUPERSEDED_DO_NOT_SELECT",
+    "appStoreReviewSubmission": "FROZEN_UNTIL_FINAL_QA_SCREENSHOTS_AND_EXPLICIT_APPROVAL"
+  },
+  "appStoreConnect": {
+    "ascAppId": "6789938403",
+    "appleUrl": "https://appstoreconnect.apple.com/apps/6789938403/distribution",
+    "integration": "CONNECTED",
+    "apiKeyId": "3X6AV8DLHU",
+    "submissionId": "2396ca6c-3c36-4e3c-af97-cb15c9c83f82",
+    "submissionUrl": "https://expo.dev/accounts/razellll/projects/pawpair-pet-med-tracker/submissions/2396ca6c-3c36-4e3c-af97-cb15c9c83f82",
+    "submissionStatus": "FINISHED",
+    "submissionCreatedAt": "2026-07-20T07:29:01.670Z",
+    "submissionUpdatedAt": "2026-07-20T07:29:17.854Z",
+    "submissionError": null
+  }
+}

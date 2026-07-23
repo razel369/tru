@@ -1,0 +1,2244 @@
+{
+  "packCount": 62,
+  "issueCount": 13,
+  "passingCount": 49,
+  "issues": [
+    {
+      "key": "breed:dog:yorkshire-terrier",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          309,
+          514,
+          104,
+          103
+        ],
+        [
+          457,
+          514,
+          104,
+          103
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 80.9,
+        "closedEyeDelta": 51.891,
+        "halfClosedDelta": 50.181,
+        "halfSeamDelta": 68.026,
+        "closedSeamDelta": 37.234
+      },
+      "issues": [
+        "half-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:cat:russian-blue",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          300,
+          564,
+          120,
+          90
+        ],
+        [
+          445,
+          564,
+          120,
+          90
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 41.715,
+        "closedEyeDelta": 40.586,
+        "halfClosedDelta": 37.294,
+        "halfSeamDelta": 40.19,
+        "closedSeamDelta": 33.898
+      },
+      "issues": [
+        "half-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:cat:devon-rex",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          295,
+          552,
+          130,
+          100
+        ],
+        [
+          440,
+          552,
+          130,
+          100
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 41.593,
+        "closedEyeDelta": 45.449,
+        "halfClosedDelta": 43.372,
+        "halfSeamDelta": 42.159,
+        "closedSeamDelta": 41.162
+      },
+      "issues": [
+        "half-blink-seam-risk",
+        "closed-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:dog:miniature-schnauzer",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          300,
+          520,
+          115,
+          110
+        ],
+        [
+          450,
+          520,
+          115,
+          110
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 44.496,
+        "closedEyeDelta": 41.794,
+        "halfClosedDelta": 31.601,
+        "halfSeamDelta": 34.153,
+        "closedSeamDelta": 31.405
+      },
+      "issues": [
+        "half-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:cat:munchkin",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          275,
+          575,
+          125,
+          140
+        ],
+        [
+          455,
+          575,
+          125,
+          140
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 50.072,
+        "closedEyeDelta": 56.142,
+        "halfClosedDelta": 49.181,
+        "halfSeamDelta": 34.802,
+        "closedSeamDelta": 41.977
+      },
+      "issues": [
+        "half-blink-seam-risk",
+        "closed-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:dog:pug",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          270,
+          650,
+          140,
+          130
+        ],
+        [
+          455,
+          650,
+          140,
+          130
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 29.961,
+        "closedEyeDelta": 52.949,
+        "halfClosedDelta": 39.647,
+        "halfSeamDelta": 26.387,
+        "closedSeamDelta": 40.905
+      },
+      "issues": [
+        "closed-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:dog:shih-tzu",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          285,
+          690,
+          125,
+          120
+        ],
+        [
+          450,
+          690,
+          125,
+          120
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 39.338,
+        "closedEyeDelta": 69.986,
+        "halfClosedDelta": 42.177,
+        "halfSeamDelta": 23.778,
+        "closedSeamDelta": 45.379
+      },
+      "issues": [
+        "closed-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:dog:havanese",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          325,
+          850,
+          80,
+          90
+        ],
+        [
+          448,
+          850,
+          80,
+          90
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 34.093,
+        "closedEyeDelta": 56.689,
+        "halfClosedDelta": 47.774,
+        "halfSeamDelta": 26.667,
+        "closedSeamDelta": 39.496
+      },
+      "issues": [
+        "closed-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:cat:maine-coon",
+      "canvas": [
+        852,
+        1847
+      ],
+      "regions": [
+        [
+          343,
+          513,
+          73,
+          85
+        ],
+        [
+          482,
+          513,
+          73,
+          85
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 56.618,
+        "closedEyeDelta": 64.615,
+        "halfClosedDelta": 40.051,
+        "halfSeamDelta": 33.712,
+        "closedSeamDelta": 48.443
+      },
+      "issues": [
+        "closed-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:dog:chihuahua",
+      "canvas": [
+        853,
+        1844
+      ],
+      "regions": [
+        [
+          261,
+          516,
+          90,
+          103
+        ],
+        [
+          444,
+          516,
+          90,
+          103
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 35.645,
+        "closedEyeDelta": 87.874,
+        "halfClosedDelta": 78.233,
+        "halfSeamDelta": 17.294,
+        "closedSeamDelta": 42.719
+      },
+      "issues": [
+        "closed-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:dog:pembroke-welsh-corgi",
+      "canvas": [
+        853,
+        1844
+      ],
+      "regions": [
+        [
+          299,
+          609,
+          85,
+          92
+        ],
+        [
+          473,
+          609,
+          85,
+          92
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 44.092,
+        "closedEyeDelta": 64.519,
+        "halfClosedDelta": 45.614,
+        "halfSeamDelta": 26.843,
+        "closedSeamDelta": 43.391
+      },
+      "issues": [
+        "closed-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:cat:persian",
+      "canvas": [
+        853,
+        1844
+      ],
+      "regions": [
+        [
+          330,
+          527,
+          77,
+          85
+        ],
+        [
+          473,
+          527,
+          77,
+          85
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 65.181,
+        "closedEyeDelta": 72.677,
+        "halfClosedDelta": 36.277,
+        "halfSeamDelta": 44.446,
+        "closedSeamDelta": 47.967
+      },
+      "issues": [
+        "half-blink-seam-risk",
+        "closed-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:cat:bengal",
+      "canvas": [
+        853,
+        1844
+      ],
+      "regions": [
+        [
+          316,
+          439,
+          73,
+          85
+        ],
+        [
+          448,
+          439,
+          73,
+          85
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 58.397,
+        "closedEyeDelta": 75.074,
+        "halfClosedDelta": 60.224,
+        "halfSeamDelta": 42.171,
+        "closedSeamDelta": 58.753
+      },
+      "issues": [
+        "half-blink-seam-risk",
+        "closed-blink-seam-risk"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "key": "breed:dog:rottweiler",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          298,
+          350,
+          117,
+          100
+        ],
+        [
+          452,
+          350,
+          117,
+          100
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 20.416,
+        "closedEyeDelta": 23.069,
+        "halfClosedDelta": 13.707,
+        "halfSeamDelta": 18.941,
+        "closedSeamDelta": 22.893
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:boxer",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          288,
+          344,
+          112,
+          108
+        ],
+        [
+          452,
+          344,
+          112,
+          108
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 27.555,
+        "closedEyeDelta": 26.902,
+        "halfClosedDelta": 17.193,
+        "halfSeamDelta": 22.918,
+        "closedSeamDelta": 22.064
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:dobermann",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          319,
+          274,
+          94,
+          88
+        ],
+        [
+          443,
+          274,
+          94,
+          88
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 17.938,
+        "closedEyeDelta": 27.833,
+        "halfClosedDelta": 24.0,
+        "halfSeamDelta": 14.882,
+        "closedSeamDelta": 27.275
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:bernese-mountain-dog",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          314,
+          319,
+          99,
+          103
+        ],
+        [
+          446,
+          319,
+          99,
+          103
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 24.406,
+        "closedEyeDelta": 23.296,
+        "halfClosedDelta": 14.449,
+        "halfSeamDelta": 15.159,
+        "closedSeamDelta": 14.532
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:yorkshire-terrier",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          309,
+          514,
+          104,
+          103
+        ],
+        [
+          457,
+          514,
+          104,
+          103
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 80.9,
+        "closedEyeDelta": 51.891,
+        "halfClosedDelta": 50.181,
+        "halfSeamDelta": 68.026,
+        "closedSeamDelta": 37.234
+      },
+      "issues": [
+        "half-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:cat:russian-blue",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          300,
+          564,
+          120,
+          90
+        ],
+        [
+          445,
+          564,
+          120,
+          90
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 41.715,
+        "closedEyeDelta": 40.586,
+        "halfClosedDelta": 37.294,
+        "halfSeamDelta": 40.19,
+        "closedSeamDelta": 33.898
+      },
+      "issues": [
+        "half-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:cat:abyssinian",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          325,
+          430,
+          110,
+          90
+        ],
+        [
+          465,
+          430,
+          110,
+          90
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 37.642,
+        "closedEyeDelta": 48.416,
+        "halfClosedDelta": 41.699,
+        "halfSeamDelta": 22.54,
+        "closedSeamDelta": 24.894
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:cat:norwegian-forest-cat",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          325,
+          505,
+          115,
+          95
+        ],
+        [
+          465,
+          505,
+          115,
+          95
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 38.092,
+        "closedEyeDelta": 48.359,
+        "halfClosedDelta": 46.363,
+        "halfSeamDelta": 23.593,
+        "closedSeamDelta": 30.268
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:cat:devon-rex",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          295,
+          552,
+          130,
+          100
+        ],
+        [
+          440,
+          552,
+          130,
+          100
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 41.593,
+        "closedEyeDelta": 45.449,
+        "halfClosedDelta": 43.372,
+        "halfSeamDelta": 42.159,
+        "closedSeamDelta": 41.162
+      },
+      "issues": [
+        "half-blink-seam-risk",
+        "closed-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:dog:australian-shepherd",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          315,
+          405,
+          95,
+          85
+        ],
+        [
+          445,
+          405,
+          95,
+          85
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 24.992,
+        "closedEyeDelta": 41.131,
+        "halfClosedDelta": 36.236,
+        "halfSeamDelta": 12.943,
+        "closedSeamDelta": 28.091
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:cavalier-king-charles-spaniel",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          305,
+          515,
+          115,
+          110
+        ],
+        [
+          450,
+          515,
+          115,
+          110
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 29.466,
+        "closedEyeDelta": 35.322,
+        "halfClosedDelta": 24.976,
+        "halfSeamDelta": 12.831,
+        "closedSeamDelta": 17.059
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:miniature-schnauzer",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          300,
+          520,
+          115,
+          110
+        ],
+        [
+          450,
+          520,
+          115,
+          110
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 44.496,
+        "closedEyeDelta": 41.794,
+        "halfClosedDelta": 31.601,
+        "halfSeamDelta": 34.153,
+        "closedSeamDelta": 31.405
+      },
+      "issues": [
+        "half-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:dog:bulldog",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          260,
+          535,
+          120,
+          110
+        ],
+        [
+          470,
+          535,
+          120,
+          110
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 40.264,
+        "closedEyeDelta": 64.719,
+        "halfClosedDelta": 49.097,
+        "halfSeamDelta": 25.63,
+        "closedSeamDelta": 35.533
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:cat:american-shorthair",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          305,
+          520,
+          115,
+          115
+        ],
+        [
+          455,
+          520,
+          115,
+          115
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 61.98,
+        "closedEyeDelta": 57.275,
+        "halfClosedDelta": 50.825,
+        "halfSeamDelta": 30.83,
+        "closedSeamDelta": 26.459
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:cat:birman",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          330,
+          500,
+          100,
+          115
+        ],
+        [
+          455,
+          500,
+          100,
+          115
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 22.346,
+        "closedEyeDelta": 34.806,
+        "halfClosedDelta": 31.028,
+        "halfSeamDelta": 12.443,
+        "closedSeamDelta": 23.431
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:cat:oriental-shorthair",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          330,
+          395,
+          90,
+          110
+        ],
+        [
+          455,
+          395,
+          90,
+          110
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 22.047,
+        "closedEyeDelta": 27.071,
+        "halfClosedDelta": 18.458,
+        "halfSeamDelta": 11.777,
+        "closedSeamDelta": 15.331
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:cat:munchkin",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          275,
+          575,
+          125,
+          140
+        ],
+        [
+          455,
+          575,
+          125,
+          140
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 50.072,
+        "closedEyeDelta": 56.142,
+        "halfClosedDelta": 49.181,
+        "halfSeamDelta": 34.802,
+        "closedSeamDelta": 41.977
+      },
+      "issues": [
+        "half-blink-seam-risk",
+        "closed-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:dog:pug",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          270,
+          650,
+          140,
+          130
+        ],
+        [
+          455,
+          650,
+          140,
+          130
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 29.961,
+        "closedEyeDelta": 52.949,
+        "halfClosedDelta": 39.647,
+        "halfSeamDelta": 26.387,
+        "closedSeamDelta": 40.905
+      },
+      "issues": [
+        "closed-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:dog:maltese",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          305,
+          730,
+          110,
+          110
+        ],
+        [
+          465,
+          730,
+          110,
+          110
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 42.157,
+        "closedEyeDelta": 58.486,
+        "halfClosedDelta": 28.901,
+        "halfSeamDelta": 13.126,
+        "closedSeamDelta": 15.349
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:shih-tzu",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          285,
+          690,
+          125,
+          120
+        ],
+        [
+          450,
+          690,
+          125,
+          120
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 39.338,
+        "closedEyeDelta": 69.986,
+        "halfClosedDelta": 42.177,
+        "halfSeamDelta": 23.778,
+        "closedSeamDelta": 45.379
+      },
+      "issues": [
+        "closed-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:dog:jack-russell-terrier",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          305,
+          580,
+          110,
+          105
+        ],
+        [
+          450,
+          580,
+          110,
+          105
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 23.756,
+        "closedEyeDelta": 37.054,
+        "halfClosedDelta": 28.998,
+        "halfSeamDelta": 14.569,
+        "closedSeamDelta": 21.561
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:cat:domestic-shorthair",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          280,
+          650,
+          130,
+          130
+        ],
+        [
+          445,
+          650,
+          130,
+          130
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 31.046,
+        "closedEyeDelta": 50.951,
+        "halfClosedDelta": 51.643,
+        "halfSeamDelta": 18.149,
+        "closedSeamDelta": 32.894
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:cat:domestic-longhair",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          300,
+          625,
+          120,
+          125
+        ],
+        [
+          455,
+          625,
+          120,
+          125
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 18.815,
+        "closedEyeDelta": 31.768,
+        "halfClosedDelta": 26.187,
+        "halfSeamDelta": 10.157,
+        "closedSeamDelta": 23.578
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:cat:siberian",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          300,
+          650,
+          120,
+          120
+        ],
+        [
+          455,
+          650,
+          120,
+          120
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 40.366,
+        "closedEyeDelta": 46.017,
+        "halfClosedDelta": 31.991,
+        "halfSeamDelta": 29.711,
+        "closedSeamDelta": 30.889
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:cat:bombay",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          295,
+          615,
+          125,
+          130
+        ],
+        [
+          455,
+          615,
+          125,
+          130
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 33.495,
+        "closedEyeDelta": 31.604,
+        "halfClosedDelta": 21.359,
+        "halfSeamDelta": 18.363,
+        "closedSeamDelta": 14.219
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:boston-terrier",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          270,
+          760,
+          105,
+          100
+        ],
+        [
+          475,
+          760,
+          105,
+          100
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 19.362,
+        "closedEyeDelta": 24.794,
+        "halfClosedDelta": 21.416,
+        "halfSeamDelta": 8.73,
+        "closedSeamDelta": 11.453
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:bichon-frise",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          330,
+          900,
+          80,
+          85
+        ],
+        [
+          450,
+          900,
+          80,
+          85
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 28.979,
+        "closedEyeDelta": 60.495,
+        "halfClosedDelta": 45.089,
+        "halfSeamDelta": 15.562,
+        "closedSeamDelta": 32.991
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:havanese",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          325,
+          850,
+          80,
+          90
+        ],
+        [
+          448,
+          850,
+          80,
+          90
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 34.093,
+        "closedEyeDelta": 56.689,
+        "halfClosedDelta": 47.774,
+        "halfSeamDelta": 26.667,
+        "closedSeamDelta": 39.496
+      },
+      "issues": [
+        "closed-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:dog:english-cocker-spaniel",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          310,
+          710,
+          90,
+          95
+        ],
+        [
+          455,
+          710,
+          90,
+          95
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 24.498,
+        "closedEyeDelta": 31.581,
+        "halfClosedDelta": 22.08,
+        "halfSeamDelta": 12.522,
+        "closedSeamDelta": 13.653
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:akita",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          356,
+          640,
+          88,
+          82
+        ],
+        [
+          466,
+          640,
+          88,
+          82
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 18.417,
+        "closedEyeDelta": 28.621,
+        "halfClosedDelta": 22.127,
+        "halfSeamDelta": 7.193,
+        "closedSeamDelta": 8.505
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:basset-hound",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          315,
+          675,
+          92,
+          110
+        ],
+        [
+          430,
+          675,
+          92,
+          110
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 16.265,
+        "closedEyeDelta": 27.391,
+        "halfClosedDelta": 21.595,
+        "halfSeamDelta": 8.835,
+        "closedSeamDelta": 12.632
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:papillon",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          345,
+          790,
+          92,
+          105
+        ],
+        [
+          465,
+          790,
+          92,
+          105
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 23.202,
+        "closedEyeDelta": 31.442,
+        "halfClosedDelta": 23.207,
+        "halfSeamDelta": 11.991,
+        "closedSeamDelta": 13.549
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:cat:british-shorthair",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          335,
+          700,
+          95,
+          115
+        ],
+        [
+          465,
+          700,
+          95,
+          115
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 31.979,
+        "closedEyeDelta": 38.909,
+        "halfClosedDelta": 32.602,
+        "halfSeamDelta": 17.687,
+        "closedSeamDelta": 17.673
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:dalmatian",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          337,
+          610,
+          92,
+          96
+        ],
+        [
+          449,
+          610,
+          92,
+          96
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 31.745,
+        "closedEyeDelta": 42.427,
+        "halfClosedDelta": 28.653,
+        "halfSeamDelta": 10.181,
+        "closedSeamDelta": 12.421
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:belgian-malinois",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          316,
+          614,
+          100,
+          125
+        ],
+        [
+          428,
+          614,
+          100,
+          125
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 25.254,
+        "closedEyeDelta": 24.533,
+        "halfClosedDelta": 16.233,
+        "halfSeamDelta": 17.367,
+        "closedSeamDelta": 16.712
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:chow-chow",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          312,
+          668,
+          96,
+          116
+        ],
+        [
+          445,
+          668,
+          96,
+          116
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 22.158,
+        "closedEyeDelta": 26.327,
+        "halfClosedDelta": 16.901,
+        "halfSeamDelta": 11.845,
+        "closedSeamDelta": 12.949
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:cat:savannah",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          304,
+          626,
+          104,
+          129
+        ],
+        [
+          433,
+          626,
+          104,
+          129
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 29.04,
+        "closedEyeDelta": 45.203,
+        "halfClosedDelta": 39.672,
+        "halfSeamDelta": 16.635,
+        "closedSeamDelta": 25.545
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:alaskan-malamute",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          345,
+          653,
+          89,
+          90
+        ],
+        [
+          464,
+          653,
+          89,
+          90
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 25.151,
+        "closedEyeDelta": 35.687,
+        "halfClosedDelta": 24.37,
+        "halfSeamDelta": 9.946,
+        "closedSeamDelta": 10.822
+      },
+      "issues": []
+    },
+    {
+      "key": "pet:luna",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          294,
+          539,
+          115,
+          140
+        ],
+        [
+          447,
+          539,
+          115,
+          140
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 35.986,
+        "closedEyeDelta": 48.053,
+        "halfClosedDelta": 36.663,
+        "halfSeamDelta": 14.626,
+        "closedSeamDelta": 16.205
+      },
+      "issues": []
+    },
+    {
+      "key": "pet:milo",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          318,
+          371,
+          77,
+          74
+        ],
+        [
+          473,
+          371,
+          77,
+          74
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 29.769,
+        "closedEyeDelta": 53.091,
+        "halfClosedDelta": 39.568,
+        "halfSeamDelta": 11.791,
+        "closedSeamDelta": 25.73
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:golden-retriever",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          318,
+          371,
+          77,
+          74
+        ],
+        [
+          473,
+          371,
+          77,
+          74
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 29.769,
+        "closedEyeDelta": 53.091,
+        "halfClosedDelta": 39.568,
+        "halfSeamDelta": 11.791,
+        "closedSeamDelta": 25.73
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:dachshund",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          325,
+          497,
+          77,
+          85
+        ],
+        [
+          473,
+          497,
+          77,
+          85
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 26.166,
+        "closedEyeDelta": 31.423,
+        "halfClosedDelta": 24.921,
+        "halfSeamDelta": 17.225,
+        "closedSeamDelta": 22.738
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:cat:maine-coon",
+      "canvas": [
+        852,
+        1847
+      ],
+      "regions": [
+        [
+          343,
+          513,
+          73,
+          85
+        ],
+        [
+          482,
+          513,
+          73,
+          85
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 56.618,
+        "closedEyeDelta": 64.615,
+        "halfClosedDelta": 40.051,
+        "halfSeamDelta": 33.712,
+        "closedSeamDelta": 48.443
+      },
+      "issues": [
+        "closed-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:cat:sphynx",
+      "canvas": [
+        844,
+        1863
+      ],
+      "regions": [
+        [
+          305,
+          518,
+          81,
+          93
+        ],
+        [
+          462,
+          518,
+          81,
+          93
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 42.795,
+        "closedEyeDelta": 62.696,
+        "halfClosedDelta": 45.755,
+        "halfSeamDelta": 24.198,
+        "closedSeamDelta": 33.147
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:chihuahua",
+      "canvas": [
+        853,
+        1844
+      ],
+      "regions": [
+        [
+          261,
+          516,
+          90,
+          103
+        ],
+        [
+          444,
+          516,
+          90,
+          103
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 35.645,
+        "closedEyeDelta": 87.874,
+        "halfClosedDelta": 78.233,
+        "halfSeamDelta": 17.294,
+        "closedSeamDelta": 42.719
+      },
+      "issues": [
+        "closed-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:dog:french-bulldog",
+      "canvas": [
+        853,
+        1844
+      ],
+      "regions": [
+        [
+          264,
+          572,
+          94,
+          103
+        ],
+        [
+          480,
+          572,
+          94,
+          103
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 26.259,
+        "closedEyeDelta": 56.11,
+        "halfClosedDelta": 47.467,
+        "halfSeamDelta": 14.797,
+        "closedSeamDelta": 35.557
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:border-collie",
+      "canvas": [
+        853,
+        1844
+      ],
+      "regions": [
+        [
+          315,
+          494,
+          77,
+          85
+        ],
+        [
+          458,
+          494,
+          77,
+          85
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 17.514,
+        "closedEyeDelta": 20.54,
+        "halfClosedDelta": 14.832,
+        "halfSeamDelta": 6.532,
+        "closedSeamDelta": 9.947
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:great-dane",
+      "canvas": [
+        853,
+        1844
+      ],
+      "regions": [
+        [
+          321,
+          267,
+          73,
+          63
+        ],
+        [
+          451,
+          267,
+          73,
+          63
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 25.242,
+        "closedEyeDelta": 43.593,
+        "halfClosedDelta": 38.049,
+        "halfSeamDelta": 16.808,
+        "closedSeamDelta": 29.121
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:pomeranian",
+      "canvas": [
+        853,
+        1844
+      ],
+      "regions": [
+        [
+          299,
+          609,
+          77,
+          85
+        ],
+        [
+          443,
+          609,
+          77,
+          85
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 37.107,
+        "closedEyeDelta": 58.098,
+        "halfClosedDelta": 37.294,
+        "halfSeamDelta": 18.405,
+        "closedSeamDelta": 30.811
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:cat:siamese",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          302,
+          425,
+          111,
+          129
+        ],
+        [
+          439,
+          425,
+          111,
+          129
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 20.918,
+        "closedEyeDelta": 37.677,
+        "halfClosedDelta": 27.007,
+        "halfSeamDelta": 8.466,
+        "closedSeamDelta": 17.337
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:labrador-retriever",
+      "canvas": [
+        851,
+        1847
+      ],
+      "regions": [
+        [
+          304,
+          432,
+          82,
+          85
+        ],
+        [
+          470,
+          432,
+          82,
+          85
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 32.878,
+        "closedEyeDelta": 57.624,
+        "halfClosedDelta": 44.769,
+        "halfSeamDelta": 11.375,
+        "closedSeamDelta": 26.835
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:german-shepherd",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          339,
+          474,
+          73,
+          85
+        ],
+        [
+          463,
+          474,
+          73,
+          85
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 29.566,
+        "closedEyeDelta": 35.84,
+        "halfClosedDelta": 21.978,
+        "halfSeamDelta": 26.966,
+        "closedSeamDelta": 27.895
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:siberian-husky",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          318,
+          491,
+          77,
+          85
+        ],
+        [
+          453,
+          491,
+          77,
+          85
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 28.59,
+        "closedEyeDelta": 48.104,
+        "halfClosedDelta": 41.495,
+        "halfSeamDelta": 9.524,
+        "closedSeamDelta": 13.072
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:beagle",
+      "canvas": [
+        853,
+        1844
+      ],
+      "regions": [
+        [
+          305,
+          356,
+          82,
+          85
+        ],
+        [
+          471,
+          356,
+          82,
+          85
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 30.675,
+        "closedEyeDelta": 47.126,
+        "halfClosedDelta": 35.563,
+        "halfSeamDelta": 13.609,
+        "closedSeamDelta": 26.934
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:standard-poodle",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          322,
+          384,
+          77,
+          85
+        ],
+        [
+          465,
+          384,
+          77,
+          85
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 29.651,
+        "closedEyeDelta": 47.82,
+        "halfClosedDelta": 38.291,
+        "halfSeamDelta": 13.432,
+        "closedSeamDelta": 18.012
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:pembroke-welsh-corgi",
+      "canvas": [
+        853,
+        1844
+      ],
+      "regions": [
+        [
+          299,
+          609,
+          85,
+          92
+        ],
+        [
+          473,
+          609,
+          85,
+          92
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 44.092,
+        "closedEyeDelta": 64.519,
+        "halfClosedDelta": 45.614,
+        "halfSeamDelta": 26.843,
+        "closedSeamDelta": 43.391
+      },
+      "issues": [
+        "closed-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:dog:shiba-inu",
+      "canvas": [
+        853,
+        1844
+      ],
+      "regions": [
+        [
+          312,
+          550,
+          73,
+          85
+        ],
+        [
+          440,
+          550,
+          73,
+          85
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 33.902,
+        "closedEyeDelta": 55.49,
+        "halfClosedDelta": 43.844,
+        "halfSeamDelta": 18.222,
+        "closedSeamDelta": 26.643
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:samoyed",
+      "canvas": [
+        851,
+        1849
+      ],
+      "regions": [
+        [
+          319,
+          516,
+          73,
+          78
+        ],
+        [
+          454,
+          516,
+          73,
+          78
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 42.412,
+        "closedEyeDelta": 54.781,
+        "halfClosedDelta": 39.324,
+        "halfSeamDelta": 9.271,
+        "closedSeamDelta": 8.556
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:cat:persian",
+      "canvas": [
+        853,
+        1844
+      ],
+      "regions": [
+        [
+          330,
+          527,
+          77,
+          85
+        ],
+        [
+          473,
+          527,
+          77,
+          85
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 65.181,
+        "closedEyeDelta": 72.677,
+        "halfClosedDelta": 36.277,
+        "halfSeamDelta": 44.446,
+        "closedSeamDelta": 47.967
+      },
+      "issues": [
+        "half-blink-seam-risk",
+        "closed-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:cat:ragdoll",
+      "canvas": [
+        853,
+        1844
+      ],
+      "regions": [
+        [
+          343,
+          514,
+          73,
+          85
+        ],
+        [
+          471,
+          514,
+          73,
+          85
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 41.048,
+        "closedEyeDelta": 49.363,
+        "halfClosedDelta": 33.87,
+        "halfSeamDelta": 25.511,
+        "closedSeamDelta": 32.817
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:cat:bengal",
+      "canvas": [
+        853,
+        1844
+      ],
+      "regions": [
+        [
+          316,
+          439,
+          73,
+          85
+        ],
+        [
+          448,
+          439,
+          73,
+          85
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 58.397,
+        "closedEyeDelta": 75.074,
+        "halfClosedDelta": 60.224,
+        "halfSeamDelta": 42.171,
+        "closedSeamDelta": 58.753
+      },
+      "issues": [
+        "half-blink-seam-risk",
+        "closed-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:cat:scottish-fold",
+      "canvas": [
+        853,
+        1844
+      ],
+      "regions": [
+        [
+          281,
+          479,
+          154,
+          221
+        ],
+        [
+          426,
+          479,
+          154,
+          221
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 29.464,
+        "closedEyeDelta": 35.128,
+        "halfClosedDelta": 25.463,
+        "halfSeamDelta": 19.998,
+        "closedSeamDelta": 21.836
+      },
+      "issues": []
+    }
+  ]
+}

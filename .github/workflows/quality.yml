@@ -1,0 +1,33 @@
+name: PawPair quality
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+concurrency:
+  cancel-in-progress: true
+  group: quality-${{ github.ref }}
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          lfs: true
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          cache: npm
+          node-version: 24
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Verify PawPair
+        run: npm run verify:ci

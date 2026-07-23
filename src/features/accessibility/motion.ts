@@ -1,33 +1,59 @@
 import { useEffect, useState } from "react";
 import { AccessibilityInfo } from "react-native";
 
+let cachedReduceMotion = false;
+let queryGeneration = 0;
+let nativeSubscription: { remove: () => void } | null = null;
+const subscribers = new Set<() => void>();
+
+function updateReducedMotion(value: boolean) {
+  if (cachedReduceMotion === value) return;
+  cachedReduceMotion = value;
+  subscribers.forEach((subscriber) => subscriber());
+}
+
+function startReducedMotionStore() {
+  if (nativeSubscription) return;
+  const generation = ++queryGeneration;
+  nativeSubscription = AccessibilityInfo.addEventListener(
+    "reduceMotionChanged",
+    updateReducedMotion,
+  );
+  void AccessibilityInfo.isReduceMotionEnabled()
+    .then((value) => {
+      if (generation === queryGeneration) updateReducedMotion(value);
+    })
+    .catch(() => undefined);
+}
+
+function subscribeToReducedMotion(subscriber: () => void) {
+  subscribers.add(subscriber);
+  startReducedMotionStore();
+  subscriber();
+  return () => {
+    subscribers.delete(subscriber);
+    if (subscribers.size > 0) return;
+    queryGeneration += 1;
+    nativeSubscription?.remove();
+    nativeSubscription = null;
+  };
+}
+
 /**
  * docs/AAA-HANDOFF.md §10: "Motion must explain state change.
  * Prefer spring-based 180–320 ms transitions and respect Reduce
  * Motion."
  *
- * Returns the current Reduce Motion preference. The initial
- * value comes from AccessibilityInfo.isReduceMotionEnabled so
- * the first render matches the user's setting; subsequent
- * changes are picked up via the change listener.
+ * Returns the current Reduce Motion preference. All consumers
+ * share one native listener and a cached snapshot; the async
+ * platform value and later preference changes update together.
  */
 export function usePrefersReducedMotion(): boolean {
-  const [reduce, setReduce] = useState(false);
+  const [reduce, setReduce] = useState(cachedReduceMotion);
   useEffect(() => {
-    let active = true;
-    AccessibilityInfo.isReduceMotionEnabled().then((value: boolean) => {
-      if (active) setReduce(value);
+    return subscribeToReducedMotion(() => {
+      setReduce(cachedReduceMotion);
     });
-    const sub = AccessibilityInfo.addEventListener(
-      "reduceMotionChanged" as never,
-      ((event: { reduceMotionEnabled: boolean }) => {
-        setReduce(event.reduceMotionEnabled);
-      }) as never,
-    );
-    return () => {
-      active = false;
-      sub.remove();
-    };
   }, []);
   return reduce;
 }

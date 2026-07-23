@@ -8,29 +8,19 @@ interface OfflineBannerProps {
   visible: boolean;
 }
 
-/**
- * Per docs/AAA-HANDOFF.md §8: "Offline and syncing indicators
- * that do not dominate the screen." A subtle top banner that
- * shows when the device is offline so caregivers know that
- * cloud-side caregiver sync is paused. The local data layer
- * continues to work.
- */
 export function OfflineBanner({ visible }: OfflineBannerProps) {
   if (!visible) return null;
   return (
-    <View style={styles.banner}>
+    <View accessibilityRole="alert" style={styles.banner}>
+      <View style={styles.statusDot} />
       <Ionicons color={colors.ink} name="cloud-offline-outline" size={14} />
       <Text style={styles.text}>
-        Offline — local data still works, sync will resume.
+        Offline / care updates stay safely on this device.
       </Text>
     </View>
   );
 }
 
-/**
- * Convenience wrapper: shows the banner only when the device
- * reports offline. Mounted at the App level.
- */
 export function AutoOfflineBanner() {
   const online = useOnlineStatus();
   return <OfflineBanner visible={!online} />;
@@ -40,14 +30,25 @@ const styles = StyleSheet.create({
   banner: {
     alignItems: "center",
     backgroundColor: colors.butterSoft,
+    borderBottomColor: colors.line,
+    borderBottomWidth: 1,
     flexDirection: "row",
-    gap: 6,
+    gap: 7,
     justifyContent: "center",
-    paddingVertical: 6,
+    minHeight: 32,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    zIndex: 50,
+  },
+  statusDot: {
+    backgroundColor: colors.coral,
+    borderRadius: 4,
+    height: 7,
+    width: 7,
   },
   text: {
     color: colors.ink,
-    fontFamily: "Manrope_700Bold",
-    fontSize: 11,
+    fontFamily: "Nunito_700Bold",
+    fontSize: 10,
   },
 });

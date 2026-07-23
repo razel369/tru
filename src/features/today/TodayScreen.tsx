@@ -1,10 +1,13 @@
 import type { ImageSourcePropType } from "react-native";
 import { StyleSheet, View } from "react-native";
+import { useMemo, useState } from "react";
 
 import { EmptyTodayState } from "../../components/feedback/EmptyTodayState";
 import type { Pet, ScheduledDose } from "../../types";
 
-import { TodayHero } from "./TodayHero";
+import { TodayHero } from "./TodayHeroDesignV2";
+import { PetSwitcher } from "./PetSwitcher";
+import { resolvePetVisual } from "../pet-visuals";
 
 interface TodayScreenProps {
   schedule: ScheduledDose[];
@@ -37,36 +40,61 @@ export function TodayScreen({
   onAdd,
   onMenu,
 }: TodayScreenProps) {
+  const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
+  const pets = useMemo(() => {
+    const uniquePets = new Map<string, Pet>();
+    schedule.forEach((dose) => uniquePets.set(dose.pet.id, dose.pet));
+    return Array.from(uniquePets.values());
+  }, [schedule]);
   const nextDue = schedule.find(
     (dose) =>
       dose.status === "due" ||
       dose.status === "missed" ||
       dose.status === "upcoming",
   );
-  const focusPet = nextDue?.pet ?? schedule[0]?.pet;
+  const activePetId =
+    selectedPetId && pets.some((pet) => pet.id === selectedPetId)
+      ? selectedPetId
+      : nextDue?.pet.id ?? pets[0]?.id ?? "";
+  const focusPet = pets.find((pet) => pet.id === activePetId) ?? nextDue?.pet;
+  const focusedSchedule = activePetId
+    ? schedule.filter((dose) => dose.pet.id === activePetId)
+    : schedule;
   const petImage = focusPet
     ? petImages[focusPet.avatar] ?? heroPet
     : heroPet;
   const petName = focusPet?.name ?? "your pet";
+  const petVisual = focusPet
+    ? resolvePetVisual(focusPet, petImage, heroScene)
+    : null;
 
   return (
     <View style={styles.root}>
       <TodayHero
-        canConfirm={nextDue !== undefined}
         companionImage={companionImage}
-        heroScene={heroScene}
-        nextDose={nextDue}
-        onConfirmNext={
-          nextDue ? () => onLog(nextDue, "given") : undefined
-        }
+        heroScene={petVisual?.sceneSource ?? heroScene}
         onLog={onLog}
         onMenu={onMenu}
-        petImage={petImage}
+        petBreed={focusPet?.breed ?? "Beloved pet"}
+        petImage={petVisual?.petSource ?? petImage}
+        petKey={petVisual?.assetKey ?? `pet:${focusPet?.id ?? "fallback"}`}
+        petLayout={petVisual?.layout}
         petName={petName}
+        petVisualProfile={petVisual?.profile}
         roomImage={roomImage}
-        schedule={schedule}
+        schedule={focusedSchedule}
+        sceneContainsPet={petVisual?.sceneContainsPet ?? false}
         topInset={topInset}
       />
+      {focusPet ? (
+        <PetSwitcher
+          activePetId={focusPet.id}
+          onSelect={setSelectedPetId}
+          petImages={petImages}
+          pets={pets}
+          topInset={topInset}
+        />
+      ) : null}
       {schedule.length === 0 ? (
         <View style={styles.emptyOverlay}>
           <EmptyTodayState onAddMedication={onAdd} />

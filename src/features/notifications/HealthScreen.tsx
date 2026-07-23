@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 
 import { AppHeader } from "../../components/AppHeader";
+import { MotionPressable } from "../../components/motion";
 import { colors, shadow } from "../../design";
 import {
   getPermissionState,
@@ -18,11 +19,13 @@ import type { NotificationHealthReport } from "./types";
 interface HealthScreenProps {
   onOpenSettings?: () => void;
   onOpenPaywall?: () => void;
+  onOpenHousehold?: () => void;
 }
 
 export function HealthScreen({
   onOpenSettings,
   onOpenPaywall,
+  onOpenHousehold,
 }: HealthScreenProps = {}) {
   const insets = useSafeAreaInsets();
   const [report, setReport] = useState<NotificationHealthReport | null>(null);
@@ -47,6 +50,8 @@ export function HealthScreen({
   const undetermined = report?.permission === "undetermined";
   const healthy =
     report?.permission === "granted" && (report?.failures ?? 0) === 0;
+  const visibleFailures =
+    report?.permission === "unsupported" ? 0 : report?.failures ?? 0;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + 14 }]}>
@@ -76,6 +81,24 @@ export function HealthScreen({
           </View>
         </View>
 
+        {onOpenHousehold && (
+          <MotionPressable onPress={onOpenHousehold} style={styles.householdCard}>
+            <View style={styles.householdIcon}>
+              <Ionicons color={colors.coral} name="people-outline" size={20} />
+            </View>
+            <View style={styles.flex}>
+              <Text style={styles.linkTitle}>Caregiver household</Text>
+              <Text style={styles.linkCopy}>Create a home, invite caregivers, and test shared care</Text>
+            </View>
+            <Ionicons color={colors.muted} name="chevron-forward" size={18} />
+          </MotionPressable>
+        )}
+
+        <View style={styles.previewCard}>
+          <Ionicons color={colors.sky} name="lock-open-outline" size={17} />
+          <Text style={styles.previewText}>Design preview: all Plus tools are unlocked</Text>
+        </View>
+
         <Text style={styles.sectionLabel}>REMINDERS</Text>
         {!report ? (
           <Text style={styles.body}>Loading reminder status…</Text>
@@ -92,14 +115,14 @@ export function HealthScreen({
                   : "Keep reminders on so you don’t miss a dose."}
               </Text>
               {undetermined && (
-                <Pressable
+                <MotionPressable
                   onPress={onAskPermission}
                   style={styles.primaryButton}
                 >
                   <Text style={styles.primaryButtonText}>
                     Allow notifications
                   </Text>
-                </Pressable>
+                </MotionPressable>
               )}
               {denied && (
                 <Text style={styles.body}>
@@ -118,10 +141,10 @@ export function HealthScreen({
                 <Text
                   style={[
                     styles.value,
-                    report.failures > 0 && styles.valueDanger,
+                    visibleFailures > 0 && styles.valueDanger,
                   ]}
                 >
-                  {report.failures}
+                  {visibleFailures}
                 </Text>
               </View>
             </View>
@@ -129,7 +152,7 @@ export function HealthScreen({
         )}
 
         {onOpenSettings && (
-          <Pressable onPress={onOpenSettings} style={styles.linkCard}>
+          <MotionPressable onPress={onOpenSettings} style={styles.linkCard}>
             <View style={styles.linkIcon}>
               <Ionicons color={colors.ink} name="settings-outline" size={20} />
             </View>
@@ -138,13 +161,13 @@ export function HealthScreen({
               <Text style={styles.linkCopy}>Language, account, export</Text>
             </View>
             <Ionicons color={colors.muted} name="chevron-forward" size={18} />
-          </Pressable>
+          </MotionPressable>
         )}
         {onOpenPaywall && (
-          <Pressable onPress={onOpenPaywall} style={styles.upgradeCard}>
+          <MotionPressable onPress={onOpenPaywall} style={styles.upgradeCard}>
             <Ionicons color={colors.white} name="sparkles" size={18} />
             <Text style={styles.upgradeText}>PawPair Plus (coming soon)</Text>
-          </Pressable>
+          </MotionPressable>
         )}
       </ScrollView>
     </View>
@@ -225,6 +248,24 @@ const styles = StyleSheet.create({
     letterSpacing: -0.3,
     marginTop: 3,
   },
+  householdCard: {
+    alignItems: "center",
+    backgroundColor: colors.paper,
+    borderRadius: 24,
+    flexDirection: "row",
+    gap: 12,
+    marginBottom: 10,
+    padding: 14,
+    ...shadow.subtle,
+  },
+  householdIcon: {
+    alignItems: "center",
+    backgroundColor: "#FFF0E9",
+    borderRadius: 16,
+    height: 42,
+    justifyContent: "center",
+    width: 42,
+  },
   label: {
     color: colors.sky,
     fontFamily: "Nunito_800ExtraBold",
@@ -274,6 +315,22 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontFamily: "Nunito_800ExtraBold",
     fontSize: 14,
+  },
+  previewCard: {
+    alignItems: "center",
+    alignSelf: "flex-start",
+    backgroundColor: colors.sageSoft,
+    borderRadius: 999,
+    flexDirection: "row",
+    gap: 7,
+    marginBottom: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  previewText: {
+    color: colors.sky,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 11,
   },
   rowCards: { flexDirection: "row", gap: 10 },
   sectionLabel: {

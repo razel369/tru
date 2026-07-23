@@ -68,6 +68,16 @@ export function defaultFreeEntitlement(): SubscriptionEntitlement {
   };
 }
 
+/** Full-access entitlement used only by the local design-preview build. */
+export function defaultPreviewEntitlement(): SubscriptionEntitlement {
+  return {
+    tier: "plus",
+    productId: "design-preview",
+    expiresAtUtc: null,
+    hasBeenPlus: true,
+  };
+}
+
 export function upgradeLabel(_tier: Tier): string {
   return "PawPair Plus";
 }

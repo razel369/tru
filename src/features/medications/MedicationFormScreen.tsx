@@ -9,7 +9,7 @@ import {
   Text,
   TextInput,
   View,
-} from "react-native";
+ Image } from "react-native";
 import { useMemo, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -23,6 +23,8 @@ import {
   validateStep,
 } from "./form-state";
 import type { FormStep, MedicationDraft } from "./form-state";
+
+
 
 interface MedicationFormScreenProps {
   pets: Pet[];
@@ -238,7 +240,7 @@ function IdentityStep({
   draft: MedicationDraft;
   update: (patch: Partial<MedicationDraft>) => void;
 }) {
-  const forms: Array<{ id: MedicationDraft["form"]; label: string }> = [
+  const forms: { id: MedicationDraft["form"]; label: string }[] = [
     { id: "tablet", label: "Tablet" },
     { id: "capsule", label: "Capsule" },
     { id: "liquid", label: "Liquid" },
@@ -428,8 +430,6 @@ function ReviewStep({
     </View>
   );
 }
-
-import { Image } from "react-native";
 
 const styles = StyleSheet.create({
   choiceCheck: {

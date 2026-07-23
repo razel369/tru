@@ -1,11 +1,16 @@
-import { useRef, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import {
   Animated,
+  Platform,
   Pressable,
   type PressableProps,
   type StyleProp,
   type ViewStyle,
 } from "react-native";
+
+import { usePrefersReducedMotion } from "../features/accessibility/motion";
+
+const USE_NATIVE_DRIVER = Platform.OS !== "web";
 
 interface PressScaleProps extends Omit<PressableProps, "style"> {
   children: ReactNode;
@@ -24,33 +29,70 @@ export function PressScale({
   onPressOut,
   ...rest
 }: PressScaleProps) {
+  const reduceMotion = usePrefersReducedMotion();
   const scale = useRef(new Animated.Value(1)).current;
+  const activeAnimation = useRef<ReturnType<typeof Animated.spring> | null>(
+    null,
+  );
+
+  useEffect(() => {
+    if (reduceMotion) {
+      activeAnimation.current?.stop();
+      activeAnimation.current = null;
+      scale.setValue(1);
+    }
+    return () => {
+      activeAnimation.current?.stop();
+      activeAnimation.current = null;
+    };
+  }, [reduceMotion, scale]);
+
+  const animateScale = (toValue: number, returning: boolean) => {
+    activeAnimation.current?.stop();
+    activeAnimation.current = null;
+    if (reduceMotion) {
+      scale.setValue(1);
+      return;
+    }
+    const animation = Animated.spring(scale, {
+      toValue,
+      friction: returning ? 5 : 6,
+      tension: returning ? 180 : 220,
+      useNativeDriver: USE_NATIVE_DRIVER,
+    });
+    activeAnimation.current = animation;
+    animation.start(() => {
+      if (activeAnimation.current === animation) {
+        activeAnimation.current = null;
+      }
+    });
+  };
 
   return (
     <Pressable
       {...rest}
       onPressIn={(event) => {
-        Animated.spring(scale, {
-          toValue: scaleTo,
-          friction: 6,
-          tension: 220,
-          useNativeDriver: true,
-        }).start();
+        animateScale(scaleTo, false);
         onPressIn?.(event);
       }}
       onPressOut={(event) => {
-        Animated.spring(scale, {
-          toValue: 1,
-          friction: 5,
-          tension: 180,
-          useNativeDriver: true,
-        }).start();
+        animateScale(1, true);
         onPressOut?.(event);
       }}
     >
-      <Animated.View style={[style, { transform: [{ scale }] }]}>
-        {children}
-      </Animated.View>
+      {({ pressed }) => (
+        <Animated.View
+          style={[
+            style,
+            {
+              opacity: reduceMotion && pressed ? 0.84 : 1,
+              transform: [{ scale }],
+            },
+          ]}
+        >
+          {children}
+        </Animated.View>
+      )}
     </Pressable>
   );
 }

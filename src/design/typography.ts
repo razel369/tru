@@ -8,7 +8,7 @@
 import type { TextStyle } from "react-native";
 
 export const fontFamily = {
-  display: "Fraunces_700Bold",
+  display: "Fredoka_600SemiBold",
   body: "Nunito_600SemiBold",
   medium: "Nunito_600SemiBold",
   bold: "Nunito_700Bold",

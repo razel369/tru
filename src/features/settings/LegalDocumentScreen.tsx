@@ -22,6 +22,7 @@ export function LegalDocumentScreen({
       <View style={styles.header}>
         <Pressable
           accessibilityLabel="Close"
+          accessibilityRole="button"
           onPress={onClose}
           style={styles.close}
         >
@@ -52,13 +53,13 @@ const styles = StyleSheet.create({
   close: {
     alignItems: "center",
     backgroundColor: colors.paper,
-    borderRadius: 20,
-    height: 40,
+    borderRadius: 22,
+    height: 44,
     justifyContent: "center",
-    width: 40,
+    width: 44,
     ...shadow.subtle,
   },
-  closeSpacer: { width: 40 },
+  closeSpacer: { width: 44 },
   container: { backgroundColor: colors.background, flex: 1 },
   content: { paddingHorizontal: 20, paddingTop: 8 },
   header: {

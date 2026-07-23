@@ -2,33 +2,80 @@
   "expo": {
     "name": "PawPair",
     "slug": "pawpair-pet-med-tracker",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "icon": "./assets/pawpair-icon.png",
     "orientation": "portrait",
+    "scheme": "pawpair",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/pawpair-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#F7F1E8"
-    },
     "ios": {
       "supportsTablet": true,
+      "requireFullScreen": false,
       "bundleIdentifier": "app.pawpair.medtracker",
+      "buildNumber": "11",
       "infoPlist": {
-        "NSUserNotificationsUsageDescription": "PawPair sends local reminders so you can confirm pet medication doses on time.",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "UISupportedInterfaceOrientations~ipad": [
+          "UIInterfaceOrientationPortrait",
+          "UIInterfaceOrientationPortraitUpsideDown",
+          "UIInterfaceOrientationLandscapeLeft",
+          "UIInterfaceOrientationLandscapeRight"
+        ]
+      },
+      "privacyManifests": {
+        "NSPrivacyTracking": false,
+        "NSPrivacyCollectedDataTypes": [
+          {
+            "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeUserID",
+            "NSPrivacyCollectedDataTypeLinked": false,
+            "NSPrivacyCollectedDataTypeTracking": false,
+              "NSPrivacyCollectedDataTypePurposes": [
+                "NSPrivacyCollectedDataTypePurposeAnalytics",
+                "NSPrivacyCollectedDataTypePurposeAppFunctionality"
+              ]
+          },
+          {
+            "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeDeviceID",
+            "NSPrivacyCollectedDataTypeLinked": false,
+            "NSPrivacyCollectedDataTypeTracking": false,
+              "NSPrivacyCollectedDataTypePurposes": [
+                "NSPrivacyCollectedDataTypePurposeAnalytics",
+                "NSPrivacyCollectedDataTypePurposeAppFunctionality"
+              ]
+          },
+          {
+            "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeProductInteraction",
+            "NSPrivacyCollectedDataTypeLinked": false,
+            "NSPrivacyCollectedDataTypeTracking": false,
+            "NSPrivacyCollectedDataTypePurposes": [
+              "NSPrivacyCollectedDataTypePurposeAnalytics"
+            ]
+          },
+          {
+            "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypePurchaseHistory",
+            "NSPrivacyCollectedDataTypeLinked": false,
+            "NSPrivacyCollectedDataTypeTracking": false,
+            "NSPrivacyCollectedDataTypePurposes": [
+              "NSPrivacyCollectedDataTypePurposeAnalytics"
+            ]
+          }
+        ],
+        "NSPrivacyAccessedAPITypes": [
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+            "NSPrivacyAccessedAPITypeReasons": [
+              "CA92.1"
+            ]
+          }
+        ]
       }
     },
     "android": {
       "package": "app.pawpair.medtracker",
       "adaptiveIcon": {
         "foregroundImage": "./assets/pawpair-icon.png",
-        "backgroundColor": "#F7F1E8"
+        "backgroundColor": "#040B34"
       },
       "permissions": [
-        "RECEIVE_BOOT_COMPLETED",
-        "VIBRATE",
-        "SCHEDULE_EXACT_ALARM",
         "RECEIVE_BOOT_COMPLETED",
         "VIBRATE",
         "SCHEDULE_EXACT_ALARM"
@@ -38,25 +85,34 @@
       "expo-status-bar",
       "expo-font",
       "expo-sqlite",
+      "./with-pawpair-notification-icon",
       [
         "expo-notifications",
         {
-          "icon": "./assets/pawpair-icon.png",
           "color": "#FF7F6A",
           "sounds": []
         }
-      ]
+      ],
+      "expo-sharing",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#040B34",
+          "image": "./assets/pawpair-icon.png",
+          "imageWidth": 180,
+          "resizeMode": "contain"
+        }
+      ],
+      "expo-secure-store"
     ],
     "extra": {
       "eas": {
         "projectId": "cf604bac-300f-4ce7-b632-72593cef6674"
       }
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
     "updates": {
-      "url": "https://u.expo.dev/cf604bac-300f-4ce7-b632-72593cef6674"
+      "enabled": false,
+      "checkAutomatically": "NEVER"
     }
   }
 }

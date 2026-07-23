@@ -161,7 +161,7 @@ class TestDb {
       const sets = (update[2] ?? "").split(",").map((s) => s.trim());
       const t = this.tables.get(tableName);
       if (!t) throw new Error(`unknown table ${tableName}`);
-      const setEntries: Array<[string, unknown]> = sets.map((s, i) => {
+      const setEntries: [string, unknown][] = sets.map((s, i) => {
         const [col] = s.split("=").map((x) => x.trim());
         return [col ?? "", params[i] ?? null];
       });
@@ -179,7 +179,7 @@ class TestDb {
 
 interface SelectAst {
   table: string;
-  where: Array<{ col: string }>;
+  where: { col: string }[];
 }
 
 function parseSelect(sql: string): SelectAst | null {
@@ -215,10 +215,10 @@ describe("repositories", () => {
     clock.__setNow(() => new Date("2026-07-10T08:00:00.000Z"));
   });
 
-  it("applies the v1 schema and reports the target version", async () => {
+  it("applies the current schema and reports the target version", async () => {
     const db = new TestDb();
     await migrate(db as never);
-    expect(TARGET_SCHEMA_VERSION).toBe(1);
+    expect(TARGET_SCHEMA_VERSION).toBe(2);
   });
 
   it("creates a pet and stamps it with the deterministic clock", async () => {

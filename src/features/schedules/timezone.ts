@@ -14,20 +14,43 @@
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const ISO_TIME = /^\d{2}:\d{2}(?::\d{2})?$/;
+const timezoneValidity = new Map<string, boolean>();
+const dateFormatters = new Map<string, Intl.DateTimeFormat>();
+const timeFormatters = new Map<string, Intl.DateTimeFormat>();
+const weekdayFormatters = new Map<string, Intl.DateTimeFormat>();
+
+function cachedFormatter(
+  cache: Map<string, Intl.DateTimeFormat>,
+  timezone: string,
+  locale: string,
+  options: Intl.DateTimeFormatOptions,
+): Intl.DateTimeFormat {
+  const cached = cache.get(timezone);
+  if (cached) return cached;
+  const formatter = new Intl.DateTimeFormat(locale, {
+    ...options,
+    timeZone: timezone,
+  });
+  cache.set(timezone, formatter);
+  return formatter;
+}
 
 export function isValidTimezone(tz: string): boolean {
+  const cached = timezoneValidity.get(tz);
+  if (cached !== undefined) return cached;
   try {
     new Intl.DateTimeFormat("en-US", { timeZone: tz }).format(new Date());
+    timezoneValidity.set(tz, true);
     return true;
   } catch {
+    timezoneValidity.set(tz, false);
     return false;
   }
 }
 
 /** Return YYYY-MM-DD in the given timezone. */
 export function localDateIn(utc: Date, timezone: string): string {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: timezone,
+  const parts = cachedFormatter(dateFormatters, timezone, "en-CA", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -40,8 +63,7 @@ export function localDateIn(utc: Date, timezone: string): string {
 
 /** Return HH:MM in the given timezone. */
 export function localTimeIn(utc: Date, timezone: string): string {
-  const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: timezone,
+  const parts = cachedFormatter(timeFormatters, timezone, "en-GB", {
     hour: "2-digit",
     minute: "2-digit",
     hourCycle: "h23",
@@ -53,8 +75,7 @@ export function localTimeIn(utc: Date, timezone: string): string {
 
 /** Return the weekday index in the given timezone. Mon=0, Sun=6. */
 export function localWeekday(utc: Date, timezone: string): number {
-  const wd = new Intl.DateTimeFormat("en-US", {
-    timeZone: timezone,
+  const wd = cachedFormatter(weekdayFormatters, timezone, "en-US", {
     weekday: "short",
   }).format(utc);
   const map: Record<string, number> = {

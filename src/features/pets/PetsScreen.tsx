@@ -17,6 +17,7 @@ import { colors, shadow } from "../../design";
 import type { Pet } from "../../types";
 
 import { MedicationCard } from "./MedicationCard";
+import { MotionPressable } from "../../components/motion";
 
 interface PetsScreenProps {
   pets: Pet[];
@@ -140,7 +141,7 @@ export function PetsScreen({
               </View>
             </View>
             <Pressable
-              onPress={() => onOpenReport?.()}
+              onPress={() => onLongPressPet?.(pet.id)}
               onLongPress={() => onLongPressPet?.(pet.id)}
               style={styles.moreButton}
             >
@@ -192,7 +193,7 @@ export function PetsScreen({
             />
           ))}
 
-          <View style={styles.vetCard}>
+          <MotionPressable onPress={onOpenReport} style={styles.vetCard}>
             <View style={styles.vetIcon}>
               <Ionicons
                 color={colors.sage}
@@ -206,10 +207,8 @@ export function PetsScreen({
                 Every dose, note, and missed medication in one clear report.
               </Text>
             </View>
-            <View style={styles.proPill}>
-              <Text style={styles.proPillText}>SOON</Text>
-            </View>
-          </View>
+            <Ionicons color={colors.muted} name="chevron-forward" size={19} />
+          </MotionPressable>
         </>
       )}
     </ScrollView>

@@ -10,8 +10,8 @@
 import { describe, expect, it } from "vitest";
 
 import { detectConflict, legacyLogToRow } from "../features/household/conflict";
-import { renderReport } from "../features/reports/report";
-import { renderReport as renderReportReexport } from "../features/reports/report";
+import { renderReport , renderReport as renderReportReexport } from "../features/reports/report";
+
 import { setLocale, t } from "../features/i18n/i18n";
 import { isValidTaper } from "../features/schedules";
 

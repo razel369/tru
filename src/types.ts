@@ -20,13 +20,57 @@ export interface Medication {
   paused?: boolean;
 }
 
+export type BreedVisualProfile =
+  | "cat-compact"
+  | "cat-longhair"
+  | "cat-hairless"
+  | "cat-tall"
+  | "dog-toy"
+  | "dog-long-low"
+  | "dog-compact"
+  | "dog-standard"
+  | "dog-tall"
+  | "dog-large"
+  | "dog-fluffy"
+  | "other";
+
+export type PetVisualStatus = "pending" | "processing" | "ready" | "failed" | "fallback";
+
+export type PetSex = "female" | "male" | "unknown";
+export type PetReproductiveStatus = "intact" | "altered" | "unknown";
+
+export interface PetVisualIdentity {
+  assetKey?: string;
+  engravingText?: string;
+  profile: BreedVisualProfile;
+  revision: number;
+  status: PetVisualStatus;
+}
+
+export interface PetCareProfile {
+  allergies?: string;
+  dateOfBirth?: string;
+  diet?: string;
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
+  veterinarianName?: string;
+  veterinarianPhone?: string;
+  microchipId?: string;
+  reproductiveStatus?: PetReproductiveStatus;
+  sex?: PetSex;
+  caregiverNotes?: string;
+}
+
 export interface Pet {
   id: string;
   name: string;
   species: "dog" | "cat" | "other";
   breed: string;
   age: number;
-  avatar: "milo" | "luna";
+  avatar: string;
+  visualProfile?: BreedVisualProfile;
+  visual?: PetVisualIdentity;
+  careProfile?: PetCareProfile;
   color: string;
   medications: Medication[];
 }

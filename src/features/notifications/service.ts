@@ -85,7 +85,6 @@ export async function scheduleNotification(
     return platformId;
   } catch (error) {
     failureCount += 1;
-    // eslint-disable-next-line no-console
     console.warn("[pawpair] scheduleNotification failed", error);
     return null;
   }

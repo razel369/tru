@@ -64,17 +64,18 @@ class InMemoryDb {
 describe("migrations", () => {
   beforeEach(() => {});
 
-  it("has a single registered v1 migration that matches the target", () => {
-    expect(TARGET_SCHEMA_VERSION).toBe(1);
+  it("has registered v1 and v2 migrations that match the target", () => {
+    expect(TARGET_SCHEMA_VERSION).toBe(2);
   });
 
-  it("applies v1 from a clean state", async () => {
+  it("applies v1 and v2 from a clean state", async () => {
     const db = new InMemoryDb();
     const result = await migrate(db as never);
     expect(result.from).toBe(0);
-    expect(result.to).toBe(1);
-    expect(result.applied).toHaveLength(1);
+    expect(result.to).toBe(2);
+    expect(result.applied).toHaveLength(2);
     expect(result.applied[0]?.name).toBe("initial_schema");
+    expect(result.applied[1]?.name).toBe("care_state_snapshots");
   });
 
   it("is idempotent when the schema is already at target", async () => {
@@ -82,14 +83,14 @@ describe("migrations", () => {
     await migrate(db as never);
     const second = await migrate(db as never);
     expect(second.applied).toHaveLength(0);
-    expect(await getCurrentSchemaVersion(db as never)).toBe(1);
+    expect(await getCurrentSchemaVersion(db as never)).toBe(2);
   });
 
   it("supports the {to} option to stop at an earlier version", async () => {
     const db = new InMemoryDb();
-    await migrate(db as never);
-    const second = await migrate(db as never, { to: 1 });
-    expect(second.applied).toHaveLength(0);
+    const result = await migrate(db as never, { to: 1 });
+    expect(result.to).toBe(1);
+    expect(result.applied).toHaveLength(1);
   });
 });
 

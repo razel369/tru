@@ -1,3 +1,5 @@
+import type { BreedVisualProfile } from "../../types";
+
 /**
  * PawPair — onboarding state machine.
  *
@@ -30,6 +32,7 @@ export interface OnboardingPetDraft {
   /** Avatar seed: 'milo' | 'luna' | 'generated' | a custom key. */
   avatarSeed: string;
   accentColor: string;
+  visualProfile?: BreedVisualProfile;
 }
 
 export type MedicationForm =

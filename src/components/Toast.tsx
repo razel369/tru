@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
-import { Animated, Easing, Image, StyleSheet, Text } from "react-native";
+import { Animated, Easing, Platform, StyleSheet, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
-import { assets, colors, shadow } from "../design";
+import { colors, shadow } from "../design";
 import { usePrefersReducedMotion } from "../features/accessibility/motion";
 
 interface ToastProps {
@@ -17,8 +18,18 @@ export function Toast({ text, bottomInset }: ToastProps) {
   const reduceMotion = usePrefersReducedMotion();
   const opacity = useRef(new Animated.Value(0)).current;
   const y = useRef(new Animated.Value(16)).current;
+  const isSkip = /skipped|restored/i.test(text);
+  const isRemoval = /removed/i.test(text);
+  const accent = isRemoval
+    ? colors.danger
+    : isSkip
+      ? colors.butter
+      : colors.coral;
+  const icon = isRemoval ? "trash-outline" : isSkip ? "remove" : "heart";
 
   useEffect(() => {
+    opacity.stopAnimation();
+    y.stopAnimation();
     opacity.setValue(0);
     y.setValue(16);
     if (reduceMotion) {
@@ -26,24 +37,32 @@ export function Toast({ text, bottomInset }: ToastProps) {
       y.setValue(0);
       return;
     }
-    Animated.parallel([
+    const animation = Animated.parallel([
       Animated.timing(opacity, {
         toValue: 1,
         duration: 220,
         easing: Easing.out(Easing.cubic),
-        useNativeDriver: true,
+        useNativeDriver: Platform.OS !== "web",
       }),
       Animated.spring(y, {
         toValue: 0,
         friction: 7,
         tension: 120,
-        useNativeDriver: true,
+        useNativeDriver: Platform.OS !== "web",
       }),
-    ]).start();
+    ]);
+    animation.start();
+    return () => animation.stop();
   }, [text, reduceMotion, opacity, y]);
 
   return (
     <Animated.View
+      accessibilityLabel={text}
+      accessibilityLiveRegion="polite"
+      accessibilityRole="alert"
+      accessible
+      importantForAccessibility="yes"
+      pointerEvents="none"
       style={[
         styles.toast,
         {
@@ -53,19 +72,11 @@ export function Toast({ text, bottomInset }: ToastProps) {
         },
       ]}
     >
-      <Image
-        accessibilityIgnoresInvertColors
-        resizeMode="contain"
-        source={assets.stickers.heart}
-        style={styles.toastArt}
-      />
+      <View style={styles.toastIcon}>
+        <Ionicons color={accent} name={icon} size={16} />
+      </View>
       <Text style={styles.toastText}>{text}</Text>
-      <Image
-        accessibilityIgnoresInvertColors
-        resizeMode="contain"
-        source={assets.stickers.check}
-        style={styles.toastCheckArt}
-      />
+      <Ionicons color="#9FC7A9" name="checkmark-circle" size={20} />
     </Animated.View>
   );
 }
@@ -76,26 +87,27 @@ const styles = StyleSheet.create({
     backgroundColor: colors.ink,
     borderRadius: 999,
     flexDirection: "row",
-    gap: 10,
-    left: 18,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    gap: 9,
+    left: 30,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     position: "absolute",
-    right: 18,
+    right: 30,
     ...shadow.card,
   },
-  toastArt: {
+  toastIcon: {
+    alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.1)",
+    borderRadius: 14,
     height: 28,
+    justifyContent: "center",
     width: 28,
-  },
-  toastCheckArt: {
-    height: 26,
-    width: 26,
   },
   toastText: {
     color: colors.white,
     flex: 1,
     fontFamily: "Nunito_700Bold",
-    fontSize: 13,
+    fontSize: 12,
+    lineHeight: 16,
   },
 });

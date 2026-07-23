@@ -1,0 +1,39 @@
+{
+  "artifact": {
+    "path": "C:\\Users\\rmalk\\AppData\\Local\\Temp\\PawPair-1.0.0-10.ipa",
+    "bytes": 204955426,
+    "appBundle": "Payload/PawPair.app/",
+    "archiveEntries": 468,
+    "compressedAppBytes": 198729209,
+    "uncompressedAppBytes": 231593434
+  },
+  "identity": {
+    "bundleIdentifier": "app.pawpair.medtracker",
+    "version": "1.0.0",
+    "build": "10",
+    "deviceFamily": [
+      1
+    ]
+  },
+  "checks": {
+    "singleAppBundle": true,
+    "bundleIdentifier": true,
+    "version": true,
+    "build": true,
+    "iphoneOnly": true,
+    "portrait": true,
+    "storeProvisioning": true,
+    "notificationEntitlementProduction": true,
+    "notificationsLinked": true,
+    "revenueCatLinked": true,
+    "annualProductId": true,
+    "monthlyProductId": true,
+    "staleAnnualProductIdAbsent": true,
+    "staleMonthlyProductIdAbsent": true,
+    "revenueCatPublicKeyEmbedded": true,
+    "privacyManifestPresent": true
+  },
+  "passed": 16,
+  "total": 16,
+  "status": "PASS"
+}

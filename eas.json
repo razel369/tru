@@ -19,15 +19,21 @@
     },
     "production": {
       "channel": "production",
+      "distribution": "store",
+      "environment": "production",
+      "autoIncrement": true,
       "ios": {
-        "simulator": false
-      },
-      "android": {
-        "buildType": "app-bundle"
+        "simulator": false,
+        "image": "sdk-57"
       }
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "ascAppId": "6789938403",
+        "metadataPath": "./store.config.js"
+      }
+    }
   }
 }

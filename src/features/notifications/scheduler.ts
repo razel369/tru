@@ -25,15 +25,19 @@ import type { ScheduledNotification } from "./types";
 
 export const DEFAULT_HORIZON_DAYS = 7;
 
-function medicationToSchedule(petId: string, medication: {
-  id: string;
-  times: string[];
-}): Schedule {
+function medicationToSchedule(
+  petId: string,
+  medication: {
+    id: string;
+    times: string[];
+  },
+  startDate: string,
+): Schedule {
   return {
     id: `med-${petId}-${medication.id}`,
     medicationId: medication.id,
     timezone: "UTC",
-    startDate: new Date().toISOString().slice(0, 10),
+    startDate,
     endDate: null,
     times: medication.times,
     weekdayMask: EVERY_DAY,
@@ -75,16 +79,18 @@ export async function scheduleAllPets(
   horizonDays = DEFAULT_HORIZON_DAYS,
 ): Promise<ScheduledNotification[]> {
   const to = new Date(from.getTime() + horizonDays * 24 * 60 * 60 * 1000);
+  const startDate = from.toISOString().slice(0, 10);
   const result: ScheduledNotification[] = [];
 
   for (const pet of pets) {
     for (const medication of pet.medications) {
-      const schedule = medicationToSchedule(pet.id, medication);
+      const schedule = medicationToSchedule(pet.id, medication, startDate);
       const occurrences = generateOccurrences(schedule, from, to);
-      for (const occ of occurrences) {
-        result.push(toNotification(pet, medication, occ));
-      }
-      await rescheduleForSchedule(schedule.id, result);
+      const notifications = occurrences.map((occ) =>
+        toNotification(pet, medication, occ),
+      );
+      result.push(...notifications);
+      await rescheduleForSchedule(schedule.id, notifications);
     }
   }
   return result;

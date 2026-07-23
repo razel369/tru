@@ -20,16 +20,28 @@ let openPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
   if (cached) return cached;
   if (openPromise) return openPromise;
-  openPromise = (async () => {
+  const pending = (async () => {
     const db = await SQLite.openDatabaseAsync(DB_NAME);
     // Enable foreign keys on every new connection.
     await db.execAsync("PRAGMA foreign_keys = ON;");
     await db.execAsync("PRAGMA journal_mode = WAL;");
     cached = db;
-    openPromise = null;
     return db;
   })();
-  return openPromise;
+  openPromise = pending;
+  try {
+    return await pending;
+  } finally {
+    if (openPromise === pending) openPromise = null;
+  }
+}
+
+export async function closeDatabase(): Promise<void> {
+  const pending = openPromise;
+  const database = cached ?? (pending ? await pending.catch(() => null) : null);
+  cached = null;
+  openPromise = null;
+  if (database) await database.closeAsync();
 }
 
 /** Test-only — close and forget the cached connection. */

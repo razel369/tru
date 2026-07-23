@@ -39,7 +39,20 @@ export const FREE_TIER_LIMITS: FreeTierLimits = {
   historyDays: 30,
 };
 
-export const PLUS_PRODUCT_ID = "app.pawpair.plus.monthly";
+export const REVENUECAT_ENTITLEMENT_ID = "premium";
+export const PREMIUM_OFFERING_ID = "default";
+export const PREMIUM_ANNUAL_PRODUCT_ID =
+  "app.pawpair.medtracker.premium.annual";
+export const PREMIUM_MONTHLY_PRODUCT_ID =
+  "app.pawpair.medtracker.premium.monthly";
+export const PLUS_PRODUCT_ID = PREMIUM_ANNUAL_PRODUCT_ID;
+
+export type PremiumEntryPoint =
+  | "pets"
+  | "second-pet"
+  | "care-handoff"
+  | "first-care"
+  | "onboarding";
 
 export interface PaywallBenefit {
   title: string;

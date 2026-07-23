@@ -13,6 +13,8 @@ import { useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { colors } from "../../design";
+import { BreedPicker } from "../../components/BreedPicker";
+import { getBreedVisualProfile } from "../../data/pet-breeds";
 import type { OnboardingPetDraft } from "./types";
 
 interface AddPetScreenProps {
@@ -21,20 +23,20 @@ interface AddPetScreenProps {
   initial?: OnboardingPetDraft;
 }
 
-const SPECIES_OPTIONS: Array<{
+const SPECIES_OPTIONS: {
   id: OnboardingPetDraft["species"];
   label: string;
   color: string;
-}> = [
+}[] = [
   { id: "dog", label: "Dog", color: "#F3B66D" },
   { id: "cat", label: "Cat", color: "#9891C7" },
   { id: "other", label: "Other", color: "#5D9387" },
 ];
 
-const PORTRAIT_OPTIONS: Array<{
+const PORTRAIT_OPTIONS: {
   id: OnboardingPetDraft["avatarSeed"];
   label: string;
-}> = [
+}[] = [
   { id: "milo", label: "Milo" },
   { id: "luna", label: "Luna" },
   { id: "generated", label: "Generated" },
@@ -74,6 +76,7 @@ export function AddPetScreen({ onBack, onNext, initial }: AddPetScreenProps) {
       ageYears: age ? Number(age) : undefined,
       avatarSeed,
       accentColor: accent,
+      visualProfile: getBreedVisualProfile(species, breed.trim()),
     });
   };
 
@@ -130,7 +133,10 @@ export function AddPetScreen({ onBack, onNext, initial }: AddPetScreenProps) {
             return (
               <Pressable
                 key={option.id}
-                onPress={() => setSpecies(option.id)}
+                onPress={() => {
+                  setSpecies(option.id);
+                  setBreed("");
+                }}
                 style={[
                   styles.speciesChoice,
                   active && styles.speciesChoiceActive,
@@ -156,16 +162,7 @@ export function AddPetScreen({ onBack, onNext, initial }: AddPetScreenProps) {
         </View>
 
         <Text style={styles.label}>Breed (optional)</Text>
-        <View style={styles.input}>
-          <TextInput
-            accessibilityLabel="Breed"
-            onChangeText={setBreed}
-            placeholder="e.g. Golden retriever"
-            placeholderTextColor="#A9B0B3"
-            style={styles.inputField}
-            value={breed}
-          />
-        </View>
+        <BreedPicker onChange={setBreed} species={species} value={breed} />
 
         <Text style={styles.label}>Age (years, optional)</Text>
         <View style={styles.input}>

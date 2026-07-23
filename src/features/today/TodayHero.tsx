@@ -12,306 +12,216 @@ import {
   View,
 } from "react-native";
 
-import { HeartBurst } from "../../components/HeartBurst";
 import { AmbientStickers } from "../../components/AmbientStickers";
+import { HeartBurst } from "../../components/HeartBurst";
 import { PressScale } from "../../components/PressScale";
 import { assets, colors, shadow } from "../../design";
-import { usePrefersReducedMotion } from "../accessibility/motion";
 import { formatTime } from "../../schedule";
 import type { ScheduledDose } from "../../types";
+import { usePrefersReducedMotion } from "../accessibility/motion";
 
 interface TodayHeroProps {
   schedule: ScheduledDose[];
   topInset: number;
   petImage: ImageSourcePropType;
+  petName: string;
+  petBreed: string;
   companionImage?: ImageSourcePropType;
   roomImage?: ImageSourcePropType;
   heroScene?: ImageSourcePropType;
-  /** Real pet for the next dose — not the brand mascot. */
-  petName: string;
-  nextDose?: ScheduledDose;
   onMenu?: () => void;
-  onConfirmNext?: () => void;
-  canConfirm?: boolean;
   onLog: (dose: ScheduledDose, status: "given" | "skipped") => void;
 }
 
-const ACCENT = [colors.sky, colors.coral, colors.lavender] as const;
-
-const FLOAT_SLOTS = [
-  { top: 0, left: -10, rotate: "-9deg" },
-  { top: 204, left: -12, rotate: "6deg" },
-  { top: 96, right: -12, rotate: "9deg" },
-] as const;
+const PENDING_STATUSES = new Set(["due", "upcoming", "missed"]);
 
 /**
- * Full-bleed companion scene. Product logic: name the real pet and
- * the exact next dose — Buddy is brand atmosphere only.
- *
- * Motion: entrance stagger + ambient breathe/float/pulse so the
- * screen feels like a living room, not a static poster.
+ * Personalized daily-care room. The room, pet portrait, engraved name tag,
+ * and care controls are separate layers so the selected pet always owns the
+ * scene. Medication remains the trust anchor while food, walks, and the next
+ * care moment broaden PawPair into shared daily care.
  */
 export function TodayHero({
   schedule,
   topInset,
   petImage,
+  petName,
+  petBreed,
   companionImage,
   roomImage,
   heroScene,
-  petName,
-  nextDose,
   onMenu,
-  onConfirmNext,
-  canConfirm = false,
   onLog,
 }: TodayHeroProps) {
   const reduceMotion = usePrefersReducedMotion();
   const [burstKey, setBurstKey] = useState(0);
+  const [foodDone, setFoodDone] = useState(false);
+  const [walkDone, setWalkDone] = useState(false);
+  const [optimisticGivenIds, setOptimisticGivenIds] = useState<string[]>([]);
+
   const remainingDoses = schedule.filter(
     (dose) =>
-      dose.status === "due" ||
-      dose.status === "upcoming" ||
-      dose.status === "missed",
+      PENDING_STATUSES.has(dose.status) &&
+      !optimisticGivenIds.includes(dose.id),
   );
-  const needsAttention = schedule.some((dose) => dose.status === "missed");
-  const allDone = schedule.length > 0 && remainingDoses.length === 0;
+  const nextDose = remainingDoses[0];
+  const allMedicationDone = schedule.length > 0 && remainingDoses.length === 0;
+  const medicationComplete =
+    allMedicationDone || schedule.some((dose) => dose.status === "given");
+  const completedCount =
+    Number(medicationComplete) + Number(foodDone) + Number(walkDone);
 
-  let bubbleLead = "Add a pet";
-  let bubbleAccent = "to begin";
-  if (needsAttention && nextDose) {
-    bubbleLead = `${nextDose.pet.name} still`;
-    bubbleAccent = "needs you";
-  } else if (allDone) {
-    bubbleLead = "All set for";
-    bubbleAccent = "tonight!";
-  } else if (nextDose) {
-    bubbleLead = `${nextDose.pet.name} ·`;
-    bubbleAccent = formatTime(nextDose.scheduledTime);
-  }
-
-  const floating =
-    remainingDoses.length > 0
-      ? remainingDoses.slice(0, 3)
-      : schedule.filter((dose) => dose.status === "given").slice(0, 3);
-
-  const sceneSource = heroScene ?? roomImage ?? companionImage ?? petImage;
-  const ctaLabel = nextDose
-    ? `Mark ${nextDose.pet.name} · ${nextDose.medication.name} · ${formatTime(nextDose.scheduledTime)}`
-    : "Mark as given";
-
-  const sceneScale = useRef(new Animated.Value(1)).current;
+  const sceneSource = roomImage ?? heroScene ?? companionImage ?? petImage;
   const enterOpacity = useRef(new Animated.Value(0)).current;
   const enterY = useRef(new Animated.Value(18)).current;
-  const bubbleY = useRef(new Animated.Value(0)).current;
-  const heartScale = useRef(new Animated.Value(1)).current;
-  const ctaScale = useRef(new Animated.Value(1)).current;
-  const ctaGlow = useRef(new Animated.Value(0.88)).current;
-  const pawWiggle = useRef(new Animated.Value(0)).current;
-  const stickerYs = useRef([
-    new Animated.Value(0),
-    new Animated.Value(0),
-    new Animated.Value(0),
-  ]).current;
-  const stickerEnters = useRef([
-    new Animated.Value(0),
-    new Animated.Value(0),
-    new Animated.Value(0),
-  ]).current;
+  const roomScale = useRef(new Animated.Value(1)).current;
+  const petFloat = useRef(new Animated.Value(0)).current;
 
-  const celebrateGiven = (dose: ScheduledDose) => {
-    setBurstKey((key) => key + 1);
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    onLog(dose, "given");
-  };
+  useEffect(() => {
+    setFoodDone(false);
+    setWalkDone(false);
+    setOptimisticGivenIds([]);
+  }, [petName]);
 
-  const confirmNext = () => {
-    if (!onConfirmNext) return;
-    setBurstKey((key) => key + 1);
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    onConfirmNext();
-  };
+  useEffect(() => {
+    setOptimisticGivenIds((ids) =>
+      ids.filter((id) =>
+        schedule.some(
+          (dose) => dose.id === id && PENDING_STATUSES.has(dose.status),
+        ),
+      ),
+    );
+  }, [schedule]);
 
   useEffect(() => {
     if (reduceMotion) {
       enterOpacity.setValue(1);
       enterY.setValue(0);
-      stickerEnters.forEach((v) => v.setValue(1));
       return;
     }
 
     const useNativeDriver = Platform.OS !== "web";
-
     const entrance = Animated.parallel([
       Animated.timing(enterOpacity, {
         toValue: 1,
-        duration: 520,
+        duration: 460,
         easing: Easing.out(Easing.cubic),
         useNativeDriver,
       }),
       Animated.timing(enterY, {
         toValue: 0,
-        duration: 560,
+        duration: 520,
         easing: Easing.out(Easing.cubic),
         useNativeDriver,
       }),
-      Animated.stagger(
-        110,
-        stickerEnters.map((value) =>
-          Animated.spring(value, {
-            toValue: 1,
-            friction: 7,
-            tension: 80,
-            useNativeDriver,
-          }),
-        ),
-      ),
     ]);
-    entrance.start();
-
-    const loop = (
-      value: Animated.Value,
-      to: number,
-      duration: number,
-      from = 0,
-    ) =>
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(value, {
-            toValue: to,
-            duration,
-            easing: Easing.inOut(Easing.sin),
-            useNativeDriver,
-          }),
-          Animated.timing(value, {
-            toValue: from,
-            duration,
-            easing: Easing.inOut(Easing.sin),
-            useNativeDriver,
-          }),
-        ]),
-      );
-
-    // Slow ken-burns on the room — ambient, not flashy.
-    const scene = loop(sceneScale, 1.045, 9000, 1);
-    const bubble = loop(bubbleY, -8, 2400);
-    const heart = loop(heartScale, 1.18, 900);
-    const cta = loop(ctaScale, 1.04, 1700);
-    const glow = loop(ctaGlow, 1, 1700, 0.88);
-    const paw = Animated.loop(
+    const roomMotion = Animated.loop(
       Animated.sequence([
-        Animated.delay(2800),
-        Animated.timing(pawWiggle, {
+        Animated.timing(roomScale, {
+          toValue: 1.035,
+          duration: 9000,
+          easing: Easing.inOut(Easing.sin),
+          useNativeDriver,
+        }),
+        Animated.timing(roomScale, {
           toValue: 1,
-          duration: 120,
-          easing: Easing.out(Easing.quad),
-          useNativeDriver,
-        }),
-        Animated.timing(pawWiggle, {
-          toValue: -1,
-          duration: 120,
-          useNativeDriver,
-        }),
-        Animated.timing(pawWiggle, {
-          toValue: 0.6,
-          duration: 100,
-          useNativeDriver,
-        }),
-        Animated.timing(pawWiggle, {
-          toValue: 0,
-          duration: 100,
+          duration: 9000,
+          easing: Easing.inOut(Easing.sin),
           useNativeDriver,
         }),
       ]),
     );
-    const stickers = stickerYs.map((value, index) =>
-      loop(value, index % 2 === 0 ? -8 : 8, 1900 + index * 320),
+    const petMotion = Animated.loop(
+      Animated.sequence([
+        Animated.timing(petFloat, {
+          toValue: -6,
+          duration: 2200,
+          easing: Easing.inOut(Easing.sin),
+          useNativeDriver,
+        }),
+        Animated.timing(petFloat, {
+          toValue: 0,
+          duration: 2200,
+          easing: Easing.inOut(Easing.sin),
+          useNativeDriver,
+        }),
+      ]),
     );
 
-    scene.start();
-    bubble.start();
-    heart.start();
-    cta.start();
-    glow.start();
-    paw.start();
-    stickers.forEach((anim) => anim.start());
-
+    entrance.start();
+    roomMotion.start();
+    petMotion.start();
     return () => {
       entrance.stop();
-      scene.stop();
-      bubble.stop();
-      heart.stop();
-      cta.stop();
-      glow.stop();
-      paw.stop();
-      stickers.forEach((anim) => anim.stop());
+      roomMotion.stop();
+      petMotion.stop();
     };
-  }, [
-    reduceMotion,
-    sceneScale,
-    enterOpacity,
-    enterY,
-    bubbleY,
-    heartScale,
-    ctaScale,
-    ctaGlow,
-    pawWiggle,
-    stickerYs,
-    stickerEnters,
-  ]);
+  }, [enterOpacity, enterY, petFloat, reduceMotion, roomScale]);
+
+  const celebrate = () => {
+    setBurstKey((key) => key + 1);
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  };
+
+  const confirmDose = () => {
+    if (!nextDose) return;
+    setOptimisticGivenIds((ids) => [...ids, nextDose.id]);
+    celebrate();
+    onLog(nextDose, "given");
+  };
+
+  const toggleFood = () => {
+    setFoodDone((done) => !done);
+    celebrate();
+  };
+
+  const toggleWalk = () => {
+    setWalkDone((done) => !done);
+    celebrate();
+  };
+
+  const statusTitle =
+    completedCount === 3 && allMedicationDone
+      ? `${petName} is all cared for`
+      : `${petName}'s care, together`;
 
   return (
     <View style={styles.room}>
       <Animated.Image
         accessibilityIgnoresInvertColors
-        accessibilityLabel={`${petName} care scene`}
+        accessibilityLabel={`${petName} personalized care room`}
         resizeMode="cover"
         source={sceneSource}
         style={[
           styles.sceneBleed,
-          { transform: [{ scale: sceneScale }] },
+          { transform: [{ scale: roomScale }] },
         ]}
       />
+      <View style={styles.roomWash} />
       <HeartBurst trigger={burstKey} />
       <AmbientStickers
         items={[
           {
             source: assets.stickers.sun,
-            size: 52,
+            size: 48,
             top: topInset + 58,
-            right: 6,
+            right: 8,
             rotate: "8deg",
             delay: 40,
             amplitude: 4,
           },
           {
             source: assets.stickers.plant,
-            size: 58,
-            bottom: 132,
-            left: -6,
+            size: 52,
+            bottom: 300,
+            left: -4,
             rotate: "-6deg",
             delay: 180,
-            amplitude: 5,
-          },
-          {
-            source: assets.stickers.ball,
-            size: 40,
-            bottom: 168,
-            right: 10,
-            rotate: "14deg",
-            delay: 260,
-            amplitude: 7,
-          },
-          {
-            source: assets.stickers.pill,
-            size: 36,
-            top: topInset + 120,
-            left: 4,
-            rotate: "-18deg",
-            delay: 120,
-            amplitude: 5,
+            amplitude: 4,
           },
         ]}
       />
+
       <Animated.View
         style={[
           styles.hero,
@@ -334,23 +244,7 @@ export function TodayHero({
           <View style={styles.wordmark}>
             <Text style={styles.wordPaw}>Paw</Text>
             <Text style={styles.wordPair}>Pair</Text>
-            <Animated.View
-              style={[
-                styles.pawDot,
-                {
-                  transform: [
-                    {
-                      rotate: pawWiggle.interpolate({
-                        inputRange: [-1, 0, 1],
-                        outputRange: ["-18deg", "0deg", "18deg"],
-                      }),
-                    },
-                  ],
-                },
-              ]}
-            >
-              <Ionicons color={colors.coral} name="paw" size={13} />
-            </Animated.View>
+            <Ionicons color={colors.coral} name="paw" size={13} />
           </View>
 
           <View style={styles.profilePuck}>
@@ -362,316 +256,235 @@ export function TodayHero({
           </View>
         </View>
 
-        <View style={styles.scene}>
-          <Animated.View
-            style={[
-              styles.speechWrap,
-              { transform: [{ translateY: bubbleY }] },
-            ]}
-          >
-            <Animated.View
-              style={[
-                styles.heartFloat,
-                { transform: [{ scale: heartScale }] },
-              ]}
-            >
-              <Ionicons color={colors.coral} name="heart" size={13} />
-            </Animated.View>
-            <View style={styles.speechBubble}>
-              <Text style={styles.speechText}>
-                {bubbleLead}{" "}
-                <Text style={styles.speechAccent}>{bubbleAccent}</Text>
-              </Text>
-              {nextDose && !allDone ? (
-                <Text style={styles.speechSub} numberOfLines={1}>
-                  {nextDose.medication.name} · {nextDose.medication.dosage}
-                </Text>
-              ) : null}
-            </View>
-          </Animated.View>
+        <View style={styles.statusBubble}>
+          <View style={styles.statusCopy}>
+            <Text style={styles.eyebrow}>TODAY'S CARE</Text>
+            <Text style={styles.statusTitle}>{statusTitle}</Text>
+          </View>
+          <View style={styles.progressPill}>
+            <Text style={styles.progressText}>{completedCount}/4</Text>
+          </View>
+        </View>
 
-          <View style={styles.companionStage}>
-            {floating.map((dose, index) => {
-              const slot = FLOAT_SLOTS[index] ?? FLOAT_SLOTS[0]!;
-              const accent = ACCENT[index % ACCENT.length] ?? colors.sky;
-              const floatY = stickerYs[index] ?? stickerYs[0]!;
-              const enter = stickerEnters[index] ?? stickerEnters[0]!;
-              return (
-                <FloatingDoseSticker
-                  accent={accent}
-                  dose={dose}
-                  enter={enter}
-                  floatY={floatY}
-                  key={dose.id}
-                  onCelebrate={celebrateGiven}
-                  reduceMotion={reduceMotion}
-                  slot={slot}
-                />
-              );
-            })}
+        <Animated.View
+          style={[styles.petStage, { transform: [{ translateY: petFloat }] }]}
+        >
+          <View style={styles.petHalo}>
+            <Image
+              accessibilityLabel={`${petName}, ${petBreed}`}
+              source={petImage}
+              style={styles.petPortrait}
+            />
+          </View>
+          <View style={styles.nameTag}>
+            <Image source={assets.stickers.bone} style={styles.nameTagImage} />
+            <Text style={styles.nameTagText} numberOfLines={1}>
+              {petName}
+            </Text>
+          </View>
+          <Text style={styles.breedLabel} numberOfLines={1}>
+            {petBreed}
+          </Text>
+        </Animated.View>
+
+        <View style={styles.careDock}>
+          <View style={styles.dockHeader}>
+            <Text style={styles.dockTitle}>Care plan</Text>
+            <Text style={styles.dockMeta}>Shared household</Text>
           </View>
 
-          {canConfirm && onConfirmNext && nextDose ? (
-            <Animated.View
-              style={{
-                opacity: ctaGlow,
-                transform: [{ scale: ctaScale }],
-                zIndex: 8,
-              }}
-            >
+          <View style={styles.medicationRow}>
+            <View style={styles.medicationIcon}>
+              <Ionicons color={colors.coral} name="medical" size={20} />
+            </View>
+            <View style={styles.medicationCopy}>
+              <Text style={styles.actionEyebrow}>MEDICATION</Text>
+              <Text style={styles.actionTitle} numberOfLines={1}>
+                {nextDose?.medication.name ?? "All doses given"}
+              </Text>
+              <Text style={styles.actionMeta} numberOfLines={1}>
+                {nextDose
+                  ? `${formatTime(nextDose.scheduledTime)} - ${nextDose.medication.dosage}`
+                  : "Completed for today"}
+              </Text>
+            </View>
+            {nextDose ? (
               <PressScale
-                accessibilityLabel={ctaLabel}
-                onPress={confirmNext}
-                scaleTo={0.96}
-                style={styles.giveCta}
+                accessibilityLabel={`Mark ${nextDose.pet.name}'s ${nextDose.medication.name} as given`}
+                onPress={confirmDose}
+                scaleTo={0.94}
+                style={styles.giveButton}
               >
-                <Ionicons color={colors.white} name="checkmark" size={20} />
-                <Text style={styles.giveCtaText} numberOfLines={2}>
-                  {ctaLabel}
-                </Text>
+                <Ionicons color={colors.white} name="checkmark" size={18} />
+                <Text style={styles.giveButtonText}>Give</Text>
               </PressScale>
-            </Animated.View>
-          ) : null}
+            ) : (
+              <View style={styles.donePuck}>
+                <Ionicons color={colors.white} name="checkmark" size={20} />
+              </View>
+            )}
+          </View>
+
+          <View style={styles.quickRow}>
+            <QuickCareCard
+              accent={colors.coral}
+              done={foodDone}
+              icon="restaurant-outline"
+              label="Food"
+              meta={foodDone ? "Fed now" : "Breakfast"}
+              onPress={toggleFood}
+            />
+            <QuickCareCard
+              accent={colors.sky}
+              done={walkDone}
+              icon="walk-outline"
+              label="Walk"
+              meta={walkDone ? "Walked now" : "20 minutes"}
+              onPress={toggleWalk}
+            />
+            <View style={styles.nextCard}>
+              <View style={[styles.quickIcon, styles.nextIcon]}>
+                <Ionicons
+                  color={colors.lavender}
+                  name="sparkles-outline"
+                  size={18}
+                />
+              </View>
+              <Text style={styles.quickLabel}>Next</Text>
+              <Text style={styles.quickMeta} numberOfLines={1}>
+                Brush - 7 PM
+              </Text>
+            </View>
+          </View>
         </View>
       </Animated.View>
     </View>
   );
 }
 
-interface FloatingDoseStickerProps {
-  dose: ScheduledDose;
+interface QuickCareCardProps {
+  label: string;
+  meta: string;
+  icon: "restaurant-outline" | "walk-outline";
   accent: string;
-  floatY: Animated.Value;
-  enter: Animated.Value;
-  onCelebrate: (dose: ScheduledDose) => void;
-  reduceMotion: boolean;
-  slot: (typeof FLOAT_SLOTS)[number];
+  done: boolean;
+  onPress: () => void;
 }
 
-function FloatingDoseSticker({
-  dose,
+function QuickCareCard({
+  label,
+  meta,
+  icon,
   accent,
-  floatY,
-  enter,
-  onCelebrate,
-  reduceMotion,
-  slot,
-}: FloatingDoseStickerProps) {
-  const complete = dose.status === "given";
-  const skipped = dose.status === "skipped";
-  const caregiver = dose.log?.completedBy?.slice(0, 2).toUpperCase();
-  const popOpacity = useRef(new Animated.Value(1)).current;
-  const popScale = useRef(new Animated.Value(1)).current;
-  const heartPop = useRef(new Animated.Value(0)).current;
-  const busy = useRef(false);
-
-  const markGiven = () => {
-    if (busy.current) return;
-    busy.current = true;
-
-    if (reduceMotion) {
-      onCelebrate(dose);
-      return;
-    }
-
-    Animated.parallel([
-      Animated.timing(popScale, {
-        toValue: 1.12,
-        duration: 220,
-        easing: Easing.out(Easing.back(1.6)),
-        useNativeDriver: true,
-      }),
-      Animated.timing(heartPop, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(popOpacity, {
-        toValue: 0,
-        duration: 320,
-        delay: 120,
-        easing: Easing.in(Easing.quad),
-        useNativeDriver: true,
-      }),
-    ]).start(({ finished }) => {
-      if (finished) onCelebrate(dose);
-      else busy.current = false;
-    });
-  };
-
+  done,
+  onPress,
+}: QuickCareCardProps) {
   return (
-    <Animated.View
-      style={[
-        styles.sticker,
-        {
-          top: slot.top,
-          ...("left" in slot ? { left: slot.left } : { right: slot.right }),
-          opacity: Animated.multiply(enter, popOpacity),
-          transform: [
-            { rotate: slot.rotate },
-            { translateY: floatY },
-            {
-              scale: Animated.multiply(
-                enter.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0.82, 1],
-                }),
-                popScale,
-              ),
-            },
-          ],
-        },
-        complete && styles.stickerDone,
-      ]}
+    <PressScale
+      accessibilityLabel={`${done ? "Undo" : "Mark"} ${label.toLowerCase()} ${done ? "completion" : "as done"}`}
+      onPress={onPress}
+      scaleTo={0.95}
+      style={[styles.quickCard, done && styles.quickCardDone]}
     >
-      <Animated.View
-        pointerEvents="none"
-        style={[
-          styles.stickerHeart,
-          {
-            opacity: heartPop,
-            transform: [
-              {
-                scale: heartPop.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0.4, 1.35],
-                }),
-              },
-              {
-                translateY: heartPop.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [8, -18],
-                }),
-              },
-            ],
-          },
-        ]}
-      >
-        <Ionicons color={colors.coral} name="heart" size={22} />
-      </Animated.View>
-      <View style={styles.stickerTop}>
-        <View style={[styles.avatar, { backgroundColor: `${accent}30` }]}>
-          <Text style={[styles.avatarText, { color: accent }]}>
-            {caregiver ?? dose.pet.name.slice(0, 1).toUpperCase()}
-          </Text>
-        </View>
-        <Text style={styles.petChip} numberOfLines={1}>
-          {dose.pet.name}
-        </Text>
+      <View style={[styles.quickIcon, { backgroundColor: `${accent}24` }]}>
+        <Ionicons
+          color={done ? colors.sage : accent}
+          name={done ? "checkmark" : icon}
+          size={18}
+        />
       </View>
-      <View style={styles.timeRow}>
-        <Ionicons color={colors.muted} name="time-outline" size={12} />
-        <Text style={styles.time}>{formatTime(dose.scheduledTime)}</Text>
-      </View>
-      <Text style={styles.medName} numberOfLines={1}>
-        {dose.medication.name}
+      <Text style={styles.quickLabel}>{label}</Text>
+      <Text style={styles.quickMeta} numberOfLines={1}>
+        {meta}
       </Text>
-      <Text style={styles.details} numberOfLines={1}>
-        {dose.medication.dosage}
-      </Text>
-      {complete || skipped ? (
-        <View
-          style={[
-            styles.checkPuck,
-            { backgroundColor: complete ? accent : colors.muted },
-          ]}
-        >
-          <Ionicons
-            color={colors.white}
-            name={complete ? "checkmark" : "remove"}
-            size={16}
-          />
-        </View>
-      ) : (
-        <PressScale
-          accessibilityLabel={`Mark ${dose.pet.name}'s ${dose.medication.name} as given`}
-          onPress={markGiven}
-          scaleTo={0.88}
-          style={[styles.checkPuck, { backgroundColor: accent }]}
-        >
-          <Ionicons color={colors.white} name="checkmark" size={16} />
-        </PressScale>
-      )}
-    </Animated.View>
+    </PressScale>
   );
 }
 
 const styles = StyleSheet.create({
-  avatar: {
-    alignItems: "center",
-    borderRadius: 13,
-    height: 28,
-    justifyContent: "center",
-    width: 28,
-  },
-  avatarText: {
+  actionEyebrow: {
+    color: colors.coral,
     fontFamily: "Nunito_800ExtraBold",
-    fontSize: 10,
+    fontSize: 9,
+    letterSpacing: 1.1,
   },
-  checkPuck: {
-    alignItems: "center",
-    alignSelf: "flex-end",
-    borderRadius: 15,
-    height: 30,
-    justifyContent: "center",
-    marginTop: 8,
-    width: 30,
-    ...shadow.subtle,
-  },
-  companionStage: {
-    flex: 1,
-    minHeight: 260,
-    position: "relative",
-    width: "100%",
-  },
-  details: {
+  actionMeta: {
     color: colors.muted,
     fontFamily: "Nunito_600SemiBold",
     fontSize: 11,
-    marginTop: 1,
   },
-  giveCta: {
-    alignItems: "center",
-    alignSelf: "center",
-    backgroundColor: colors.coral,
-    borderRadius: 999,
-    flexDirection: "row",
-    gap: 10,
-    justifyContent: "center",
-    marginBottom: 24,
-    marginTop: 12,
-    maxWidth: "100%",
-    minHeight: 62,
-    paddingHorizontal: 22,
-    paddingVertical: 12,
-    ...shadow.fab,
-  },
-  giveCtaText: {
-    color: colors.white,
-    flexShrink: 1,
+  actionTitle: {
+    color: colors.ink,
     fontFamily: "Nunito_800ExtraBold",
     fontSize: 15,
-    letterSpacing: -0.2,
-    textAlign: "center",
   },
-  heartFloat: {
-    alignItems: "center",
-    backgroundColor: colors.paper,
-    borderRadius: 14,
-    height: 28,
-    justifyContent: "center",
-    marginBottom: -8,
-    width: 28,
-    zIndex: 5,
+  breedLabel: {
+    color: colors.ink,
+    fontFamily: "Nunito_700Bold",
+    fontSize: 11,
+    marginTop: 2,
+    opacity: 0.72,
+  },
+  careDock: {
+    backgroundColor: "rgba(255,252,247,0.97)",
+    borderRadius: 30,
+    padding: 14,
+    width: "100%",
+    zIndex: 6,
     ...shadow.card,
   },
+  dockHeader: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  dockMeta: {
+    color: colors.muted,
+    fontFamily: "Nunito_700Bold",
+    fontSize: 10,
+  },
+  dockTitle: {
+    color: colors.ink,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 17,
+  },
+  donePuck: {
+    alignItems: "center",
+    backgroundColor: colors.sage,
+    borderRadius: 22,
+    height: 44,
+    justifyContent: "center",
+    width: 44,
+  },
+  eyebrow: {
+    color: colors.sky,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 9,
+    letterSpacing: 1.2,
+  },
+  giveButton: {
+    alignItems: "center",
+    backgroundColor: colors.coral,
+    borderRadius: 22,
+    flexDirection: "row",
+    gap: 4,
+    height: 44,
+    justifyContent: "center",
+    minWidth: 76,
+    paddingHorizontal: 12,
+    ...shadow.subtle,
+  },
+  giveButtonText: {
+    color: colors.white,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 13,
+  },
   hero: {
-    backgroundColor: "transparent",
     flex: 1,
-    overflow: "hidden",
-    paddingBottom: 108,
+    paddingBottom: 112,
     paddingHorizontal: 14,
-    zIndex: 1,
+    zIndex: 2,
   },
   iconPuck: {
     alignItems: "center",
@@ -682,22 +495,81 @@ const styles = StyleSheet.create({
     width: 48,
     ...shadow.card,
   },
-  medName: {
-    color: colors.ink,
-    fontFamily: "Nunito_800ExtraBold",
-    fontSize: 13,
-    marginTop: 2,
-  },
-  pawDot: {
-    marginLeft: -2,
-    marginTop: -14,
-  },
-  petChip: {
-    color: colors.muted,
+  medicationCopy: {
     flex: 1,
-    fontFamily: "Nunito_700Bold",
-    fontSize: 11,
-    marginLeft: 6,
+    gap: 1,
+  },
+  medicationIcon: {
+    alignItems: "center",
+    backgroundColor: `${colors.coral}20`,
+    borderRadius: 18,
+    height: 42,
+    justifyContent: "center",
+    width: 42,
+  },
+  medicationRow: {
+    alignItems: "center",
+    backgroundColor: `${colors.coral}0F`,
+    borderRadius: 22,
+    flexDirection: "row",
+    gap: 10,
+    minHeight: 68,
+    padding: 10,
+  },
+  nameTag: {
+    alignItems: "center",
+    bottom: 4,
+    height: 42,
+    justifyContent: "center",
+    position: "absolute",
+    width: 92,
+    zIndex: 4,
+  },
+  nameTagImage: {
+    height: 42,
+    position: "absolute",
+    resizeMode: "contain",
+    width: 92,
+  },
+  nameTagText: {
+    color: "#8B5E35",
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 12,
+    maxWidth: 64,
+    paddingTop: 1,
+    textAlign: "center",
+  },
+  nextCard: {
+    backgroundColor: colors.paper,
+    borderRadius: 20,
+    flex: 1,
+    minHeight: 78,
+    padding: 10,
+    ...shadow.subtle,
+  },
+  nextIcon: {
+    backgroundColor: `${colors.lavender}24`,
+  },
+  petHalo: {
+    backgroundColor: "rgba(255,252,247,0.68)",
+    borderColor: "rgba(255,255,255,0.82)",
+    borderRadius: 94,
+    borderWidth: 6,
+    height: 188,
+    overflow: "hidden",
+    width: 188,
+    ...shadow.fab,
+  },
+  petPortrait: {
+    height: "100%",
+    width: "100%",
+  },
+  petStage: {
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "center",
+    minHeight: 190,
+    paddingBottom: 18,
   },
   profileImage: {
     borderRadius: 22,
@@ -713,93 +585,90 @@ const styles = StyleSheet.create({
     width: 50,
     ...shadow.card,
   },
+  progressPill: {
+    alignItems: "center",
+    backgroundColor: `${colors.sage}25`,
+    borderRadius: 18,
+    height: 36,
+    justifyContent: "center",
+    minWidth: 52,
+  },
+  progressText: {
+    color: colors.sage,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 13,
+  },
+  quickCard: {
+    backgroundColor: colors.paper,
+    borderRadius: 20,
+    flex: 1,
+    minHeight: 78,
+    padding: 10,
+    ...shadow.subtle,
+  },
+  quickCardDone: {
+    backgroundColor: `${colors.sage}16`,
+  },
+  quickIcon: {
+    alignItems: "center",
+    borderRadius: 13,
+    height: 26,
+    justifyContent: "center",
+    marginBottom: 4,
+    width: 26,
+  },
+  quickLabel: {
+    color: colors.ink,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 12,
+  },
+  quickMeta: {
+    color: colors.muted,
+    fontFamily: "Nunito_600SemiBold",
+    fontSize: 9,
+    marginTop: 1,
+  },
+  quickRow: {
+    flexDirection: "row",
+    gap: 8,
+    marginTop: 10,
+  },
   room: {
-    backgroundColor: "#C9B59A",
+    backgroundColor: colors.room,
     flex: 1,
     overflow: "hidden",
     position: "relative",
     width: "100%",
   },
-  scene: {
-    alignItems: "center",
-    flex: 1,
-    justifyContent: "space-between",
-    minHeight: 520,
+  roomWash: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: "rgba(255,244,227,0.13)",
   },
   sceneBleed: {
     ...StyleSheet.absoluteFill,
     height: "100%",
     width: "100%",
   },
-  speechAccent: {
-    color: colors.coral,
-    fontFamily: "Nunito_800ExtraBold",
-  },
-  speechBubble: {
-    backgroundColor: "rgba(255,252,247,0.97)",
-    borderRadius: 34,
-    maxWidth: "100%",
-    paddingHorizontal: 24,
-    paddingVertical: 14,
+  statusBubble: {
+    alignItems: "center",
+    backgroundColor: "rgba(255,252,247,0.94)",
+    borderRadius: 26,
+    flexDirection: "row",
+    gap: 12,
+    justifyContent: "space-between",
+    marginTop: 4,
+    paddingHorizontal: 16,
+    paddingVertical: 11,
     ...shadow.card,
   },
-  speechSub: {
-    color: colors.muted,
-    fontFamily: "Nunito_700Bold",
-    fontSize: 13,
-    marginTop: 4,
-    textAlign: "center",
+  statusCopy: {
+    flex: 1,
   },
-  speechText: {
+  statusTitle: {
     color: colors.ink,
     fontFamily: "Nunito_800ExtraBold",
-    fontSize: 22,
-    letterSpacing: -0.5,
-    lineHeight: 28,
-    textAlign: "center",
-  },
-  speechWrap: {
-    alignItems: "center",
-    marginTop: 6,
-    zIndex: 4,
-  },
-  sticker: {
-    backgroundColor: "rgba(255,252,247,0.98)",
-    borderRadius: 22,
-    paddingBottom: 10,
-    paddingHorizontal: 11,
-    paddingTop: 9,
-    position: "absolute",
-    width: 128,
-    zIndex: 7,
-    ...shadow.card,
-  },
-  stickerDone: {
-    opacity: 0.8,
-  },
-  stickerHeart: {
-    alignItems: "center",
-    justifyContent: "center",
-    left: 0,
-    position: "absolute",
-    right: 0,
-    top: 36,
-    zIndex: 9,
-  },
-  stickerTop: {
-    alignItems: "center",
-    flexDirection: "row",
-    marginBottom: 6,
-  },
-  time: {
-    color: colors.muted,
-    fontFamily: "Nunito_700Bold",
-    fontSize: 11,
-  },
-  timeRow: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 4,
+    fontSize: 18,
+    letterSpacing: -0.3,
   },
   topBar: {
     alignItems: "center",
@@ -808,20 +677,20 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     zIndex: 5,
   },
-  wordmark: {
-    alignItems: "flex-start",
-    flexDirection: "row",
-  },
   wordPair: {
     color: colors.coral,
     fontFamily: "Nunito_800ExtraBold",
-    fontSize: 34,
-    letterSpacing: -1.1,
+    fontSize: 32,
+    letterSpacing: -1,
   },
   wordPaw: {
     color: colors.sky,
     fontFamily: "Nunito_800ExtraBold",
-    fontSize: 34,
-    letterSpacing: -1.1,
+    fontSize: 32,
+    letterSpacing: -1,
+  },
+  wordmark: {
+    alignItems: "center",
+    flexDirection: "row",
   },
 });

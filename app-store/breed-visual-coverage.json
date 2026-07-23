@@ -1,0 +1,1539 @@
+{
+  "generatedAt": "2026-07-21T05:58:06.431Z",
+  "summary": {
+    "total": 189,
+    "exact": 65,
+    "fallback": 124,
+    "exactPercent": 34.39
+  },
+  "bySpecies": {
+    "dog": {
+      "total": 121,
+      "exact": 42,
+      "fallback": 79,
+      "exactPercent": 34.71
+    },
+    "cat": {
+      "total": 68,
+      "exact": 23,
+      "fallback": 45,
+      "exactPercent": 33.82
+    }
+  },
+  "exact": [
+    {
+      "species": "dog",
+      "name": "Akita",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:akita",
+      "resolvedKey": "breed:dog:akita",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Alaskan Malamute",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:alaskan-malamute",
+      "resolvedKey": "breed:dog:alaskan-malamute",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Australian Shepherd",
+      "visualProfile": "dog-fluffy",
+      "catalogKey": "breed:dog:australian-shepherd",
+      "resolvedKey": "breed:dog:australian-shepherd",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Basset Hound",
+      "visualProfile": "dog-long-low",
+      "catalogKey": "breed:dog:basset-hound",
+      "resolvedKey": "breed:dog:basset-hound",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Beagle",
+      "visualProfile": "dog-compact",
+      "catalogKey": "breed:dog:beagle",
+      "resolvedKey": "breed:dog:beagle",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Bernese Mountain Dog",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:bernese-mountain-dog",
+      "resolvedKey": "breed:dog:bernese-mountain-dog",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Bichon Frise",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:bichon-frise",
+      "resolvedKey": "breed:dog:bichon-frise",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Border Collie",
+      "visualProfile": "dog-standard",
+      "catalogKey": "breed:dog:border-collie",
+      "resolvedKey": "breed:dog:border-collie",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Boston Terrier",
+      "visualProfile": "dog-compact",
+      "catalogKey": "breed:dog:boston-terrier",
+      "resolvedKey": "breed:dog:boston-terrier",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Boxer",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:boxer",
+      "resolvedKey": "breed:dog:boxer",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Bulldog",
+      "visualProfile": "dog-compact",
+      "catalogKey": "breed:dog:bulldog",
+      "resolvedKey": "breed:dog:bulldog",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Cane Corso",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:cane-corso",
+      "resolvedKey": "breed:dog:cane-corso",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Cavalier King Charles Spaniel",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:cavalier-king-charles-spaniel",
+      "resolvedKey": "breed:dog:cavalier-king-charles-spaniel",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Chihuahua",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:chihuahua",
+      "resolvedKey": "breed:dog:chihuahua",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Chow Chow",
+      "visualProfile": "dog-fluffy",
+      "catalogKey": "breed:dog:chow-chow",
+      "resolvedKey": "breed:dog:chow-chow",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Dachshund",
+      "visualProfile": "dog-long-low",
+      "catalogKey": "breed:dog:dachshund",
+      "resolvedKey": "breed:dog:dachshund",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Dalmatian",
+      "visualProfile": "dog-tall",
+      "catalogKey": "breed:dog:dalmatian",
+      "resolvedKey": "breed:dog:dalmatian",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Dobermann",
+      "visualProfile": "dog-tall",
+      "catalogKey": "breed:dog:dobermann",
+      "resolvedKey": "breed:dog:dobermann",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "English Cocker Spaniel",
+      "visualProfile": "dog-compact",
+      "catalogKey": "breed:dog:english-cocker-spaniel",
+      "resolvedKey": "breed:dog:english-cocker-spaniel",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "French Bulldog",
+      "visualProfile": "dog-compact",
+      "catalogKey": "breed:dog:french-bulldog",
+      "resolvedKey": "breed:dog:french-bulldog",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "German Shepherd Dog",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:german-shepherd-dog",
+      "resolvedKey": "breed:dog:german-shepherd",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Golden Retriever",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:golden-retriever",
+      "resolvedKey": "breed:dog:golden-retriever",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Great Dane",
+      "visualProfile": "dog-tall",
+      "catalogKey": "breed:dog:great-dane",
+      "resolvedKey": "breed:dog:great-dane",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Greyhound",
+      "visualProfile": "dog-tall",
+      "catalogKey": "breed:dog:greyhound",
+      "resolvedKey": "breed:dog:greyhound",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Havanese",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:havanese",
+      "resolvedKey": "breed:dog:havanese",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Jack Russell Terrier",
+      "visualProfile": "dog-compact",
+      "catalogKey": "breed:dog:jack-russell-terrier",
+      "resolvedKey": "breed:dog:jack-russell-terrier",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Labrador Retriever",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:labrador-retriever",
+      "resolvedKey": "breed:dog:labrador-retriever",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Maltese",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:maltese",
+      "resolvedKey": "breed:dog:maltese",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Miniature Schnauzer",
+      "visualProfile": "dog-compact",
+      "catalogKey": "breed:dog:miniature-schnauzer",
+      "resolvedKey": "breed:dog:miniature-schnauzer",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Papillon",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:papillon",
+      "resolvedKey": "breed:dog:papillon",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Pembroke Welsh Corgi",
+      "visualProfile": "dog-long-low",
+      "catalogKey": "breed:dog:pembroke-welsh-corgi",
+      "resolvedKey": "breed:dog:pembroke-welsh-corgi",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Pomeranian",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:pomeranian",
+      "resolvedKey": "breed:dog:pomeranian",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Poodle (Standard)",
+      "visualProfile": "dog-tall",
+      "catalogKey": "breed:dog:poodle-standard",
+      "resolvedKey": "breed:dog:standard-poodle",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Poodle (Toy)",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:poodle-toy",
+      "resolvedKey": "breed:dog:poodle-toy",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Pug",
+      "visualProfile": "dog-compact",
+      "catalogKey": "breed:dog:pug",
+      "resolvedKey": "breed:dog:pug",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Rottweiler",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:rottweiler",
+      "resolvedKey": "breed:dog:rottweiler",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Samoyed",
+      "visualProfile": "dog-fluffy",
+      "catalogKey": "breed:dog:samoyed",
+      "resolvedKey": "breed:dog:samoyed",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Shiba Inu",
+      "visualProfile": "dog-standard",
+      "catalogKey": "breed:dog:shiba-inu",
+      "resolvedKey": "breed:dog:shiba-inu",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Shih Tzu",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:shih-tzu",
+      "resolvedKey": "breed:dog:shih-tzu",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Siberian Husky",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:siberian-husky",
+      "resolvedKey": "breed:dog:siberian-husky",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "West Highland White Terrier",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:west-highland-white-terrier",
+      "resolvedKey": "breed:dog:west-highland-white-terrier",
+      "status": "exact"
+    },
+    {
+      "species": "dog",
+      "name": "Yorkshire Terrier",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:yorkshire-terrier",
+      "resolvedKey": "breed:dog:yorkshire-terrier",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "Domestic Shorthair",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:domestic-shorthair",
+      "resolvedKey": "breed:cat:domestic-shorthair",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "Domestic Longhair",
+      "visualProfile": "cat-longhair",
+      "catalogKey": "breed:cat:domestic-longhair",
+      "resolvedKey": "breed:cat:domestic-longhair",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "Abyssinian",
+      "visualProfile": "cat-tall",
+      "catalogKey": "breed:cat:abyssinian",
+      "resolvedKey": "breed:cat:abyssinian",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "American Shorthair",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:american-shorthair",
+      "resolvedKey": "breed:cat:american-shorthair",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "Bengal",
+      "visualProfile": "cat-tall",
+      "catalogKey": "breed:cat:bengal",
+      "resolvedKey": "breed:cat:bengal",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "Birman",
+      "visualProfile": "cat-longhair",
+      "catalogKey": "breed:cat:birman",
+      "resolvedKey": "breed:cat:birman",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "Bombay",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:bombay",
+      "resolvedKey": "breed:cat:bombay",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "British Shorthair",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:british-shorthair",
+      "resolvedKey": "pet:luna",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "Burmese",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:burmese",
+      "resolvedKey": "breed:cat:burmese",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "Devon Rex",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:devon-rex",
+      "resolvedKey": "breed:cat:devon-rex",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "Exotic Shorthair",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:exotic-shorthair",
+      "resolvedKey": "breed:cat:exotic-shorthair",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "Maine Coon",
+      "visualProfile": "cat-longhair",
+      "catalogKey": "breed:cat:maine-coon",
+      "resolvedKey": "breed:cat:maine-coon",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "Munchkin",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:munchkin",
+      "resolvedKey": "breed:cat:munchkin",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "Norwegian Forest Cat",
+      "visualProfile": "cat-longhair",
+      "catalogKey": "breed:cat:norwegian-forest-cat",
+      "resolvedKey": "breed:cat:norwegian-forest-cat",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "Oriental Shorthair",
+      "visualProfile": "cat-tall",
+      "catalogKey": "breed:cat:oriental-shorthair",
+      "resolvedKey": "breed:cat:oriental-shorthair",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "Persian",
+      "visualProfile": "cat-longhair",
+      "catalogKey": "breed:cat:persian",
+      "resolvedKey": "breed:cat:persian",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "Ragdoll",
+      "visualProfile": "cat-longhair",
+      "catalogKey": "breed:cat:ragdoll",
+      "resolvedKey": "breed:cat:ragdoll",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "Russian Blue",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:russian-blue",
+      "resolvedKey": "breed:cat:russian-blue",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "Savannah",
+      "visualProfile": "cat-tall",
+      "catalogKey": "breed:cat:savannah",
+      "resolvedKey": "breed:cat:savannah",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "Scottish Fold",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:scottish-fold",
+      "resolvedKey": "breed:cat:scottish-fold",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "Siamese",
+      "visualProfile": "cat-tall",
+      "catalogKey": "breed:cat:siamese",
+      "resolvedKey": "breed:cat:siamese",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "Siberian",
+      "visualProfile": "cat-longhair",
+      "catalogKey": "breed:cat:siberian",
+      "resolvedKey": "breed:cat:siberian",
+      "status": "exact"
+    },
+    {
+      "species": "cat",
+      "name": "Sphynx",
+      "visualProfile": "cat-hairless",
+      "catalogKey": "breed:cat:sphynx",
+      "resolvedKey": "breed:cat:sphynx",
+      "status": "exact"
+    }
+  ],
+  "fallback": [
+    {
+      "species": "dog",
+      "name": "Mixed breed",
+      "visualProfile": "dog-standard",
+      "catalogKey": "breed:dog:mixed-breed",
+      "resolvedKey": "breed:dog:mixed-breed",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Affenpinscher",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:affenpinscher",
+      "resolvedKey": "breed:dog:affenpinscher",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Afghan Hound",
+      "visualProfile": "dog-tall",
+      "catalogKey": "breed:dog:afghan-hound",
+      "resolvedKey": "breed:dog:afghan-hound",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Airedale Terrier",
+      "visualProfile": "dog-tall",
+      "catalogKey": "breed:dog:airedale-terrier",
+      "resolvedKey": "breed:dog:airedale-terrier",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "American Akita",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:american-akita",
+      "resolvedKey": "breed:dog:american-akita",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "American Bulldog",
+      "visualProfile": "dog-compact",
+      "catalogKey": "breed:dog:american-bulldog",
+      "resolvedKey": "breed:dog:american-bulldog",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "American Cocker Spaniel",
+      "visualProfile": "dog-compact",
+      "catalogKey": "breed:dog:american-cocker-spaniel",
+      "resolvedKey": "breed:dog:american-cocker-spaniel",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "American Staffordshire Terrier",
+      "visualProfile": "dog-compact",
+      "catalogKey": "breed:dog:american-staffordshire-terrier",
+      "resolvedKey": "breed:dog:american-staffordshire-terrier",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Australian Cattle Dog",
+      "visualProfile": "dog-standard",
+      "catalogKey": "breed:dog:australian-cattle-dog",
+      "resolvedKey": "breed:dog:australian-cattle-dog",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Australian Kelpie",
+      "visualProfile": "dog-standard",
+      "catalogKey": "breed:dog:australian-kelpie",
+      "resolvedKey": "breed:dog:australian-kelpie",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Australian Terrier",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:australian-terrier",
+      "resolvedKey": "breed:dog:australian-terrier",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Basenji",
+      "visualProfile": "dog-standard",
+      "catalogKey": "breed:dog:basenji",
+      "resolvedKey": "breed:dog:basenji",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Bearded Collie",
+      "visualProfile": "dog-fluffy",
+      "catalogKey": "breed:dog:bearded-collie",
+      "resolvedKey": "breed:dog:bearded-collie",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Bedlington Terrier",
+      "visualProfile": "dog-standard",
+      "catalogKey": "breed:dog:bedlington-terrier",
+      "resolvedKey": "breed:dog:bedlington-terrier",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Belgian Shepherd Dog",
+      "visualProfile": "dog-standard",
+      "catalogKey": "breed:dog:belgian-shepherd-dog",
+      "resolvedKey": "breed:dog:belgian-shepherd-dog",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Bloodhound",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:bloodhound",
+      "resolvedKey": "breed:dog:bloodhound",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Border Terrier",
+      "visualProfile": "dog-compact",
+      "catalogKey": "breed:dog:border-terrier",
+      "resolvedKey": "breed:dog:border-terrier",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Borzoi",
+      "visualProfile": "dog-tall",
+      "catalogKey": "breed:dog:borzoi",
+      "resolvedKey": "breed:dog:borzoi",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Bouvier des Flandres",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:bouvier-des-flandres",
+      "resolvedKey": "breed:dog:bouvier-des-flandres",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Brittany",
+      "visualProfile": "dog-standard",
+      "catalogKey": "breed:dog:brittany",
+      "resolvedKey": "breed:dog:brittany",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Brussels Griffon",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:brussels-griffon",
+      "resolvedKey": "breed:dog:brussels-griffon",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Bull Terrier",
+      "visualProfile": "dog-compact",
+      "catalogKey": "breed:dog:bull-terrier",
+      "resolvedKey": "breed:dog:bull-terrier",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Bullmastiff",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:bullmastiff",
+      "resolvedKey": "breed:dog:bullmastiff",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Cairn Terrier",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:cairn-terrier",
+      "resolvedKey": "breed:dog:cairn-terrier",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Chinese Crested",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:chinese-crested",
+      "resolvedKey": "breed:dog:chinese-crested",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Clumber Spaniel",
+      "visualProfile": "dog-compact",
+      "catalogKey": "breed:dog:clumber-spaniel",
+      "resolvedKey": "breed:dog:clumber-spaniel",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Collie",
+      "visualProfile": "dog-fluffy",
+      "catalogKey": "breed:dog:collie",
+      "resolvedKey": "breed:dog:collie",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Coton de Tulear",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:coton-de-tulear",
+      "resolvedKey": "breed:dog:coton-de-tulear",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Dogo Argentino",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:dogo-argentino",
+      "resolvedKey": "breed:dog:dogo-argentino",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Dogue de Bordeaux",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:dogue-de-bordeaux",
+      "resolvedKey": "breed:dog:dogue-de-bordeaux",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "English Foxhound",
+      "visualProfile": "dog-tall",
+      "catalogKey": "breed:dog:english-foxhound",
+      "resolvedKey": "breed:dog:english-foxhound",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "English Setter",
+      "visualProfile": "dog-tall",
+      "catalogKey": "breed:dog:english-setter",
+      "resolvedKey": "breed:dog:english-setter",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "English Springer Spaniel",
+      "visualProfile": "dog-standard",
+      "catalogKey": "breed:dog:english-springer-spaniel",
+      "resolvedKey": "breed:dog:english-springer-spaniel",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "English Toy Spaniel",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:english-toy-spaniel",
+      "resolvedKey": "breed:dog:english-toy-spaniel",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Finnish Lapphund",
+      "visualProfile": "dog-fluffy",
+      "catalogKey": "breed:dog:finnish-lapphund",
+      "resolvedKey": "breed:dog:finnish-lapphund",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Finnish Spitz",
+      "visualProfile": "dog-fluffy",
+      "catalogKey": "breed:dog:finnish-spitz",
+      "resolvedKey": "breed:dog:finnish-spitz",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Flat-Coated Retriever",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:flat-coated-retriever",
+      "resolvedKey": "breed:dog:flat-coated-retriever",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "German Pinscher",
+      "visualProfile": "dog-standard",
+      "catalogKey": "breed:dog:german-pinscher",
+      "resolvedKey": "breed:dog:german-pinscher",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "German Shorthaired Pointer",
+      "visualProfile": "dog-tall",
+      "catalogKey": "breed:dog:german-shorthaired-pointer",
+      "resolvedKey": "breed:dog:german-shorthaired-pointer",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "German Spitz",
+      "visualProfile": "dog-fluffy",
+      "catalogKey": "breed:dog:german-spitz",
+      "resolvedKey": "breed:dog:german-spitz",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "German Wirehaired Pointer",
+      "visualProfile": "dog-tall",
+      "catalogKey": "breed:dog:german-wirehaired-pointer",
+      "resolvedKey": "breed:dog:german-wirehaired-pointer",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Giant Schnauzer",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:giant-schnauzer",
+      "resolvedKey": "breed:dog:giant-schnauzer",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Gordon Setter",
+      "visualProfile": "dog-tall",
+      "catalogKey": "breed:dog:gordon-setter",
+      "resolvedKey": "breed:dog:gordon-setter",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Great Pyrenees",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:great-pyrenees",
+      "resolvedKey": "breed:dog:great-pyrenees",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Hungarian Vizsla",
+      "visualProfile": "dog-tall",
+      "catalogKey": "breed:dog:hungarian-vizsla",
+      "resolvedKey": "breed:dog:hungarian-vizsla",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Irish Setter",
+      "visualProfile": "dog-tall",
+      "catalogKey": "breed:dog:irish-setter",
+      "resolvedKey": "breed:dog:irish-setter",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Irish Terrier",
+      "visualProfile": "dog-standard",
+      "catalogKey": "breed:dog:irish-terrier",
+      "resolvedKey": "breed:dog:irish-terrier",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Irish Wolfhound",
+      "visualProfile": "dog-tall",
+      "catalogKey": "breed:dog:irish-wolfhound",
+      "resolvedKey": "breed:dog:irish-wolfhound",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Italian Greyhound",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:italian-greyhound",
+      "resolvedKey": "breed:dog:italian-greyhound",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Japanese Chin",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:japanese-chin",
+      "resolvedKey": "breed:dog:japanese-chin",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Japanese Spitz",
+      "visualProfile": "dog-fluffy",
+      "catalogKey": "breed:dog:japanese-spitz",
+      "resolvedKey": "breed:dog:japanese-spitz",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Keeshond",
+      "visualProfile": "dog-fluffy",
+      "catalogKey": "breed:dog:keeshond",
+      "resolvedKey": "breed:dog:keeshond",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Komondor",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:komondor",
+      "resolvedKey": "breed:dog:komondor",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Lagotto Romagnolo",
+      "visualProfile": "dog-standard",
+      "catalogKey": "breed:dog:lagotto-romagnolo",
+      "resolvedKey": "breed:dog:lagotto-romagnolo",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Leonberger",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:leonberger",
+      "resolvedKey": "breed:dog:leonberger",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Lhasa Apso",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:lhasa-apso",
+      "resolvedKey": "breed:dog:lhasa-apso",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Mastiff",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:mastiff",
+      "resolvedKey": "breed:dog:mastiff",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Miniature Pinscher",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:miniature-pinscher",
+      "resolvedKey": "breed:dog:miniature-pinscher",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Newfoundland",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:newfoundland",
+      "resolvedKey": "breed:dog:newfoundland",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Norfolk Terrier",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:norfolk-terrier",
+      "resolvedKey": "breed:dog:norfolk-terrier",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Norwegian Elkhound",
+      "visualProfile": "dog-fluffy",
+      "catalogKey": "breed:dog:norwegian-elkhound",
+      "resolvedKey": "breed:dog:norwegian-elkhound",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Nova Scotia Duck Tolling Retriever",
+      "visualProfile": "dog-standard",
+      "catalogKey": "breed:dog:nova-scotia-duck-tolling-retriever",
+      "resolvedKey": "breed:dog:nova-scotia-duck-tolling-retriever",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Old English Sheepdog",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:old-english-sheepdog",
+      "resolvedKey": "breed:dog:old-english-sheepdog",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Pekingese",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:pekingese",
+      "resolvedKey": "breed:dog:pekingese",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Poodle (Miniature)",
+      "visualProfile": "dog-compact",
+      "catalogKey": "breed:dog:poodle-miniature",
+      "resolvedKey": "breed:dog:poodle-miniature",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Portuguese Water Dog",
+      "visualProfile": "dog-standard",
+      "catalogKey": "breed:dog:portuguese-water-dog",
+      "resolvedKey": "breed:dog:portuguese-water-dog",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Rhodesian Ridgeback",
+      "visualProfile": "dog-tall",
+      "catalogKey": "breed:dog:rhodesian-ridgeback",
+      "resolvedKey": "breed:dog:rhodesian-ridgeback",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Saluki",
+      "visualProfile": "dog-tall",
+      "catalogKey": "breed:dog:saluki",
+      "resolvedKey": "breed:dog:saluki",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Schnauzer",
+      "visualProfile": "dog-standard",
+      "catalogKey": "breed:dog:schnauzer",
+      "resolvedKey": "breed:dog:schnauzer",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Scottish Terrier",
+      "visualProfile": "dog-compact",
+      "catalogKey": "breed:dog:scottish-terrier",
+      "resolvedKey": "breed:dog:scottish-terrier",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Shar Pei",
+      "visualProfile": "dog-compact",
+      "catalogKey": "breed:dog:shar-pei",
+      "resolvedKey": "breed:dog:shar-pei",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Shetland Sheepdog",
+      "visualProfile": "dog-fluffy",
+      "catalogKey": "breed:dog:shetland-sheepdog",
+      "resolvedKey": "breed:dog:shetland-sheepdog",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Soft Coated Wheaten Terrier",
+      "visualProfile": "dog-standard",
+      "catalogKey": "breed:dog:soft-coated-wheaten-terrier",
+      "resolvedKey": "breed:dog:soft-coated-wheaten-terrier",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Staffordshire Bull Terrier",
+      "visualProfile": "dog-compact",
+      "catalogKey": "breed:dog:staffordshire-bull-terrier",
+      "resolvedKey": "breed:dog:staffordshire-bull-terrier",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "St. Bernard",
+      "visualProfile": "dog-large",
+      "catalogKey": "breed:dog:st-bernard",
+      "resolvedKey": "breed:dog:st-bernard",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Toy Fox Terrier",
+      "visualProfile": "dog-toy",
+      "catalogKey": "breed:dog:toy-fox-terrier",
+      "resolvedKey": "breed:dog:toy-fox-terrier",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Weimaraner",
+      "visualProfile": "dog-tall",
+      "catalogKey": "breed:dog:weimaraner",
+      "resolvedKey": "breed:dog:weimaraner",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Welsh Springer Spaniel",
+      "visualProfile": "dog-standard",
+      "catalogKey": "breed:dog:welsh-springer-spaniel",
+      "resolvedKey": "breed:dog:welsh-springer-spaniel",
+      "status": "fallback"
+    },
+    {
+      "species": "dog",
+      "name": "Whippet",
+      "visualProfile": "dog-tall",
+      "catalogKey": "breed:dog:whippet",
+      "resolvedKey": "breed:dog:whippet",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Mixed breed",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:mixed-breed",
+      "resolvedKey": "breed:cat:mixed-breed",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Domestic Medium Hair",
+      "visualProfile": "cat-longhair",
+      "catalogKey": "breed:cat:domestic-medium-hair",
+      "resolvedKey": "breed:cat:domestic-medium-hair",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "American Bobtail",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:american-bobtail",
+      "resolvedKey": "breed:cat:american-bobtail",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "American Curl",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:american-curl",
+      "resolvedKey": "breed:cat:american-curl",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "American Wirehair",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:american-wirehair",
+      "resolvedKey": "breed:cat:american-wirehair",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Australian Mist",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:australian-mist",
+      "resolvedKey": "breed:cat:australian-mist",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Balinese",
+      "visualProfile": "cat-tall",
+      "catalogKey": "breed:cat:balinese",
+      "resolvedKey": "breed:cat:balinese",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "British Longhair",
+      "visualProfile": "cat-longhair",
+      "catalogKey": "breed:cat:british-longhair",
+      "resolvedKey": "breed:cat:british-longhair",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Burmilla",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:burmilla",
+      "resolvedKey": "breed:cat:burmilla",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Chartreux",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:chartreux",
+      "resolvedKey": "breed:cat:chartreux",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Chausie",
+      "visualProfile": "cat-tall",
+      "catalogKey": "breed:cat:chausie",
+      "resolvedKey": "breed:cat:chausie",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Cornish Rex",
+      "visualProfile": "cat-tall",
+      "catalogKey": "breed:cat:cornish-rex",
+      "resolvedKey": "breed:cat:cornish-rex",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Cymric",
+      "visualProfile": "cat-longhair",
+      "catalogKey": "breed:cat:cymric",
+      "resolvedKey": "breed:cat:cymric",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Donskoy",
+      "visualProfile": "cat-hairless",
+      "catalogKey": "breed:cat:donskoy",
+      "resolvedKey": "breed:cat:donskoy",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Egyptian Mau",
+      "visualProfile": "cat-tall",
+      "catalogKey": "breed:cat:egyptian-mau",
+      "resolvedKey": "breed:cat:egyptian-mau",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "European Shorthair",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:european-shorthair",
+      "resolvedKey": "breed:cat:european-shorthair",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Havana Brown",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:havana-brown",
+      "resolvedKey": "breed:cat:havana-brown",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Highlander",
+      "visualProfile": "cat-tall",
+      "catalogKey": "breed:cat:highlander",
+      "resolvedKey": "breed:cat:highlander",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Himalayan",
+      "visualProfile": "cat-longhair",
+      "catalogKey": "breed:cat:himalayan",
+      "resolvedKey": "breed:cat:himalayan",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Japanese Bobtail",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:japanese-bobtail",
+      "resolvedKey": "breed:cat:japanese-bobtail",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Khao Manee",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:khao-manee",
+      "resolvedKey": "breed:cat:khao-manee",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Korat",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:korat",
+      "resolvedKey": "breed:cat:korat",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Kurilian Bobtail",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:kurilian-bobtail",
+      "resolvedKey": "breed:cat:kurilian-bobtail",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "LaPerm",
+      "visualProfile": "cat-longhair",
+      "catalogKey": "breed:cat:laperm",
+      "resolvedKey": "breed:cat:laperm",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Lykoi",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:lykoi",
+      "resolvedKey": "breed:cat:lykoi",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Manx",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:manx",
+      "resolvedKey": "breed:cat:manx",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Minskin",
+      "visualProfile": "cat-hairless",
+      "catalogKey": "breed:cat:minskin",
+      "resolvedKey": "breed:cat:minskin",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Nebelung",
+      "visualProfile": "cat-longhair",
+      "catalogKey": "breed:cat:nebelung",
+      "resolvedKey": "breed:cat:nebelung",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Ocicat",
+      "visualProfile": "cat-tall",
+      "catalogKey": "breed:cat:ocicat",
+      "resolvedKey": "breed:cat:ocicat",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Oriental Longhair",
+      "visualProfile": "cat-longhair",
+      "catalogKey": "breed:cat:oriental-longhair",
+      "resolvedKey": "breed:cat:oriental-longhair",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Peterbald",
+      "visualProfile": "cat-hairless",
+      "catalogKey": "breed:cat:peterbald",
+      "resolvedKey": "breed:cat:peterbald",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Pixiebob",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:pixiebob",
+      "resolvedKey": "breed:cat:pixiebob",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Ragamuffin",
+      "visualProfile": "cat-longhair",
+      "catalogKey": "breed:cat:ragamuffin",
+      "resolvedKey": "breed:cat:ragamuffin",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Selkirk Rex",
+      "visualProfile": "cat-longhair",
+      "catalogKey": "breed:cat:selkirk-rex",
+      "resolvedKey": "breed:cat:selkirk-rex",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Serengeti",
+      "visualProfile": "cat-tall",
+      "catalogKey": "breed:cat:serengeti",
+      "resolvedKey": "breed:cat:serengeti",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Singapura",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:singapura",
+      "resolvedKey": "breed:cat:singapura",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Snowshoe",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:snowshoe",
+      "resolvedKey": "breed:cat:snowshoe",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Sokoke",
+      "visualProfile": "cat-tall",
+      "catalogKey": "breed:cat:sokoke",
+      "resolvedKey": "breed:cat:sokoke",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Somali",
+      "visualProfile": "cat-longhair",
+      "catalogKey": "breed:cat:somali",
+      "resolvedKey": "breed:cat:somali",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Thai",
+      "visualProfile": "cat-tall",
+      "catalogKey": "breed:cat:thai",
+      "resolvedKey": "breed:cat:thai",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Tonkinese",
+      "visualProfile": "cat-tall",
+      "catalogKey": "breed:cat:tonkinese",
+      "resolvedKey": "breed:cat:tonkinese",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Toybob",
+      "visualProfile": "cat-compact",
+      "catalogKey": "breed:cat:toybob",
+      "resolvedKey": "breed:cat:toybob",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Toyger",
+      "visualProfile": "cat-tall",
+      "catalogKey": "breed:cat:toyger",
+      "resolvedKey": "breed:cat:toyger",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Turkish Angora",
+      "visualProfile": "cat-longhair",
+      "catalogKey": "breed:cat:turkish-angora",
+      "resolvedKey": "breed:cat:turkish-angora",
+      "status": "fallback"
+    },
+    {
+      "species": "cat",
+      "name": "Turkish Van",
+      "visualProfile": "cat-longhair",
+      "catalogKey": "breed:cat:turkish-van",
+      "resolvedKey": "breed:cat:turkish-van",
+      "status": "fallback"
+    }
+  ]
+}

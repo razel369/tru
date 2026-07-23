@@ -1,6 +1,7 @@
 import type { SQLiteDatabase } from "expo-sqlite";
 
 import { SCHEMA_V1_SQL } from "./schema-v1.sql";
+import { SCHEMA_V2_SQL } from "./schema-v2.sql";
 
 /**
  * PawPair — migrations runner.
@@ -35,6 +36,11 @@ const MIGRATIONS: Migration[] = [
     version: 1,
     name: "initial_schema",
     up: SCHEMA_V1_SQL,
+  },
+  {
+    version: 2,
+    name: "care_state_snapshots",
+    up: SCHEMA_V2_SQL,
   },
 ];
 

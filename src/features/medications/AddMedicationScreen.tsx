@@ -17,11 +17,11 @@ import { FormInput, FormLabel } from "../../components/forms/FormInput";
 import { colors } from "../../design";
 import type { Medication, MedicationForm, Pet } from "../../types";
 
-const FORM_OPTIONS: Array<{
+const FORM_OPTIONS: {
   id: MedicationForm;
   icon: keyof typeof Ionicons.glyphMap;
   label: string;
-}> = [
+}[] = [
   { id: "tablet", icon: "ellipse-outline", label: "Tablet" },
   { id: "liquid", icon: "water-outline", label: "Liquid" },
   { id: "drops", icon: "eyedrop-outline", label: "Drops" },

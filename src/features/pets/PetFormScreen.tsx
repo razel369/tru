@@ -14,22 +14,24 @@ import { useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { colors } from "../../design";
+import { BreedPicker } from "../../components/BreedPicker";
+import { getBreedVisualProfile } from "../../data/pet-breeds";
 import type { Pet } from "../../types";
 
-const SPECIES_OPTIONS: Array<{
+const SPECIES_OPTIONS: {
   id: Pet["species"];
   label: string;
   color: string;
-}> = [
+}[] = [
   { id: "dog", label: "Dog", color: "#F3B66D" },
   { id: "cat", label: "Cat", color: "#9891C7" },
   { id: "other", label: "Other", color: "#5D9387" },
 ];
 
-const PORTRAIT_OPTIONS: Array<{
+const PORTRAIT_OPTIONS: {
   id: Pet["avatar"];
   label: string;
-}> = [
+}[] = [
   { id: "milo", label: "Milo" },
   { id: "luna", label: "Luna" },
 ];
@@ -81,6 +83,7 @@ export function PetFormScreen({
       age: age ? Number(age) : 0,
       avatar,
       color: accent,
+      visualProfile: getBreedVisualProfile(species, breed.trim()),
       medications: editing?.medications ?? [],
     };
     onSave(pet);
@@ -138,7 +141,10 @@ export function PetFormScreen({
             return (
               <Pressable
                 key={option.id}
-                onPress={() => setSpecies(option.id)}
+                onPress={() => {
+                  setSpecies(option.id);
+                  setBreed("");
+                }}
                 style={[
                   styles.speciesChoice,
                   active && styles.speciesChoiceActive,
@@ -161,16 +167,7 @@ export function PetFormScreen({
         </View>
 
         <Text style={styles.label}>Breed (optional)</Text>
-        <View style={styles.input}>
-          <TextInput
-            accessibilityLabel="Breed"
-            onChangeText={setBreed}
-            placeholder="e.g. Golden retriever"
-            placeholderTextColor="#A9B0B3"
-            style={styles.inputField}
-            value={breed}
-          />
-        </View>
+        <BreedPicker onChange={setBreed} species={species} value={breed} />
 
         <Text style={styles.label}>Age (years, optional)</Text>
         <View style={styles.input}>
