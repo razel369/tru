@@ -110,16 +110,98 @@ const screenshots = [
   "04-every-pet-ai.png",
   "05-private-ai.png",
 ];
-for (const file of screenshots) {
-  const relativePath = `app-store/aso/iphone-6.9/model-b/${file}`;
+const finalCaptures = [
+  "01-home.png",
+  "02-plan.png",
+  "03-health.png",
+  "04-pets.png",
+  "05-settings.png",
+];
+
+for (const file of finalCaptures) {
+  const relativePath = `app-store/screenshots/iphone-6.9-final/${file}`;
   const info = pngInfo(relativePath);
-  add(`Screenshot ${file}`, info?.width === 1320 && info?.height === 2868 && info?.colorType !== 4 && info?.colorType !== 6, info ? `${info.width}x${info.height}, colorType=${info.colorType}` : "missing");
+  add(
+    `Final iPhone capture ${file}`,
+    info?.width === 1320 &&
+      info?.height === 2868 &&
+      info?.colorType !== 4 &&
+      info?.colorType !== 6,
+    info
+      ? `${info.width}x${info.height}, colorType=${info.colorType}`
+      : "missing",
+  );
 }
 
 for (const file of screenshots) {
-  const relativePath = `app-store/aso/ipad-13/model-b/${file}`;
+  const sourceFile = finalCaptures[screenshots.indexOf(file)];
+  const sourcePath = path.join(
+    root,
+    `app-store/screenshots/iphone-6.9-final/${sourceFile}`,
+  );
+  const relativePath = `app-store/aso/iphone-6.9/model-b/${file}`;
+  const absolutePath = path.join(root, relativePath);
   const info = pngInfo(relativePath);
-  add(`iPad screenshot ${file}`, info?.width === 2064 && info?.height === 2752 && info?.colorType !== 4 && info?.colorType !== 6, info ? `${info.width}x${info.height}, colorType=${info.colorType}` : "missing");
+  const fresh =
+    fs.existsSync(sourcePath) &&
+    fs.existsSync(absolutePath) &&
+    fs.statSync(absolutePath).mtimeMs >= fs.statSync(sourcePath).mtimeMs;
+  add(
+    `Screenshot ${file}`,
+    fresh &&
+      info?.width === 1320 &&
+      info?.height === 2868 &&
+      info?.colorType !== 4 &&
+      info?.colorType !== 6,
+    !fs.existsSync(sourcePath)
+      ? "stale until exact final capture exists and compositor reruns"
+      : info
+        ? `${info.width}x${info.height}, colorType=${info.colorType}, fresh=${fresh}`
+        : "missing",
+  );
+}
+
+for (const file of finalCaptures) {
+  const relativePath = `app-store/screenshots/ipad-13-final/${file}`;
+  const info = pngInfo(relativePath);
+  add(
+    `Final iPad capture ${file}`,
+    info?.width === 2064 &&
+      info?.height === 2752 &&
+      info?.colorType !== 4 &&
+      info?.colorType !== 6,
+    info
+      ? `${info.width}x${info.height}, colorType=${info.colorType}`
+      : "missing",
+  );
+}
+
+for (const file of screenshots) {
+  const sourceFile = finalCaptures[screenshots.indexOf(file)];
+  const sourcePath = path.join(
+    root,
+    `app-store/screenshots/ipad-13-final/${sourceFile}`,
+  );
+  const relativePath = `app-store/aso/ipad-13/model-b/${file}`;
+  const absolutePath = path.join(root, relativePath);
+  const info = pngInfo(relativePath);
+  const fresh =
+    fs.existsSync(sourcePath) &&
+    fs.existsSync(absolutePath) &&
+    fs.statSync(absolutePath).mtimeMs >= fs.statSync(sourcePath).mtimeMs;
+  add(
+    `iPad screenshot ${file}`,
+    fresh &&
+      info?.width === 2064 &&
+      info?.height === 2752 &&
+      info?.colorType !== 4 &&
+      info?.colorType !== 6,
+    !fs.existsSync(sourcePath)
+      ? "stale until exact final capture exists and compositor reruns"
+      : info
+        ? `${info.width}x${info.height}, colorType=${info.colorType}, fresh=${fresh}`
+        : "missing",
+  );
 }
 
 const iconPath = app.icon?.replace(/^\.\//, "");

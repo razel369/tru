@@ -5,14 +5,15 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageOps
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "app-store" / "aso" / "iphone-6.9" / "model-b"
+CAPTURES = ROOT / "app-store" / "screenshots" / "iphone-6.9-final"
 TARGET_SIZE = (1320, 2868)
 
 SCREENS = [
-    ("01-pet-care-ai-source.png", ROOT / "living-pet-home.png", "01-pet-care-ai.png"),
-    ("02-daily-care-ai-source.png", ROOT / "app-store" / "screenshots" / "iphone-6.9" / "03-plan.png", "02-daily-care-ai.png"),
-    ("03-pet-health-ai-source.png", ROOT / "app-store" / "screenshots" / "iphone-6.9" / "04-health.png", "03-pet-health-ai.png"),
-    ("04-every-pet-ai-source.png", ROOT / "app-store" / "aso" / "ui-sources" / "pets-full-models.png", "04-every-pet-ai.png"),
-    ("05-private-ai-source.png", ROOT / "app-store" / "screenshots" / "iphone-6.9" / "05-settings.png", "05-private-ai.png"),
+    ("01-pet-care-ai-source.png", CAPTURES / "01-home.png", "01-pet-care-ai.png"),
+    ("02-daily-care-ai-source.png", CAPTURES / "02-plan.png", "02-daily-care-ai.png"),
+    ("03-pet-health-ai-source.png", CAPTURES / "03-health.png", "03-pet-health-ai.png"),
+    ("04-every-pet-ai-source.png", CAPTURES / "04-pets.png", "04-every-pet-ai.png"),
+    ("05-private-ai-source.png", CAPTURES / "05-settings.png", "05-private-ai.png"),
 ]
 
 

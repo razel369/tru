@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-07-24T09:13:25.557Z",
+  "generatedAt": "2026-07-24T10:05:55.097Z",
   "status": "BLOCKED",
-  "passed": 28,
-  "total": 33,
-  "blockerCount": 5,
+  "passed": 23,
+  "total": 43,
+  "blockerCount": 20,
   "checks": [
     {
       "name": "Universal iPhone and iPad target",
@@ -138,64 +138,124 @@
       "detail": "configured"
     },
     {
-      "name": "Screenshot 01-pet-care-ai.png",
-      "pass": true,
+      "name": "Final iPhone capture 01-home.png",
+      "pass": false,
       "blocking": true,
-      "detail": "1320x2868, colorType=2"
+      "detail": "missing"
+    },
+    {
+      "name": "Final iPhone capture 02-plan.png",
+      "pass": false,
+      "blocking": true,
+      "detail": "missing"
+    },
+    {
+      "name": "Final iPhone capture 03-health.png",
+      "pass": false,
+      "blocking": true,
+      "detail": "missing"
+    },
+    {
+      "name": "Final iPhone capture 04-pets.png",
+      "pass": false,
+      "blocking": true,
+      "detail": "missing"
+    },
+    {
+      "name": "Final iPhone capture 05-settings.png",
+      "pass": false,
+      "blocking": true,
+      "detail": "missing"
+    },
+    {
+      "name": "Screenshot 01-pet-care-ai.png",
+      "pass": false,
+      "blocking": true,
+      "detail": "stale until exact final capture exists and compositor reruns"
     },
     {
       "name": "Screenshot 02-daily-care-ai.png",
-      "pass": true,
+      "pass": false,
       "blocking": true,
-      "detail": "1320x2868, colorType=2"
+      "detail": "stale until exact final capture exists and compositor reruns"
     },
     {
       "name": "Screenshot 03-pet-health-ai.png",
-      "pass": true,
+      "pass": false,
       "blocking": true,
-      "detail": "1320x2868, colorType=2"
+      "detail": "stale until exact final capture exists and compositor reruns"
     },
     {
       "name": "Screenshot 04-every-pet-ai.png",
-      "pass": true,
+      "pass": false,
       "blocking": true,
-      "detail": "1320x2868, colorType=2"
+      "detail": "stale until exact final capture exists and compositor reruns"
     },
     {
       "name": "Screenshot 05-private-ai.png",
-      "pass": true,
+      "pass": false,
       "blocking": true,
-      "detail": "1320x2868, colorType=2"
+      "detail": "stale until exact final capture exists and compositor reruns"
+    },
+    {
+      "name": "Final iPad capture 01-home.png",
+      "pass": false,
+      "blocking": true,
+      "detail": "missing"
+    },
+    {
+      "name": "Final iPad capture 02-plan.png",
+      "pass": false,
+      "blocking": true,
+      "detail": "missing"
+    },
+    {
+      "name": "Final iPad capture 03-health.png",
+      "pass": false,
+      "blocking": true,
+      "detail": "missing"
+    },
+    {
+      "name": "Final iPad capture 04-pets.png",
+      "pass": false,
+      "blocking": true,
+      "detail": "missing"
+    },
+    {
+      "name": "Final iPad capture 05-settings.png",
+      "pass": false,
+      "blocking": true,
+      "detail": "missing"
     },
     {
       "name": "iPad screenshot 01-pet-care-ai.png",
       "pass": false,
       "blocking": true,
-      "detail": "missing"
+      "detail": "stale until exact final capture exists and compositor reruns"
     },
     {
       "name": "iPad screenshot 02-daily-care-ai.png",
       "pass": false,
       "blocking": true,
-      "detail": "missing"
+      "detail": "stale until exact final capture exists and compositor reruns"
     },
     {
       "name": "iPad screenshot 03-pet-health-ai.png",
       "pass": false,
       "blocking": true,
-      "detail": "missing"
+      "detail": "stale until exact final capture exists and compositor reruns"
     },
     {
       "name": "iPad screenshot 04-every-pet-ai.png",
       "pass": false,
       "blocking": true,
-      "detail": "missing"
+      "detail": "stale until exact final capture exists and compositor reruns"
     },
     {
       "name": "iPad screenshot 05-private-ai.png",
       "pass": false,
       "blocking": true,
-      "detail": "missing"
+      "detail": "stale until exact final capture exists and compositor reruns"
     },
     {
       "name": "App icon",
