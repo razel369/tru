@@ -74,6 +74,7 @@ export function PersonalizedCareOnboarding({
 
   const visual = useMemo(() => {
     if (!species) {
+      const pack = resolvePetMotionPackForProfile("pet:milo", "dog-large");
       const placement = resolvePetStagePlacement("pet:milo", {
         maxScale: 2.25,
         targetFeetY: 0.94,
@@ -82,7 +83,7 @@ export function PersonalizedCareOnboarding({
       return {
         key: "pet:milo",
         scale: placement.scale,
-        source: assets.milo,
+        source: pack?.states.idle ?? assets.milo,
         translateYRatio: placement.translateYRatio,
       };
     }
