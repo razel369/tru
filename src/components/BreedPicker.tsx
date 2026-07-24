@@ -36,7 +36,9 @@ export function BreedPicker({ species, value, onChange }: BreedPickerProps) {
 
   const options = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase();
-    const breeds = getBreedOptions(species);
+    const breeds = getBreedOptions(species).filter((option) =>
+      hasExactBreedVisual(species, option.name),
+    );
     if (!normalizedQuery) return breeds;
     return breeds.filter((option) =>
       option.name.toLocaleLowerCase().includes(normalizedQuery),
@@ -45,7 +47,9 @@ export function BreedPicker({ species, value, onChange }: BreedPickerProps) {
 
   const normalizedQuery = query.trim().toLocaleLowerCase();
   const hasExactMatch = getBreedOptions(species).some(
-    (option) => option.name.toLocaleLowerCase() === normalizedQuery,
+    (option) =>
+      option.name.toLocaleLowerCase() === normalizedQuery &&
+      hasExactBreedVisual(species, option.name),
   );
 
   const close = () => {
@@ -122,7 +126,7 @@ export function BreedPicker({ species, value, onChange }: BreedPickerProps) {
           <View style={styles.modalHeader}>
             <View style={styles.modalTitleCopy}>
               <Text style={styles.eyebrow}>{species.toUpperCase()} BREEDS</Text>
-              <Text style={styles.modalTitle}>Choose their closest match</Text>
+              <Text style={styles.modalTitle}>Choose their companion</Text>
             </View>
             <Pressable
               accessibilityLabel="Close breed picker"
@@ -138,12 +142,12 @@ export function BreedPicker({ species, value, onChange }: BreedPickerProps) {
           <View style={styles.searchBox}>
             <Ionicons color={colors.muted} name="search" size={19} />
             <TextInput
-              accessibilityLabel="Search every breed"
+              accessibilityLabel="Search available companion models"
               autoCapitalize="words"
               autoCorrect={false}
               maxLength={INPUT_LIMITS.breed}
               onChangeText={setQuery}
-              placeholder="Search every breed"
+              placeholder="Search 3D-ready breeds"
               placeholderTextColor={colors.muted}
               returnKeyType="search"
               style={styles.searchInput}
@@ -177,7 +181,7 @@ export function BreedPicker({ species, value, onChange }: BreedPickerProps) {
               <View style={styles.optionCopy}>
                 <Text style={styles.optionText}>Use “{query.trim()}”</Text>
                 <Text style={styles.optionHint}>
-                  Saved exactly as typed · closest companion visual
+                  Saved exactly as typed · neutral {species} visual
                 </Text>
               </View>
               <Ionicons color={colors.muted} name="arrow-forward" size={17} />
@@ -202,7 +206,6 @@ export function BreedPicker({ species, value, onChange }: BreedPickerProps) {
             renderItem={({ item }) => {
               const selected =
                 item.name.toLocaleLowerCase() === value.trim().toLocaleLowerCase();
-              const exactVisual = hasExactBreedVisual(species, item.name);
               return (
                 <Pressable
                   accessibilityLabel={`Choose ${item.name}`}
@@ -236,11 +239,7 @@ export function BreedPicker({ species, value, onChange }: BreedPickerProps) {
                     >
                       {item.name}
                     </Text>
-                    <Text style={styles.optionHint}>
-                      {exactVisual
-                        ? "Exact companion visual"
-                        : "Closest companion visual"}
-                    </Text>
+                    <Text style={styles.optionHint}>Exact companion visual</Text>
                   </View>
                   {selected ? (
                     <Ionicons

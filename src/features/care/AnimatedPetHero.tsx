@@ -255,6 +255,11 @@ export function AnimatedPetHero({
     [resolvedPetKey],
   );
   const isLunaRig = rig25d !== null && motionPack !== null;
+  // The old segmented renderer painted full-image head/chest crops over the
+  // base cutout. On iOS those subpixel layers could remain rasterized after a
+  // tap, producing a soft face, doubled fur, or a one-eye frame. Keep the
+  // authored cutout on one crisp plane and layer only paired-eye expressions.
+  const renderSegmentedRig = false;
   const hasLayeredPet = motionPack !== null || !sceneContainsPet;
   const motionIdleSource = motionPack?.states.idle ?? petSource;
   const motionExpressionState =
@@ -1032,7 +1037,7 @@ export function AnimatedPetHero({
       Animated.timing(lean, {
         duration: reduceMotion ? 0 : 180,
         easing: Easing.out(Easing.cubic),
-        toValue: kind === "head" ? 0.28 : 0,
+        toValue: 0,
         useNativeDriver: USE_NATIVE_DRIVER,
       }),
       Animated.delay(kind === "head" && !reduceMotion ? 130 : 0),
@@ -1182,53 +1187,70 @@ export function AnimatedPetHero({
       height: 0.075,
       width: 0.56,
     };
-    // Render both eyes through one tight expression plane. Separate native
-    // views can commit on different frames during touch interactions on iOS,
-    // briefly showing only one changed eye.
-    const regions = [overlay?.region ?? fallbackRegion];
+    // One parent opacity is the atomic expression plane for both eyes. The two
+    // clips are static children, so iOS cannot commit one blinking eye a frame
+    // before the other while each authored eye still keeps a tight soft edge.
+    const regions = overlay?.regions ?? [overlay?.region ?? fallbackRegion];
     const registration = overlay?.registration;
 
-    return regions.map((region, index) => (
+    return (
       <Animated.View
-        key={`${state}-expression-${index}`}
+        pointerEvents="none"
         style={[
-          styles.expressionClip,
+          styles.expressionPlane,
           {
-            borderRadius: overlay?.regions
-              ? geometry.height * region.height * 0.5
-              : 0,
-            height: geometry.height * region.height,
-            left: geometry.width * (region.x - origin.x),
+            height: geometry.height,
+            left: -geometry.width * origin.x,
             opacity,
-            top: geometry.height * (region.y - origin.y),
-            width: geometry.width * region.width,
+            top: -geometry.height * origin.y,
+            width: geometry.width,
             zIndex: 999,
           },
         ]}
       >
-        <Image
-          onError={() => handleMotionAssetReady(activeMotionPackKey, state)}
-          onLoad={() => handleMotionAssetReady(activeMotionPackKey, state)}
-          resizeMode="contain"
-          source={source}
-          style={{
-            height: geometry.height,
-            left:
-              -geometry.width * region.x +
-              geometry.width * (registration?.translateX ?? 0),
-            position: "absolute",
-            top:
-              -geometry.height * region.y +
-              geometry.height * (registration?.translateY ?? 0),
-            transform: [
-              { scaleX: registration?.scaleX ?? 1 },
-              { scaleY: registration?.scaleY ?? 1 },
-            ],
-            width: geometry.width,
-          }}
-        />
+        {regions.map((region, index) => (
+          <View
+            key={`${state}-eye-${index}`}
+            style={[
+              styles.expressionClip,
+              {
+                borderRadius: geometry.height * region.height * 0.5,
+                height: geometry.height * region.height,
+                left: geometry.width * region.x,
+                top: geometry.height * region.y,
+                width: geometry.width * region.width,
+              },
+            ]}
+          >
+            <Image
+              onError={() =>
+                handleMotionAssetReady(activeMotionPackKey, state)
+              }
+              onLoad={() =>
+                handleMotionAssetReady(activeMotionPackKey, state)
+              }
+              resizeMode="contain"
+              source={source}
+              style={{
+                height: geometry.height,
+                left:
+                  -geometry.width * region.x +
+                  geometry.width * (registration?.translateX ?? 0),
+                position: "absolute",
+                top:
+                  -geometry.height * region.y +
+                  geometry.height * (registration?.translateY ?? 0),
+                transform: [
+                  { scaleX: registration?.scaleX ?? 1 },
+                  { scaleY: registration?.scaleY ?? 1 },
+                ],
+                width: geometry.width,
+              }}
+            />
+          </View>
+        ))}
       </Animated.View>
-    ));
+    );
   };
 
   const attentiveBreath = Animated.multiply(
@@ -1309,7 +1331,7 @@ export function AnimatedPetHero({
             }),
             reaction.interpolate({
               inputRange: [0, 1],
-              outputRange: [1, isLunaRig ? 1.0025 : 1.01],
+              outputRange: [1, 1],
             }),
           ),
           Animated.multiply(
@@ -1437,7 +1459,7 @@ export function AnimatedPetHero({
               source={motionIdleSource}
               style={styles.layeredFrame}
             />
-            {isLunaRig && rig25d && (
+            {renderSegmentedRig && rig25d && (
               <>
                 <Animated.View
                   pointerEvents="none"
@@ -1856,11 +1878,11 @@ export function AnimatedPetHero({
                 )}
               </>
             )}
-            {!isLunaRig && motionExpressionState &&
+            {!renderSegmentedRig && motionExpressionState &&
               renderExpressionLayer(motionExpressionState, expressionOpacity)}
-            {!isLunaRig &&
+            {!renderSegmentedRig &&
               renderExpressionLayer("blinkHalf", blinkHalfCompositeOpacity)}
-            {!isLunaRig &&
+            {!renderSegmentedRig &&
               renderExpressionLayer("blink", blinkClosedOpacity)}
           </Animated.View>
         </>
@@ -2028,6 +2050,9 @@ const styles = StyleSheet.create({
   cutout: { position: "absolute" },
   expressionClip: {
     overflow: "hidden",
+    position: "absolute",
+  },
+  expressionPlane: {
     position: "absolute",
   },
   hitTarget: {

@@ -1,5 +1,5 @@
 import * as Haptics from "expo-haptics";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Platform, Pressable, StyleSheet, Switch, View } from "react-native";
 
 import { colors } from "../design";
 
@@ -19,6 +19,22 @@ export function PawPairSwitch({
     void Haptics.selectionAsync().catch(() => undefined);
     onValueChange(!value);
   };
+
+  if (Platform.OS === "ios") {
+    return (
+      <Switch
+        accessibilityLabel={accessibilityLabel}
+        disabled={disabled}
+        ios_backgroundColor={colors.line}
+        onValueChange={(nextValue) => {
+          void Haptics.selectionAsync().catch(() => undefined);
+          onValueChange(nextValue);
+        }}
+        trackColor={{ false: colors.line, true: colors.sage }}
+        value={value}
+      />
+    );
+  }
 
   return (
     <Pressable

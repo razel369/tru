@@ -23,6 +23,13 @@ const results = files.map((filePath) => {
   let coloredTransparent = 0;
   let semiTransparent = 0;
   let chromaEdge = 0;
+  let visibleBoundary = 0;
+  let visibleBoundaryChroma = 0;
+
+  const isTransparent = (x, y) => {
+    if (x < 0 || y < 0 || x >= png.width || y >= png.height) return true;
+    return png.data[(y * png.width + x) * 4 + 3] === 0;
+  };
 
   for (let index = 0; index < png.data.length; index += 4) {
     const red = png.data[index];
@@ -32,6 +39,26 @@ const results = files.map((filePath) => {
 
     if (alpha === 0 && (red !== 0 || green !== 0 || blue !== 0)) {
       coloredTransparent += 1;
+    }
+    if (alpha > 0) {
+      const pixel = index / 4;
+      const x = pixel % png.width;
+      const y = Math.floor(pixel / png.width);
+      const boundary =
+        isTransparent(x - 1, y - 1) ||
+        isTransparent(x, y - 1) ||
+        isTransparent(x + 1, y - 1) ||
+        isTransparent(x - 1, y) ||
+        isTransparent(x + 1, y) ||
+        isTransparent(x - 1, y + 1) ||
+        isTransparent(x, y + 1) ||
+        isTransparent(x + 1, y + 1);
+      if (boundary) {
+        visibleBoundary += 1;
+        const greenDominant =
+          green > 90 && green > red + 12 && green > blue + 10;
+        if (greenDominant) visibleBoundaryChroma += 1;
+      }
     }
     if (alpha <= 0 || alpha >= 252) continue;
 
@@ -45,10 +72,18 @@ const results = files.map((filePath) => {
 
   const chromaEdgePercent =
     (chromaEdge / Math.max(1, semiTransparent)) * 100;
+  const visibleBoundaryChromaPercent =
+    (visibleBoundaryChroma / Math.max(1, visibleBoundary)) * 100;
   const issues = [];
   if (coloredTransparent > 0) issues.push("colored-transparent-pixels");
   if (chromaEdge > 10 && chromaEdgePercent > 0.25) {
     issues.push("chroma-edge-spill");
+  }
+  if (
+    visibleBoundaryChroma > 10 &&
+    visibleBoundaryChromaPercent > 5
+  ) {
+    issues.push("visible-boundary-chroma-spill");
   }
 
   return {
@@ -56,6 +91,11 @@ const results = files.map((filePath) => {
     coloredTransparent,
     chromaEdge,
     chromaEdgePercent: Number(chromaEdgePercent.toFixed(3)),
+    visibleBoundary,
+    visibleBoundaryChroma,
+    visibleBoundaryChromaPercent: Number(
+      visibleBoundaryChromaPercent.toFixed(3),
+    ),
     issues,
   };
 });

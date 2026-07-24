@@ -31,6 +31,10 @@ export function resolvePetMotionPackForProfile(
 ) {
   const exact = resolvePetMotionPack(petKey);
   if (exact) return exact;
+  // A breed name must never silently become a different breed. Unsupported
+  // breeds keep the neutral species artwork supplied by the screen instead
+  // of borrowing another breed's animation.
+  if (petKey.startsWith("breed:")) return null;
   const fallbackKey = PROFILE_FALLBACK_PACKS[profile];
   return fallbackKey ? resolvePetMotionPack(fallbackKey) : null;
 }

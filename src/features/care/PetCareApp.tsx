@@ -36,6 +36,11 @@ import { canAddPet, defaultFreeEntitlement, isPlus } from "../subscriptions/enti
 import { PremiumPaywallScreen } from "../subscriptions/PremiumPaywallScreen";
 import { refreshEntitlement } from "../subscriptions/storekit";
 import type { PremiumEntryPoint } from "../subscriptions/types";
+import {
+  buildWatchSnapshot,
+  subscribeWatchCareActions,
+  syncWatchCare,
+} from "../watch/bridge";
 
 import { CareBottomNav, type CareTab } from "./CareBottomNav";
 import { buildUpcomingAppointments } from "./appointments";
@@ -280,6 +285,33 @@ export function PetCareApp() {
       ? schedule.filter((item) => item.pet.id === petId)
       : [];
   }, [schedule, store.state.activePetId, store.state.pets]);
+
+  useEffect(() => {
+    if (!store.loaded) return;
+    void syncWatchCare(
+      buildWatchSnapshot(homeSchedule, store.state.activePetId, careNow),
+    );
+  }, [careNow, homeSchedule, store.loaded, store.state.activePetId]);
+
+  useEffect(
+    () =>
+      subscribeWatchCareActions((action) => {
+        const occurrence = schedule.find(
+          (item) => item.id === action.occurrenceId,
+        );
+        if (!occurrence) return;
+        logNotificationOccurrence(occurrence, action.status);
+        setToast(
+          action.status === "done"
+            ? `${occurrence.task.title} completed from Apple Watch`
+            : `${occurrence.task.title} skipped from Apple Watch`,
+        );
+        void Haptics.notificationAsync(
+          Haptics.NotificationFeedbackType.Success,
+        ).catch(() => undefined);
+      }),
+    [logNotificationOccurrence, schedule],
+  );
   const careInsights = useMemo(
     () =>
       buildCareInsights(

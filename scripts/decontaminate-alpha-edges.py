@@ -66,14 +66,23 @@ def clean_edges(
         & (red > green + 20)
         & (blue > green + 8)
     )
+    green_spill = (
+        (green > 105)
+        & (green > np.maximum(red, blue) + 1)
+    )
 
     near_transparency = ~visible
     for _ in range(edge_radius):
         near_transparency = dilate(near_transparency)
     boundary = visible & near_transparency
+    chroma_boundary = near_transparency
+    for _ in range(edge_radius):
+        chroma_boundary = dilate(chroma_boundary)
+    chroma_boundary &= visible
     target = visible & (
         (alpha < 252)
         | magenta_spill
+        | (chroma_boundary & green_spill)
         | (boundary & all_boundary)
     )
     resolved = visible & ~target
@@ -90,6 +99,28 @@ def clean_edges(
     cleaned_count = int(np.count_nonzero(target & resolved))
     remaining_count = int(np.count_nonzero(target & ~resolved))
     rgb[target & resolved] = working[target & resolved]
+    residual_green = (
+        chroma_boundary
+        & (rgb[..., 1] > 105)
+        & (rgb[..., 1] > np.maximum(rgb[..., 0], rgb[..., 2]) + 1)
+    )
+    rgb[..., 1][residual_green] = np.maximum(
+        rgb[..., 0][residual_green],
+        rgb[..., 2][residual_green],
+    )
+    residual_yellow_green = (
+        chroma_boundary
+        & (rgb[..., 1] > rgb[..., 2] + 20)
+        & (rgb[..., 0] < rgb[..., 1] + 40)
+    )
+    rgb[..., 1][residual_yellow_green] = (
+        rgb[..., 2][residual_yellow_green]
+        + 0.55
+        * (
+            rgb[..., 0][residual_yellow_green]
+            - rgb[..., 2][residual_yellow_green]
+        )
+    )
 
     pixels[..., :3] = np.clip(np.rint(rgb), 0, 255).astype(np.uint8)
     pixels[~visible, :3] = 0

@@ -1,7 +1,7 @@
 {
-  "packCount": 62,
-  "issueCount": 13,
-  "passingCount": 49,
+  "packCount": 68,
+  "issueCount": 15,
+  "passingCount": 53,
   "issues": [
     {
       "key": "breed:dog:yorkshire-terrier",
@@ -55,11 +55,42 @@
         ]
       ],
       "metrics": {
-        "halfEyeDelta": 41.715,
-        "closedEyeDelta": 40.586,
-        "halfClosedDelta": 37.294,
-        "halfSeamDelta": 40.19,
-        "closedSeamDelta": 33.898
+        "halfEyeDelta": 41.712,
+        "closedEyeDelta": 40.577,
+        "halfClosedDelta": 37.339,
+        "halfSeamDelta": 40.154,
+        "closedSeamDelta": 33.895
+      },
+      "issues": [
+        "half-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:cat:abyssinian",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          325,
+          430,
+          110,
+          90
+        ],
+        [
+          465,
+          430,
+          110,
+          90
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 48.649,
+        "closedEyeDelta": 53.616,
+        "halfClosedDelta": 40.827,
+        "halfSeamDelta": 38.367,
+        "closedSeamDelta": 36.775
       },
       "issues": [
         "half-blink-seam-risk"
@@ -86,11 +117,11 @@
         ]
       ],
       "metrics": {
-        "halfEyeDelta": 41.593,
-        "closedEyeDelta": 45.449,
-        "halfClosedDelta": 43.372,
-        "halfSeamDelta": 42.159,
-        "closedSeamDelta": 41.162
+        "halfEyeDelta": 73.439,
+        "closedEyeDelta": 56.082,
+        "halfClosedDelta": 68.099,
+        "halfSeamDelta": 63.331,
+        "closedSeamDelta": 49.34
       },
       "issues": [
         "half-blink-seam-risk",
@@ -118,14 +149,46 @@
         ]
       ],
       "metrics": {
-        "halfEyeDelta": 44.496,
-        "closedEyeDelta": 41.794,
-        "halfClosedDelta": 31.601,
-        "halfSeamDelta": 34.153,
-        "closedSeamDelta": 31.405
+        "halfEyeDelta": 43.998,
+        "closedEyeDelta": 41.63,
+        "halfClosedDelta": 31.348,
+        "halfSeamDelta": 34.145,
+        "closedSeamDelta": 31.459
       },
       "issues": [
         "half-blink-seam-risk"
+      ]
+    },
+    {
+      "key": "breed:dog:bulldog",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          260,
+          535,
+          120,
+          110
+        ],
+        [
+          470,
+          535,
+          120,
+          110
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 45.776,
+        "closedEyeDelta": 63.812,
+        "halfClosedDelta": 52.564,
+        "halfSeamDelta": 49.2,
+        "closedSeamDelta": 57.124
+      },
+      "issues": [
+        "half-blink-seam-risk",
+        "closed-blink-seam-risk"
       ]
     },
     {
@@ -149,11 +212,11 @@
         ]
       ],
       "metrics": {
-        "halfEyeDelta": 50.072,
-        "closedEyeDelta": 56.142,
-        "halfClosedDelta": 49.181,
-        "halfSeamDelta": 34.802,
-        "closedSeamDelta": 41.977
+        "halfEyeDelta": 57.326,
+        "closedEyeDelta": 59.154,
+        "halfClosedDelta": 51.263,
+        "halfSeamDelta": 60.086,
+        "closedSeamDelta": 54.127
       },
       "issues": [
         "half-blink-seam-risk",
@@ -491,11 +554,11 @@
         ]
       ],
       "metrics": {
-        "halfEyeDelta": 17.938,
-        "closedEyeDelta": 27.833,
+        "halfEyeDelta": 17.964,
+        "closedEyeDelta": 27.854,
         "halfClosedDelta": 24.0,
-        "halfSeamDelta": 14.882,
-        "closedSeamDelta": 27.275
+        "halfSeamDelta": 14.972,
+        "closedSeamDelta": 27.346
       },
       "issues": []
     },
@@ -580,11 +643,11 @@
         ]
       ],
       "metrics": {
-        "halfEyeDelta": 41.715,
-        "closedEyeDelta": 40.586,
-        "halfClosedDelta": 37.294,
-        "halfSeamDelta": 40.19,
-        "closedSeamDelta": 33.898
+        "halfEyeDelta": 41.712,
+        "closedEyeDelta": 40.577,
+        "halfClosedDelta": 37.339,
+        "halfSeamDelta": 40.154,
+        "closedSeamDelta": 33.895
       },
       "issues": [
         "half-blink-seam-risk"
@@ -611,13 +674,15 @@
         ]
       ],
       "metrics": {
-        "halfEyeDelta": 37.642,
-        "closedEyeDelta": 48.416,
-        "halfClosedDelta": 41.699,
-        "halfSeamDelta": 22.54,
-        "closedSeamDelta": 24.894
+        "halfEyeDelta": 48.649,
+        "closedEyeDelta": 53.616,
+        "halfClosedDelta": 40.827,
+        "halfSeamDelta": 38.367,
+        "closedSeamDelta": 36.775
       },
-      "issues": []
+      "issues": [
+        "half-blink-seam-risk"
+      ]
     },
     {
       "key": "breed:cat:norwegian-forest-cat",
@@ -640,11 +705,11 @@
         ]
       ],
       "metrics": {
-        "halfEyeDelta": 38.092,
-        "closedEyeDelta": 48.359,
-        "halfClosedDelta": 46.363,
-        "halfSeamDelta": 23.593,
-        "closedSeamDelta": 30.268
+        "halfEyeDelta": 45.887,
+        "closedEyeDelta": 50.335,
+        "halfClosedDelta": 43.933,
+        "halfSeamDelta": 29.222,
+        "closedSeamDelta": 34.44
       },
       "issues": []
     },
@@ -669,11 +734,11 @@
         ]
       ],
       "metrics": {
-        "halfEyeDelta": 41.593,
-        "closedEyeDelta": 45.449,
-        "halfClosedDelta": 43.372,
-        "halfSeamDelta": 42.159,
-        "closedSeamDelta": 41.162
+        "halfEyeDelta": 73.439,
+        "closedEyeDelta": 56.082,
+        "halfClosedDelta": 68.099,
+        "halfSeamDelta": 63.331,
+        "closedSeamDelta": 49.34
       },
       "issues": [
         "half-blink-seam-risk",
@@ -701,11 +766,11 @@
         ]
       ],
       "metrics": {
-        "halfEyeDelta": 24.992,
-        "closedEyeDelta": 41.131,
-        "halfClosedDelta": 36.236,
-        "halfSeamDelta": 12.943,
-        "closedSeamDelta": 28.091
+        "halfEyeDelta": 26.369,
+        "closedEyeDelta": 38.843,
+        "halfClosedDelta": 33.863,
+        "halfSeamDelta": 16.539,
+        "closedSeamDelta": 28.559
       },
       "issues": []
     },
@@ -730,11 +795,11 @@
         ]
       ],
       "metrics": {
-        "halfEyeDelta": 29.466,
-        "closedEyeDelta": 35.322,
-        "halfClosedDelta": 24.976,
-        "halfSeamDelta": 12.831,
-        "closedSeamDelta": 17.059
+        "halfEyeDelta": 34.244,
+        "closedEyeDelta": 35.698,
+        "halfClosedDelta": 22.859,
+        "halfSeamDelta": 26.695,
+        "closedSeamDelta": 29.942
       },
       "issues": []
     },
@@ -759,11 +824,11 @@
         ]
       ],
       "metrics": {
-        "halfEyeDelta": 44.496,
-        "closedEyeDelta": 41.794,
-        "halfClosedDelta": 31.601,
-        "halfSeamDelta": 34.153,
-        "closedSeamDelta": 31.405
+        "halfEyeDelta": 43.998,
+        "closedEyeDelta": 41.63,
+        "halfClosedDelta": 31.348,
+        "halfSeamDelta": 34.145,
+        "closedSeamDelta": 31.459
       },
       "issues": [
         "half-blink-seam-risk"
@@ -790,13 +855,16 @@
         ]
       ],
       "metrics": {
-        "halfEyeDelta": 40.264,
-        "closedEyeDelta": 64.719,
-        "halfClosedDelta": 49.097,
-        "halfSeamDelta": 25.63,
-        "closedSeamDelta": 35.533
+        "halfEyeDelta": 45.776,
+        "closedEyeDelta": 63.812,
+        "halfClosedDelta": 52.564,
+        "halfSeamDelta": 49.2,
+        "closedSeamDelta": 57.124
       },
-      "issues": []
+      "issues": [
+        "half-blink-seam-risk",
+        "closed-blink-seam-risk"
+      ]
     },
     {
       "key": "breed:cat:american-shorthair",
@@ -819,11 +887,11 @@
         ]
       ],
       "metrics": {
-        "halfEyeDelta": 61.98,
-        "closedEyeDelta": 57.275,
-        "halfClosedDelta": 50.825,
-        "halfSeamDelta": 30.83,
-        "closedSeamDelta": 26.459
+        "halfEyeDelta": 61.948,
+        "closedEyeDelta": 57.274,
+        "halfClosedDelta": 51.236,
+        "halfSeamDelta": 30.84,
+        "closedSeamDelta": 26.465
       },
       "issues": []
     },
@@ -848,11 +916,11 @@
         ]
       ],
       "metrics": {
-        "halfEyeDelta": 22.346,
-        "closedEyeDelta": 34.806,
-        "halfClosedDelta": 31.028,
-        "halfSeamDelta": 12.443,
-        "closedSeamDelta": 23.431
+        "halfEyeDelta": 23.512,
+        "closedEyeDelta": 31.828,
+        "halfClosedDelta": 28.238,
+        "halfSeamDelta": 13.802,
+        "closedSeamDelta": 20.582
       },
       "issues": []
     },
@@ -877,9 +945,9 @@
         ]
       ],
       "metrics": {
-        "halfEyeDelta": 22.047,
+        "halfEyeDelta": 22.078,
         "closedEyeDelta": 27.071,
-        "halfClosedDelta": 18.458,
+        "halfClosedDelta": 18.444,
         "halfSeamDelta": 11.777,
         "closedSeamDelta": 15.331
       },
@@ -906,11 +974,11 @@
         ]
       ],
       "metrics": {
-        "halfEyeDelta": 50.072,
-        "closedEyeDelta": 56.142,
-        "halfClosedDelta": 49.181,
-        "halfSeamDelta": 34.802,
-        "closedSeamDelta": 41.977
+        "halfEyeDelta": 57.326,
+        "closedEyeDelta": 59.154,
+        "halfClosedDelta": 51.263,
+        "halfSeamDelta": 60.086,
+        "closedSeamDelta": 54.127
       },
       "issues": [
         "half-blink-seam-risk",
@@ -1029,11 +1097,11 @@
         ]
       ],
       "metrics": {
-        "halfEyeDelta": 23.756,
-        "closedEyeDelta": 37.054,
+        "halfEyeDelta": 23.752,
+        "closedEyeDelta": 37.051,
         "halfClosedDelta": 28.998,
-        "halfSeamDelta": 14.569,
-        "closedSeamDelta": 21.561
+        "halfSeamDelta": 14.554,
+        "closedSeamDelta": 21.549
       },
       "issues": []
     },
@@ -1321,11 +1389,11 @@
         ]
       ],
       "metrics": {
-        "halfEyeDelta": 16.265,
-        "closedEyeDelta": 27.391,
+        "halfEyeDelta": 16.494,
+        "closedEyeDelta": 27.621,
         "halfClosedDelta": 21.595,
-        "halfSeamDelta": 8.835,
-        "closedSeamDelta": 12.632
+        "halfSeamDelta": 9.711,
+        "closedSeamDelta": 13.51
       },
       "issues": []
     },
@@ -1408,11 +1476,11 @@
         ]
       ],
       "metrics": {
-        "halfEyeDelta": 31.745,
-        "closedEyeDelta": 42.427,
+        "halfEyeDelta": 31.788,
+        "closedEyeDelta": 42.47,
         "halfClosedDelta": 28.653,
-        "halfSeamDelta": 10.181,
-        "closedSeamDelta": 12.421
+        "halfSeamDelta": 10.337,
+        "closedSeamDelta": 12.577
       },
       "issues": []
     },
@@ -1529,6 +1597,180 @@
         "halfClosedDelta": 24.37,
         "halfSeamDelta": 9.946,
         "closedSeamDelta": 10.822
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:cane-corso",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          326,
+          563,
+          77,
+          92
+        ],
+        [
+          475,
+          563,
+          77,
+          92
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 19.737,
+        "closedEyeDelta": 22.71,
+        "halfClosedDelta": 18.729,
+        "halfSeamDelta": 13.672,
+        "closedSeamDelta": 14.99
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:poodle-toy",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          332,
+          775,
+          77,
+          96
+        ],
+        [
+          447,
+          775,
+          77,
+          96
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 28.862,
+        "closedEyeDelta": 37.602,
+        "halfClosedDelta": 25.196,
+        "halfSeamDelta": 10.074,
+        "closedSeamDelta": 9.849
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:cat:exotic-shorthair",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          331,
+          720,
+          87,
+          111
+        ],
+        [
+          456,
+          720,
+          87,
+          111
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 42.832,
+        "closedEyeDelta": 55.102,
+        "halfClosedDelta": 36.786,
+        "halfSeamDelta": 14.043,
+        "closedSeamDelta": 15.517
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:greyhound",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          343,
+          563,
+          68,
+          83
+        ],
+        [
+          433,
+          563,
+          68,
+          83
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 21.358,
+        "closedEyeDelta": 24.715,
+        "halfClosedDelta": 15.248,
+        "halfSeamDelta": 10.013,
+        "closedSeamDelta": 11.336
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:dog:west-highland-white-terrier",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          329,
+          842,
+          80,
+          96
+        ],
+        [
+          453,
+          842,
+          80,
+          96
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 27.77,
+        "closedEyeDelta": 39.663,
+        "halfClosedDelta": 23.124,
+        "halfSeamDelta": 5.486,
+        "closedSeamDelta": 7.026
+      },
+      "issues": []
+    },
+    {
+      "key": "breed:cat:burmese",
+      "canvas": [
+        852,
+        1846
+      ],
+      "regions": [
+        [
+          332,
+          785,
+          87,
+          107
+        ],
+        [
+          463,
+          785,
+          87,
+          107
+        ]
+      ],
+      "metrics": {
+        "halfEyeDelta": 30.472,
+        "closedEyeDelta": 38.924,
+        "halfClosedDelta": 29.448,
+        "halfSeamDelta": 14.464,
+        "closedSeamDelta": 19.406
       },
       "issues": []
     },

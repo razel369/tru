@@ -112,13 +112,20 @@ export function PersonalizedCareOnboarding({
   const filteredBreeds = useMemo(() => {
     if (!species) return [];
     const query = breedQuery.trim().toLocaleLowerCase();
-    const options = getBreedOptions(species);
+    const options = getBreedOptions(species).filter((option) =>
+      hasExactBreedVisual(species, option.name),
+    );
     return query
       ? options.filter((option) =>
           option.name.toLocaleLowerCase().includes(query),
         )
       : options;
   }, [breedQuery, species]);
+  const customBreed = breedQuery.trim();
+  const hasExactBreedQuery = filteredBreeds.some(
+    (option) =>
+      option.name.toLocaleLowerCase() === customBreed.toLocaleLowerCase(),
+  );
 
   useEffect(() => {
     transition.stopAnimation();
@@ -542,7 +549,7 @@ export function PersonalizedCareOnboarding({
           <View style={styles.modalHeader}>
             <View>
               <Text style={styles.modalEyebrow}>{species?.toUpperCase()} BREEDS</Text>
-              <Text style={styles.modalTitle}>Find their closest match</Text>
+              <Text style={styles.modalTitle}>Choose their companion</Text>
             </View>
             <Pressable accessibilityLabel="Close breed picker" accessibilityRole="button" onPress={() => setBreedPickerOpen(false)} style={styles.modalClose}>
               <Ionicons color={colors.ink} name="close" size={22} />
@@ -551,21 +558,51 @@ export function PersonalizedCareOnboarding({
           <View style={styles.searchBox}>
             <Ionicons color={colors.muted} name="search" size={18} />
             <TextInput
+              accessibilityLabel="Search available companion models"
               autoCapitalize="words"
               autoCorrect={false}
               onChangeText={setBreedQuery}
-              placeholder="Search every breed"
+              placeholder="Search 3D-ready breeds"
               placeholderTextColor={colors.muted}
               returnKeyType="search"
               style={styles.searchInput}
               value={breedQuery}
             />
             {breedQuery.length > 0 && (
-              <Pressable onPress={() => setBreedQuery("")}>
+              <Pressable
+                accessibilityLabel="Clear breed search"
+                accessibilityRole="button"
+                onPress={() => setBreedQuery("")}
+              >
                 <Ionicons color={colors.muted} name="close-circle" size={18} />
               </Pressable>
             )}
           </View>
+          {customBreed && !hasExactBreedQuery ? (
+            <Pressable
+              accessibilityLabel={`Use custom breed ${customBreed}`}
+              accessibilityRole="button"
+              onPress={() => {
+                setBreed(customBreed);
+                setBreedQuery("");
+                setBreedPickerOpen(false);
+                setError(null);
+                void Haptics.selectionAsync().catch(() => undefined);
+              }}
+              style={[styles.breedRow, styles.customBreedRow]}
+            >
+              <View style={[styles.breedAvatar, styles.customBreedAvatar]}>
+                <Ionicons color={colors.coral} name="create-outline" size={17} />
+              </View>
+              <View style={styles.breedCopy}>
+                <Text style={styles.breedName}>Use “{customBreed}”</Text>
+                <Text style={styles.breedProfile}>
+                  Saved as typed · neutral {species} visual
+                </Text>
+              </View>
+              <Ionicons color={colors.muted} name="arrow-forward" size={18} />
+            </Pressable>
+          ) : null}
           <FlatList
             contentContainerStyle={{ paddingBottom: Math.max(bottomInset, 20) + 24 }}
             data={filteredBreeds}
@@ -573,9 +610,6 @@ export function PersonalizedCareOnboarding({
             keyExtractor={(item) => item.name}
             renderItem={({ item }) => {
               const selected = item.name === breed;
-              const exactVisual = species
-                ? hasExactBreedVisual(species, item.name)
-                : false;
               return (
                 <Pressable
                   accessibilityRole="button"
@@ -594,11 +628,7 @@ export function PersonalizedCareOnboarding({
                   </View>
                   <View style={styles.breedCopy}>
                     <Text style={[styles.breedName, selected && styles.breedNameSelected]}>{item.name}</Text>
-                    <Text style={styles.breedProfile}>
-                      {exactVisual
-                        ? "Exact companion visual"
-                        : "Closest companion visual"}
-                    </Text>
+                    <Text style={styles.breedProfile}>Exact companion visual</Text>
                   </View>
                   {selected && <Ionicons color={colors.coral} name="checkmark-circle" size={22} />}
                 </Pressable>
@@ -637,6 +667,8 @@ const styles = StyleSheet.create({
   breedProfile: { color: colors.muted, fontFamily: "Nunito_600SemiBold", fontSize: 11, marginTop: 2, textTransform: "capitalize" },
   breedRow: { alignItems: "center", backgroundColor: colors.white, borderColor: colors.line, borderRadius: 20, borderWidth: 1, flexDirection: "row", gap: 12, marginBottom: 9, minHeight: 66, paddingHorizontal: 13 },
   breedRowSelected: { backgroundColor: colors.coralSoft, borderColor: colors.coral },
+  customBreedAvatar: { backgroundColor: colors.coralSoft },
+  customBreedRow: { backgroundColor: colors.coralSoft, borderColor: colors.coral },
   buttonPressed: { opacity: 0.88, transform: [{ scale: 0.99 }] },
   errorRow: { alignItems: "center", backgroundColor: colors.coralSoft, borderRadius: 14, flexDirection: "row", gap: 8, marginTop: 12, padding: 10 },
   errorText: { color: colors.danger, flex: 1, fontFamily: "Nunito_700Bold", fontSize: 12 },
