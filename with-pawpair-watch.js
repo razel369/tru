@@ -1,6 +1,7 @@
 const { copyFile, cp, mkdir, rm } = require("node:fs/promises");
 const path = require("node:path");
 const {
+  IOSConfig,
   withDangerousMod,
   withXcodeProject,
 } = require("expo/config-plugins");
@@ -107,7 +108,12 @@ function addIOSBridge(project, projectName) {
   ];
   for (const file of files) {
     if (!project.hasFile(file)) {
-      project.addSourceFile(file, { target: mainTarget.uuid });
+      IOSConfig.XcodeUtils.addBuildSourceFileToGroup({
+        filepath: file,
+        groupName: projectName,
+        project,
+        targetUuid: mainTarget.uuid,
+      });
     }
   }
 }
