@@ -1,0 +1,60 @@
+name: PawPair iOS native compile
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  cancel-in-progress: true
+  group: ios-native-${{ github.ref }}
+
+jobs:
+  compile:
+    runs-on: macos-26
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          lfs: true
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          cache: npm
+          node-version: 22
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Generate the iOS and Watch projects
+        run: npx expo prebuild --no-install --platform ios
+
+      - name: Install CocoaPods
+        run: npx pod-install ios
+
+      - name: Compile iPhone and Apple Watch targets
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -workspace ios/PawPair.xcworkspace \
+            -scheme PawPair \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath ios/build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build | tee xcodebuild.log
+
+      - name: Preserve Xcode log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pawpair-ios-native-xcode-log
+          path: xcodebuild.log
+          if-no-files-found: ignore
+          retention-days: 7
