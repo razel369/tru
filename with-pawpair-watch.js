@@ -51,6 +51,11 @@ function addWatchTarget(project) {
     WATCH_TARGET,
     WATCH_BUNDLE_ID,
   );
+  // Xcode 26 no longer resolves the legacy watchapp2 product type. A modern
+  // SwiftUI watchOS app uses the standard application product type and is
+  // distinguished by SDKROOT/SUPPORTED_PLATFORMS.
+  target.pbxNativeTarget.productType =
+    '"com.apple.product-type.application"';
   const swiftFiles = [
     `${WATCH_TARGET}/PawPairWatchApp.swift`,
     `${WATCH_TARGET}/WatchCareStore.swift`,
