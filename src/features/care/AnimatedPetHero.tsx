@@ -18,6 +18,7 @@ import {
 
 import { usePrefersReducedMotion } from "../accessibility/motion";
 import type { PetVisualLayout } from "../pet-visuals";
+import { resolvePetSubjectFraming } from "../pet-visuals";
 import type { BreedVisualProfile } from "../../types";
 import {
   resolvePetMotionPackForProfile,
@@ -987,22 +988,9 @@ export function AnimatedPetHero({
     if (kind === "care") {
       showExpression("happy", motionPack?.behavior?.happyHoldMs ?? 1250);
     } else {
-      if (expressionTimer.current) {
-        clearTimeout(expressionTimer.current);
-        expressionTimer.current = null;
-      }
-      blinkAnimation.current?.stop();
-      blinkAnimation.current = null;
-      expressionOpacity.stopAnimation();
-      blinkHalfOpacity.stopAnimation();
-      blinkClosedOpacity.stopAnimation();
-      proceduralBlink.stopAnimation();
-      expressionOpacity.setValue(0);
-      blinkHalfOpacity.setValue(0);
-      blinkClosedOpacity.setValue(0);
-      proceduralBlink.setValue(0);
-      setMotionState("idle");
-
+      // A touch must not tear down an in-flight blink. Stopping native-driven
+      // eye overlays mid-frame can leave one clip visible for a render pass on
+      // iOS, which reads as a one-eyed blink or a facial glitch.
       Animated.sequence([
         Animated.timing(touchFeedback, {
           duration: reduceMotion ? 0 : 150,
@@ -1063,12 +1051,8 @@ export function AnimatedPetHero({
     ]).start();
   }, [
     appActive,
-    blinkClosedOpacity,
-    blinkHalfOpacity,
-    expressionOpacity,
     lean,
     motionPack,
-    proceduralBlink,
     reaction,
     reduceMotion,
     showExpression,
@@ -1087,24 +1071,37 @@ export function AnimatedPetHero({
 
   const geometry = useMemo(() => {
     const petReferenceWidth = Math.min(width, 420);
+    const framing = resolvePetSubjectFraming(resolvedPetKey);
+    const targetSubjectHeight = petReferenceWidth * 0.82;
+    const naturalPetHeight = motionPack
+      ? targetSubjectHeight / framing.subjectHeight
+      : 0;
+    const naturalPetWidth = motionPack
+      ? naturalPetHeight *
+        (motionPack.canvas.width / motionPack.canvas.height)
+      : 0;
+    const motionWidthScale = motionPack
+      ? Math.min(1, (petReferenceWidth * 0.86) / naturalPetWidth)
+      : 1;
     const petWidth = motionPack
-      ? petReferenceWidth * 0.72
+      ? naturalPetWidth * motionWidthScale
       : Math.min(
           petReferenceWidth * layout.maxWidth * layout.scale,
           petReferenceWidth * 0.72,
         );
     const petHeight = motionPack
-      ? petWidth * (motionPack.canvas.height / motionPack.canvas.width)
+      ? naturalPetHeight * motionWidthScale
       : petWidth * (hasLayeredPet ? 1.42 : 1.72);
     const feetY = HERO_FLOOR_Y * (layout.feetY / 0.81);
-    const sourceFeetY = motionPack?.canvas.feetY ?? 1;
+    const sourceFeetY = motionPack ? framing.feetY : 1;
+    const sourceCenterX = motionPack ? framing.centerX : 0.5;
     return {
       height: petHeight,
-      left: width * layout.anchorX - petWidth / 2,
+      left: width * layout.anchorX - petWidth * sourceCenterX,
       top: feetY - petHeight * sourceFeetY,
       width: petWidth,
     };
-  }, [hasLayeredPet, layout, motionPack, width]);
+  }, [hasLayeredPet, layout, motionPack, resolvedPetKey, width]);
 
   const lunaHeadMotion = Animated.add(
     Animated.add(
@@ -1185,7 +1182,10 @@ export function AnimatedPetHero({
       height: 0.075,
       width: 0.56,
     };
-    const regions = overlay?.regions ?? [overlay?.region ?? fallbackRegion];
+    // Render both eyes through one tight expression plane. Separate native
+    // views can commit on different frames during touch interactions on iOS,
+    // briefly showing only one changed eye.
+    const regions = [overlay?.region ?? fallbackRegion];
     const registration = overlay?.registration;
 
     return regions.map((region, index) => (

@@ -11,7 +11,6 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Switch,
   Text,
   TextInput,
   useWindowDimensions,
@@ -22,23 +21,22 @@ import { assets, colors } from "../../design";
 import {
   getBreedOptions,
   getBreedVisualProfile,
-  PET_SCENE_LAYOUTS,
 } from "../../data/pet-breeds";
 import type { Pet } from "../../types";
 import { createLocalId } from "../../utils/local-id";
 import { INPUT_LIMITS } from "../../utils/input-limits";
 import { usePrefersReducedMotion } from "../accessibility/motion";
-import {
-  hasAnalyticsConsent,
-  setAnalyticsConsent,
-  trackAnalyticsEvent,
-} from "../analytics/service";
+import { trackAnalyticsEvent } from "../analytics/service";
 import type { StarterCareFocus } from "../care/migration";
 import { resolvePetMotionPackForProfile } from "../pet-motion";
-import { createBreedAssetKey, getPetVisualAsset } from "../pet-visuals";
+import {
+  createBreedAssetKey,
+  getPetVisualAsset,
+  resolvePetStagePlacement,
+} from "../pet-visuals";
 
 const ONBOARDING_STUDIO = require("../../../assets/pawpair-onboarding-studio.png");
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 4;
 
 type OnboardingIntent = "free" | "premium";
 type SupportedSpecies = Extract<Pet["species"], "dog" | "cat">;
@@ -81,34 +79,23 @@ export function PersonalizedCareOnboarding({
   const [species, setSpecies] = useState<SupportedSpecies>("dog");
   const [breed, setBreed] = useState(defaultBreed("dog"));
   const [age, setAge] = useState("");
-  const [focus, setFocus] = useState<StarterCareFocus[]>([
+  const focus: StarterCareFocus[] = [
     "meals",
     "activity",
     "wellness",
-  ]);
+  ];
   const [error, setError] = useState<string | null>(null);
   const [breedPickerOpen, setBreedPickerOpen] = useState(false);
   const [breedQuery, setBreedQuery] = useState("");
-  const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
   const transition = useRef(new Animated.Value(1)).current;
   const petFloat = useRef(new Animated.Value(0)).current;
   const petReveal = useRef(new Animated.Value(1)).current;
   const submissionLocked = useRef(false);
 
   useEffect(() => {
-    let active = true;
-    void hasAnalyticsConsent().then((enabled) => {
-      if (!active) return;
-      setAnalyticsEnabled(enabled);
-      if (enabled) {
-        void trackAnalyticsEvent("onboarding_started", {
-          entry_point: "first_launch",
-        });
-      }
+    void trackAnalyticsEvent("onboarding_started", {
+      entry_point: "first_launch",
     });
-    return () => {
-      active = false;
-    };
   }, []);
 
   const visual = useMemo(() => {
@@ -117,19 +104,19 @@ export function PersonalizedCareOnboarding({
     const asset = getPetVisualAsset(key);
     const resolvedProfile = asset?.profile ?? profile;
     const pack = resolvePetMotionPackForProfile(key, resolvedProfile);
-    const baseScale = resolvedProfile.startsWith("cat")
-      ? 1.23
-      : resolvedProfile === "dog-toy"
-        ? 1.18
-        : 1.08;
+    const placement = resolvePetStagePlacement(key, {
+      targetFeetY: 0.94,
+      targetSubjectHeight: 0.72,
+    });
 
     return {
       key,
-      scale: baseScale * (PET_SCENE_LAYOUTS[resolvedProfile]?.scale ?? 1),
+      scale: placement.scale,
       source:
-        asset?.petSource ??
         pack?.states.idle ??
+        asset?.petSource ??
         (species === "cat" ? assets.luna : assets.milo),
+      translateYRatio: placement.translateYRatio,
     };
   }, [breed, species]);
 
@@ -202,23 +189,6 @@ export function PersonalizedCareOnboarding({
     void Haptics.selectionAsync().catch(() => undefined);
   };
 
-  const toggleAnalytics = async (enabled: boolean) => {
-    const previous = analyticsEnabled;
-    setAnalyticsEnabled(enabled);
-    setError(null);
-    try {
-      await setAnalyticsConsent(enabled);
-      if (enabled) {
-        await trackAnalyticsEvent("onboarding_started", {
-          entry_point: "first_launch",
-        });
-      }
-    } catch {
-      setAnalyticsEnabled(previous);
-      setError("We could not save that privacy choice. Please try again.");
-    }
-  };
-
   const next = () => {
     if (step === 1 && !name.trim()) {
       setError("Give your companion a name to make this theirs.");
@@ -240,8 +210,8 @@ export function PersonalizedCareOnboarding({
         return;
       }
     }
-    if (step === 3 && focus.length === 0) {
-      setError("Choose at least one thing you want PawPair to help with.");
+    if (step === TOTAL_STEPS - 1) {
+      finish("free");
       return;
     }
     moveTo(step + 1);
@@ -289,43 +259,23 @@ export function PersonalizedCareOnboarding({
     step === 0
       ? "Meet my pet"
       : step === 1
-        ? `Make it ${name.trim() || "theirs"}`
+        ? "Continue"
         : step === 2
-          ? "Shape their care"
-          : "Build our plan";
+          ? `Create ${name.trim() || "their"}'s day`
+          : `Open ${name.trim() || "their"}'s day`;
 
   const renderContent = () => {
     if (step === 0) {
       return (
         <>
           <Text style={styles.eyebrow}>WELCOME TO PAWPAIR</Text>
-          <Text style={styles.title}>A better life, together.</Text>
+          <Text style={styles.title}>Never miss a care moment.</Text>
           <Text style={styles.body}>
-            One calm place that learns your companion, keeps everyday care clear, and grows with your story.
+            Set up meals, movement and health reminders for your pet in about a minute.
           </Text>
           <View style={styles.promiseRow}>
             <Ionicons color={colors.sage} name="shield-checkmark-outline" size={18} />
-            <Text style={styles.promiseText}>Private by default. Shaped around your pet.</Text>
-          </View>
-          <View style={styles.analyticsCard}>
-            <View style={styles.analyticsIcon}>
-              <Ionicons color={colors.navy} name="analytics-outline" size={18} />
-            </View>
-            <View style={styles.analyticsCopy}>
-              <Text style={styles.analyticsTitle}>Help improve PawPair</Text>
-              <Text style={styles.analyticsBody}>
-                Share anonymous app usage. Pet details, care notes, and health information are never included.
-              </Text>
-            </View>
-            <Switch
-              accessibilityLabel="Share anonymous PawPair usage"
-              accessibilityState={{ checked: analyticsEnabled }}
-              ios_backgroundColor={colors.line}
-              onValueChange={(enabled) => void toggleAnalytics(enabled)}
-              style={styles.analyticsSwitch}
-              trackColor={{ false: colors.line, true: colors.sage }}
-              value={analyticsEnabled}
-            />
+            <Text style={styles.promiseText}>Private by default. Everything can be changed later.</Text>
           </View>
         </>
       );
@@ -429,63 +379,10 @@ export function PersonalizedCareOnboarding({
     if (step === 3) {
       return (
         <>
-          <Text style={styles.eyebrow}>SHAPE THEIR DAY</Text>
-          <Text style={styles.title}>What matters most?</Text>
-          <Text style={styles.bodySmall}>Choose everything you want PawPair to make calmer from day one.</Text>
-          <View style={styles.focusGrid}>
-            {FOCUS_OPTIONS.map((option) => {
-              const selected = focus.includes(option.id);
-              const displayTitle =
-                option.id === "activity"
-                  ? species === "cat" ? "Play" : "Walks"
-                  : option.title;
-              return (
-                <Pressable
-                  accessibilityLabel={`${displayTitle}. ${option.body}`}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected }}
-                  key={option.id}
-                  onPress={() => {
-                    setFocus((current) =>
-                      current.includes(option.id)
-                        ? current.filter((item) => item !== option.id)
-                        : [...current, option.id],
-                    );
-                    setError(null);
-                    void Haptics.selectionAsync().catch(() => undefined);
-                  }}
-                  style={[styles.focusCard, selected && styles.focusCardSelected]}
-                >
-                  <View style={[styles.focusIcon, selected && styles.focusIconSelected]}>
-                    <Ionicons
-                      color={selected ? colors.white : colors.sage}
-                      name={option.icon}
-                      size={18}
-                    />
-                  </View>
-                  <View style={styles.focusCopy}>
-                    <Text style={[styles.focusTitle, selected && styles.focusTitleSelected]}>{displayTitle}</Text>
-                    <Text numberOfLines={1} style={styles.focusBody}>{option.body}</Text>
-                  </View>
-                  <Ionicons
-                    color={selected ? colors.coral : colors.line}
-                    name={selected ? "checkmark-circle" : "ellipse-outline"}
-                    size={20}
-                  />
-                </Pressable>
-              );
-            })}
-          </View>
-        </>
-      );
-    }
-
-    return (
-      <>
-        <Text style={styles.eyebrow}>YOUR CARE STORY</Text>
-        <Text numberOfLines={2} style={styles.title}>Made for {name.trim()}.</Text>
+          <Text style={styles.eyebrow}>READY FOR TODAY</Text>
+          <Text numberOfLines={2} style={styles.title}>{name.trim()}'s first day is ready.</Text>
         <Text style={styles.bodySmall}>
-          A starter rhythm is ready now, with room for every health detail and life change ahead.
+            PawPair created a simple starter plan. Begin with one care moment, then adjust anything as you learn what works.
         </Text>
         <View style={styles.revealRow}>
           {focus.slice(0, 3).map((item) => {
@@ -500,21 +397,23 @@ export function PersonalizedCareOnboarding({
             ) : null;
           })}
         </View>
-        <View style={styles.premiumCard}>
-          <View style={styles.premiumIcon}>
-            <Ionicons color={colors.coral} name="sparkles" size={20} />
+          <View style={styles.readyCard}>
+            <View style={styles.readyIcon}>
+              <Ionicons color={colors.white} name="arrow-forward" size={20} />
+            </View>
+            <View style={styles.premiumCopy}>
+              <Text style={styles.premiumEyebrow}>YOUR FIRST WIN</Text>
+              <Text style={styles.premiumTitle}>Complete the next care moment.</Text>
+              <Text style={styles.premiumBody}>
+                We will show one clear next step before the full plan.
+              </Text>
+            </View>
           </View>
-          <View style={styles.premiumCopy}>
-            <Text style={styles.premiumEyebrow}>PAWPAIR PREMIUM</Text>
-            <Text style={styles.premiumTitle}>Keep the whole story.</Text>
-            <Text style={styles.premiumBody}>
-              Unlimited pets, full history, caregiver continuity and protected backup.
-            </Text>
-          </View>
-        </View>
-        <Text style={styles.optionalText}>Premium is optional. Your free care plan is already yours.</Text>
-      </>
-    );
+        </>
+      );
+    }
+
+    return null;
   };
 
   const sceneHeight = step === 0 ? (compact ? 352 : 438) : compact ? 264 : 314;
@@ -563,10 +462,14 @@ export function PersonalizedCareOnboarding({
                   {
                     translateY: petFloat.interpolate({
                       inputRange: [0, 1],
-                      outputRange: [0, reduceMotion ? 0 : -2],
+                      outputRange: [
+                        petHeight * visual.translateYRatio,
+                        petHeight * visual.translateYRatio +
+                          (reduceMotion ? 0 : -2),
+                      ],
                     }),
                   },
-                  { scale: Math.min(visual.scale, 1.24) },
+                  { scale: visual.scale },
                 ],
               },
             ]}
@@ -615,38 +518,22 @@ export function PersonalizedCareOnboarding({
         </ScrollView>
 
         <View style={[styles.actions, { paddingBottom: Math.max(bottomInset, 12) + 6 }]}>
-          {step === TOTAL_STEPS - 1 ? (
-            <>
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => finish("premium")}
-                style={({ pressed }) => [styles.primaryButton, pressed && styles.buttonPressed]}
-              >
-                <Ionicons color={colors.white} name="sparkles" size={18} />
-                <Text style={styles.primaryButtonText}>Explore Premium</Text>
+          <View style={styles.actionRow}>
+            {step > 0 && (
+              <Pressable accessibilityLabel="Go back" accessibilityRole="button" onPress={() => moveTo(step - 1)} style={styles.backButton}>
+                <Ionicons color={colors.ink} name="arrow-back" size={21} />
               </Pressable>
-              <Pressable accessibilityRole="button" onPress={() => finish("free")} style={styles.freeButton}>
-                <Text style={styles.freeButtonText}>Start with my free plan</Text>
-              </Pressable>
-            </>
-          ) : (
-            <View style={styles.actionRow}>
-              {step > 0 && (
-                <Pressable accessibilityLabel="Go back" accessibilityRole="button" onPress={() => moveTo(step - 1)} style={styles.backButton}>
-                  <Ionicons color={colors.ink} name="arrow-back" size={21} />
-                </Pressable>
-              )}
-              <Pressable
-                accessibilityLabel={primaryLabel}
-                accessibilityRole="button"
-                onPress={next}
-                style={({ pressed }) => [styles.primaryButton, styles.primaryButtonFlex, pressed && styles.buttonPressed]}
-              >
-                <Text style={styles.primaryButtonText}>{primaryLabel}</Text>
-                <Ionicons color={colors.white} name="arrow-forward" size={19} />
-              </Pressable>
-            </View>
-          )}
+            )}
+            <Pressable
+              accessibilityLabel={primaryLabel}
+              accessibilityRole="button"
+              onPress={next}
+              style={({ pressed }) => [styles.primaryButton, styles.primaryButtonFlex, pressed && styles.buttonPressed]}
+            >
+              <Text style={styles.primaryButtonText}>{primaryLabel}</Text>
+              <Ionicons color={colors.white} name="arrow-forward" size={19} />
+            </Pressable>
+          </View>
         </View>
       </Animated.View>
 
@@ -791,6 +678,8 @@ const styles = StyleSheet.create({
   primaryButtonText: { color: colors.white, fontFamily: "Fredoka_700Bold", fontSize: 15 },
   promiseRow: { alignItems: "center", backgroundColor: colors.sageSoft, borderRadius: 15, flexDirection: "row", gap: 8, marginTop: 15, paddingHorizontal: 11, paddingVertical: 9 },
   promiseText: { color: colors.sage, flex: 1, fontFamily: "Nunito_700Bold", fontSize: 11 },
+  readyCard: { alignItems: "center", backgroundColor: colors.butterSoft, borderColor: colors.butter, borderRadius: 20, borderWidth: 1, flexDirection: "row", gap: 11, marginTop: 14, padding: 13 },
+  readyIcon: { alignItems: "center", backgroundColor: colors.coral, borderRadius: 20, height: 42, justifyContent: "center", width: 42 },
   progressRow: { flexDirection: "row", gap: 5, width: 92 },
   progressTrack: { backgroundColor: "rgba(255,255,255,0.38)", borderRadius: 3, flex: 1, height: 4 },
   progressTrackActive: { backgroundColor: colors.coral },

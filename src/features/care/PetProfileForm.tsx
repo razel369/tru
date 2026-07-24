@@ -17,7 +17,6 @@ import { colors } from "../../design";
 import { BreedPicker } from "../../components/BreedPicker";
 import {
   getBreedVisualProfile,
-  PET_SCENE_LAYOUTS,
 } from "../../data/pet-breeds";
 import type { Pet, PetReproductiveStatus, PetSex } from "../../types";
 import { createLocalId } from "../../utils/local-id";
@@ -27,6 +26,7 @@ import {
   createBreedAssetKey,
   getPetVisualAsset,
 } from "../pet-visuals/registry";
+import { resolvePetStagePlacement } from "../pet-visuals/subject-framing";
 import { resolvePetMotionPackForProfile } from "../pet-motion";
 import {
   isValidPetBirthDate,
@@ -127,21 +127,18 @@ export function PetProfileForm({
     const exactAsset = getPetVisualAsset(exactKey);
     const profile = getBreedVisualProfile(species, previewBreed);
     const pack = resolvePetMotionPackForProfile(exactKey, profile);
+    const placement = resolvePetStagePlacement(exactKey, {
+      targetFeetY: 0.91,
+      targetSubjectHeight: 0.72,
+    });
     return {
       asset: exactAsset,
+      key: exactKey,
+      placement,
       profile,
-      source: exactAsset?.petSource ?? pack?.states.idle,
+      source: pack?.states.idle ?? exactAsset?.petSource,
     };
   }, [previewBreed, species]);
-  const previewProfile =
-    preview.asset?.profile ?? preview.profile;
-  const basePreviewScale = previewProfile.startsWith("cat")
-    ? 1.23
-    : previewProfile === "dog-toy"
-      ? 1.18
-      : 1.08;
-  const previewScale =
-    basePreviewScale * (PET_SCENE_LAYOUTS[previewProfile]?.scale ?? 1);
   const hasUnsavedChanges =
     JSON.stringify(initialForm) !==
     JSON.stringify({
@@ -387,13 +384,20 @@ export function PetProfileForm({
                     {
                       translateY: previewMotion.interpolate({
                         inputRange: [0, 1],
-                        outputRange: [0, -2.5],
+                        outputRange: [
+                          151 * preview.placement.translateYRatio,
+                          151 * preview.placement.translateYRatio -
+                            (reduceMotion ? 0 : 2.5),
+                        ],
                       }),
                     },
                     {
                       scale: previewMotion.interpolate({
                         inputRange: [0, 1],
-                        outputRange: [previewScale, previewScale * 1.008],
+                        outputRange: [
+                          preview.placement.scale,
+                          preview.placement.scale * 1.008,
+                        ],
                       }),
                     },
                   ],

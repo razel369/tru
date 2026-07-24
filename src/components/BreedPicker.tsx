@@ -1,8 +1,20 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useMemo, useRef, useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { useEffect, useMemo, useState } from "react";
+import {
+  FlatList,
+  Keyboard,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { getBreedOptions, searchBreeds, type PetSpecies } from "../data/pet-breeds";
+import { getBreedOptions, type PetSpecies } from "../data/pet-breeds";
+import { colors } from "../design";
 import { INPUT_LIMITS } from "../utils/input-limits";
 
 interface BreedPickerProps {
@@ -12,195 +24,424 @@ interface BreedPickerProps {
 }
 
 export function BreedPicker({ species, value, onChange }: BreedPickerProps) {
-  const [isFocused, setIsFocused] = useState(false);
-  const inputRef = useRef<TextInput>(null);
-  const suggestions = useMemo(() => searchBreeds(species, value), [species, value]);
-  const normalizedValue = value.trim().toLocaleLowerCase();
+  const insets = useSafeAreaInsets();
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    setOpen(false);
+    setQuery("");
+  }, [species]);
+
+  const options = useMemo(() => {
+    const normalizedQuery = query.trim().toLocaleLowerCase();
+    const breeds = getBreedOptions(species);
+    if (!normalizedQuery) return breeds;
+    return breeds.filter((option) =>
+      option.name.toLocaleLowerCase().includes(normalizedQuery),
+    );
+  }, [query, species]);
+
+  const normalizedQuery = query.trim().toLocaleLowerCase();
   const hasExactMatch = getBreedOptions(species).some(
-    (option) => option.name.toLocaleLowerCase() === normalizedValue,
+    (option) => option.name.toLocaleLowerCase() === normalizedQuery,
   );
-  const canSuggest = species !== "other" && isFocused;
-  const focusSearch = () => {
-    setIsFocused(true);
-    inputRef.current?.focus();
+
+  const close = () => {
+    Keyboard.dismiss();
+    setOpen(false);
+    setQuery("");
   };
+
   const chooseBreed = (name: string) => {
     onChange(name);
-    setIsFocused(false);
-    inputRef.current?.blur();
+    close();
   };
 
-  return (
-    <View style={styles.wrapper}>
-      <View style={[styles.input, isFocused && styles.inputFocused]}>
-        <Pressable
-          accessibilityHint="Opens the breed suggestions"
-          accessibilityLabel="Search breeds"
-          accessibilityRole="button"
-          hitSlop={8}
-          onPress={focusSearch}
-          style={styles.searchButton}
-        >
-          <Ionicons color="#8A918E" name="search-outline" size={18} />
-        </Pressable>
+  if (species === "other") {
+    return (
+      <View style={styles.inlineInput}>
+        <Ionicons color={colors.muted} name="create-outline" size={18} />
         <TextInput
-          accessibilityLabel="Breed"
+          accessibilityLabel="Pet kind"
           autoCapitalize="words"
           maxLength={INPUT_LIMITS.breed}
-          onBlur={() => setTimeout(() => setIsFocused(false), 240)}
           onChangeText={onChange}
-          onFocus={() => setIsFocused(true)}
-          placeholder={species === "other" ? "Type your pet's kind" : "Search or type a breed"}
-          placeholderTextColor="#A9B0B3"
-          ref={inputRef}
-          style={styles.inputField}
+          placeholder="Type your pet's kind"
+          placeholderTextColor={colors.muted}
+          style={styles.inlineInputField}
           value={value}
         />
-        {value.length > 0 ? (
-          <Pressable
-            accessibilityLabel="Clear breed"
-            accessibilityRole="button"
-            hitSlop={13}
-            onPress={() => {
-              onChange("");
-              focusSearch();
-            }}
-          >
-            <Ionicons color="#8A918E" name="close-circle" size={19} />
-          </Pressable>
-        ) : null}
       </View>
+    );
+  }
 
-      {canSuggest ? (
-        <View style={styles.menu}>
-          {suggestions.map((option) => (
+  return (
+    <>
+      <Pressable
+        accessibilityHint="Opens a full-screen breed list"
+        accessibilityLabel="Choose breed"
+        accessibilityRole="button"
+        onPress={() => setOpen(true)}
+        style={({ pressed }) => [
+          styles.trigger,
+          open && styles.triggerActive,
+          pressed && styles.pressed,
+        ]}
+      >
+        <View style={styles.triggerIcon}>
+          <Ionicons color={colors.sage} name="paw-outline" size={17} />
+        </View>
+        <Text
+          numberOfLines={1}
+          style={[styles.triggerText, !value && styles.placeholder]}
+        >
+          {value || "Choose a breed"}
+        </Text>
+        <Ionicons color={colors.muted} name="chevron-forward" size={18} />
+      </Pressable>
+
+      <Modal
+        animationType="slide"
+        onRequestClose={close}
+        presentationStyle="fullScreen"
+        statusBarTranslucent={Platform.OS === "android"}
+        visible={open}
+      >
+        <View
+          accessibilityViewIsModal
+          style={[
+            styles.modal,
+            {
+              paddingBottom: Math.max(insets.bottom, 14),
+              paddingTop: Math.max(insets.top, 14),
+            },
+          ]}
+        >
+          <View style={styles.modalHeader}>
+            <View style={styles.modalTitleCopy}>
+              <Text style={styles.eyebrow}>{species.toUpperCase()} BREEDS</Text>
+              <Text style={styles.modalTitle}>Choose their closest match</Text>
+            </View>
             <Pressable
-              accessibilityLabel={`Choose ${option.name}`}
+              accessibilityLabel="Close breed picker"
               accessibilityRole="button"
-              accessibilityState={{ selected: option.name.toLocaleLowerCase() === normalizedValue }}
-              key={option.name}
-              onPress={() => chooseBreed(option.name)}
-              style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
+              hitSlop={8}
+              onPress={close}
+              style={styles.closeButton}
             >
-              <Text style={styles.optionText}>{option.name}</Text>
-              {option.name.toLocaleLowerCase() === normalizedValue ? (
-                <Ionicons color="#E66F51" name="checkmark" size={18} />
-              ) : null}
+              <Ionicons color={colors.ink} name="close" size={22} />
             </Pressable>
-          ))}
+          </View>
 
-          {normalizedValue.length > 0 && !hasExactMatch ? (
+          <View style={styles.searchBox}>
+            <Ionicons color={colors.muted} name="search" size={19} />
+            <TextInput
+              accessibilityLabel="Search every breed"
+              autoCapitalize="words"
+              autoCorrect={false}
+              maxLength={INPUT_LIMITS.breed}
+              onChangeText={setQuery}
+              placeholder="Search every breed"
+              placeholderTextColor={colors.muted}
+              returnKeyType="search"
+              style={styles.searchInput}
+              value={query}
+            />
+            {query.length > 0 ? (
+              <Pressable
+                accessibilityLabel="Clear breed search"
+                accessibilityRole="button"
+                hitSlop={10}
+                onPress={() => setQuery("")}
+              >
+                <Ionicons color={colors.muted} name="close-circle" size={19} />
+              </Pressable>
+            ) : null}
+          </View>
+
+          {normalizedQuery && !hasExactMatch ? (
             <Pressable
-              accessibilityLabel={`Use custom breed ${value.trim()}`}
+              accessibilityLabel={`Use custom breed ${query.trim()}`}
               accessibilityRole="button"
-              onPress={() => chooseBreed(value.trim())}
-              style={({ pressed }) => [styles.option, styles.customOption, pressed && styles.optionPressed]}
+              onPress={() => chooseBreed(query.trim())}
+              style={({ pressed }) => [
+                styles.customRow,
+                pressed && styles.optionPressed,
+              ]}
             >
               <View style={styles.customIcon}>
-                <Ionicons color="#E66F51" name="create-outline" size={15} />
+                <Ionicons color={colors.coral} name="create-outline" size={16} />
               </View>
-              <View style={styles.customCopy}>
-                <Text style={styles.optionText}>Use "{value.trim()}"</Text>
+              <View style={styles.optionCopy}>
+                <Text style={styles.optionText}>Use “{query.trim()}”</Text>
                 <Text style={styles.optionHint}>Custom or mixed breed</Text>
               </View>
+              <Ionicons color={colors.muted} name="arrow-forward" size={17} />
             </Pressable>
           ) : null}
+
+          <FlatList
+            contentContainerStyle={styles.listContent}
+            data={options}
+            keyboardDismissMode="on-drag"
+            keyboardShouldPersistTaps="handled"
+            keyExtractor={(item) => item.name}
+            ListEmptyComponent={
+              <View style={styles.emptyState}>
+                <Ionicons color={colors.sage} name="search-outline" size={24} />
+                <Text style={styles.emptyTitle}>No exact match</Text>
+                <Text style={styles.emptyCopy}>
+                  Use the custom option above or try a broader search.
+                </Text>
+              </View>
+            }
+            renderItem={({ item }) => {
+              const selected =
+                item.name.toLocaleLowerCase() === value.trim().toLocaleLowerCase();
+              return (
+                <Pressable
+                  accessibilityLabel={`Choose ${item.name}`}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected }}
+                  onPress={() => chooseBreed(item.name)}
+                  style={({ pressed }) => [
+                    styles.option,
+                    selected && styles.optionSelected,
+                    pressed && styles.optionPressed,
+                  ]}
+                >
+                  <View
+                    style={[
+                      styles.optionIcon,
+                      selected && styles.optionIconSelected,
+                    ]}
+                  >
+                    <Ionicons
+                      color={selected ? colors.white : colors.sage}
+                      name="paw"
+                      size={16}
+                    />
+                  </View>
+                  <View style={styles.optionCopy}>
+                    <Text
+                      style={[
+                        styles.optionText,
+                        selected && styles.optionTextSelected,
+                      ]}
+                    >
+                      {item.name}
+                    </Text>
+                    <Text style={styles.optionHint}>
+                      {item.visualProfile.replaceAll("-", " ")}
+                    </Text>
+                  </View>
+                  {selected ? (
+                    <Ionicons
+                      color={colors.coral}
+                      name="checkmark-circle"
+                      size={22}
+                    />
+                  ) : (
+                    <Ionicons
+                      color={colors.line}
+                      name="ellipse-outline"
+                      size={22}
+                    />
+                  )}
+                </Pressable>
+              );
+            }}
+            showsVerticalScrollIndicator={false}
+          />
         </View>
-      ) : null}
-    </View>
+      </Modal>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
-    position: "relative",
-    zIndex: 20,
-  },
-  input: {
-    minHeight: 44,
-    borderRadius: 16,
+  closeButton: {
+    alignItems: "center",
+    backgroundColor: colors.white,
+    borderColor: colors.line,
+    borderRadius: 21,
     borderWidth: 1,
-    borderColor: "#E6E1D9",
-    backgroundColor: "#FFFFFF",
-    paddingHorizontal: 15,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  inputFocused: {
-    borderColor: "#E66F51",
-    shadowColor: "#E66F51",
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-  },
-  inputField: {
-    flex: 1,
-    minWidth: 0,
-    minHeight: 44,
-    color: "#252824",
-    fontFamily: "Nunito_700Bold",
-    fontSize: 13,
-    paddingVertical: 10,
-  },
-  searchButton: {
-    alignItems: "center",
-    height: 44,
+    height: 42,
     justifyContent: "center",
-    marginLeft: -8,
-    width: 44,
-  },
-  menu: {
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: "#E8E2D9",
-    backgroundColor: "#FFFFFF",
-    padding: 6,
-    shadowColor: "#2F312D",
-    shadowOpacity: 0.14,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 7,
-    marginTop: 6,
-  },
-  option: {
-    minHeight: 44,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 10,
-  },
-  optionPressed: {
-    backgroundColor: "#FAF4EE",
-  },
-  optionText: {
-    color: "#30332F",
-    fontFamily: "Nunito_700Bold",
-    fontSize: 13,
-  },
-  customOption: {
-    marginTop: 3,
-    borderTopWidth: 1,
-    borderTopColor: "#F0ECE6",
-    justifyContent: "flex-start",
+    width: 42,
   },
   customIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
     alignItems: "center",
+    backgroundColor: colors.coralSoft,
+    borderRadius: 17,
+    height: 34,
     justifyContent: "center",
-    backgroundColor: "#FFF0E9",
+    width: 34,
   },
-  customCopy: {
-    flex: 1,
+  customRow: {
+    alignItems: "center",
+    backgroundColor: colors.coralSoft,
+    borderColor: colors.coral,
+    borderRadius: 18,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: 10,
+    marginBottom: 10,
+    minHeight: 60,
+    paddingHorizontal: 12,
   },
-  optionHint: {
-    marginTop: 1,
-    color: "#888E89",
+  emptyCopy: {
+    color: colors.muted,
     fontFamily: "Nunito_600SemiBold",
-    fontSize: 11,
+    fontSize: 12,
+    lineHeight: 17,
+    marginTop: 4,
+    maxWidth: 250,
+    textAlign: "center",
+  },
+  emptyState: {
+    alignItems: "center",
+    paddingHorizontal: 24,
+    paddingTop: 44,
+  },
+  emptyTitle: {
+    color: colors.ink,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 15,
+    marginTop: 10,
+  },
+  eyebrow: {
+    color: colors.coral,
+    fontFamily: "Fredoka_700Bold",
+    fontSize: 10,
+    letterSpacing: 1.2,
+  },
+  inlineInput: {
+    alignItems: "center",
+    backgroundColor: colors.white,
+    borderColor: colors.line,
+    borderRadius: 16,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: 8,
+    minHeight: 44,
+    paddingHorizontal: 12,
+  },
+  inlineInputField: {
+    color: colors.ink,
+    flex: 1,
+    fontFamily: "Nunito_700Bold",
+    fontSize: 13,
+    minHeight: 44,
+    paddingVertical: 8,
+  },
+  listContent: { gap: 8, paddingBottom: 16 },
+  modal: {
+    backgroundColor: colors.background,
+    flex: 1,
+    paddingHorizontal: 18,
+  },
+  modalHeader: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 12,
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  modalTitle: {
+    color: colors.ink,
+    fontFamily: "Fredoka_600SemiBold",
+    fontSize: 25,
+    lineHeight: 29,
+    marginTop: 2,
+  },
+  modalTitleCopy: { flex: 1 },
+  option: {
+    alignItems: "center",
+    backgroundColor: colors.white,
+    borderColor: colors.line,
+    borderRadius: 18,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: 11,
+    minHeight: 64,
+    paddingHorizontal: 12,
+  },
+  optionCopy: { flex: 1 },
+  optionHint: {
+    color: colors.muted,
+    fontFamily: "Nunito_600SemiBold",
+    fontSize: 10,
+    marginTop: 2,
+    textTransform: "capitalize",
+  },
+  optionIcon: {
+    alignItems: "center",
+    backgroundColor: colors.sageSoft,
+    borderRadius: 18,
+    height: 36,
+    justifyContent: "center",
+    width: 36,
+  },
+  optionIconSelected: { backgroundColor: colors.sage },
+  optionPressed: { opacity: 0.82 },
+  optionSelected: {
+    backgroundColor: colors.coralSoft,
+    borderColor: colors.coral,
+  },
+  optionText: {
+    color: colors.ink,
+    fontFamily: "Nunito_800ExtraBold",
+    fontSize: 14,
+  },
+  optionTextSelected: { color: colors.navy },
+  placeholder: { color: colors.muted },
+  pressed: { opacity: 0.82 },
+  searchBox: {
+    alignItems: "center",
+    backgroundColor: colors.white,
+    borderColor: colors.line,
+    borderRadius: 18,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: 9,
+    marginBottom: 10,
+    minHeight: 52,
+    paddingHorizontal: 13,
+  },
+  searchInput: {
+    color: colors.ink,
+    flex: 1,
+    fontFamily: "Nunito_700Bold",
+    fontSize: 15,
+    minHeight: 50,
+    paddingVertical: 10,
+  },
+  trigger: {
+    alignItems: "center",
+    backgroundColor: colors.white,
+    borderColor: colors.line,
+    borderRadius: 16,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: 8,
+    minHeight: 44,
+    paddingHorizontal: 9,
+  },
+  triggerActive: { borderColor: colors.coral },
+  triggerIcon: {
+    alignItems: "center",
+    backgroundColor: colors.sageSoft,
+    borderRadius: 15,
+    height: 30,
+    justifyContent: "center",
+    width: 30,
+  },
+  triggerText: {
+    color: colors.ink,
+    flex: 1,
+    fontFamily: "Nunito_700Bold",
+    fontSize: 12,
   },
 });

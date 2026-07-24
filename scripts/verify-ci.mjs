@@ -14,6 +14,7 @@ const steps = [
   { label: "TypeScript", cli: npmCli, args: ["run", "typecheck"] },
   { label: "Vitest", cli: npmCli, args: ["test"] },
   { label: "Motion asset audit", cli: npmCli, args: ["run", "audit:motion-assets"] },
+  { label: "Pet chroma audit", cli: npmCli, args: ["run", "audit:pet-chroma"] },
   { label: "Expo Doctor", cli: npxCli, args: ["--yes", "expo-doctor"] },
 ];
 

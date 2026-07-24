@@ -130,11 +130,16 @@ export function HomeCareScreen({
   const next = schedule.find(
     (item) => item.status === "due" || item.status === "upcoming",
   );
+  const firstStepMode = completion === 0 && Boolean(next);
+  const visibleSchedule =
+    firstStepMode && next ? [next] : schedule;
   const openMoments = schedule.filter(
     (item) => item.status !== "done" && item.status !== "skipped",
   );
   const summaryTitle =
-    completion === 100
+    firstStepMode
+      ? "Start here"
+      : completion === 100
       ? "Care plan complete"
       : next
         ? "Next up"
@@ -142,7 +147,9 @@ export function HomeCareScreen({
           ? "Still on today's list"
           : "Ready for today";
   const summaryBody =
-    completion === 100
+    firstStepMode && next
+      ? `Your only step right now: ${next.task.title}. Mark it done when it is handled.`
+      : completion === 100
       ? "Everything planned for today is handled."
       : next
         ? formatCareTime(next.scheduledTime) + "  " + next.task.title
@@ -162,7 +169,7 @@ export function HomeCareScreen({
       <FlatList
         bounces
         contentContainerStyle={{ paddingBottom: 28 }}
-        data={schedule}
+        data={visibleSchedule}
         keyExtractor={(item) => item.id}
         ref={listRef}
         ListEmptyComponent={
@@ -310,8 +317,14 @@ export function HomeCareScreen({
               </View>
               </View>
               <View style={styles.sectionRow}>
-                <Text style={styles.sectionTitle}>Care plan</Text>
-                <Text style={styles.sectionCount}>{schedule.length} moments</Text>
+                <Text style={styles.sectionTitle}>
+                  {firstStepMode ? "Your next step" : "Care plan"}
+                </Text>
+                <Text style={styles.sectionCount}>
+                  {firstStepMode
+                    ? `1 of ${schedule.length}`
+                    : `${schedule.length} moments`}
+                </Text>
               </View>
             </View>
           </View>

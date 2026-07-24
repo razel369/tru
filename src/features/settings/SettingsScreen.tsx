@@ -8,12 +8,12 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Switch,
   Text,
   View,
 } from "react-native";
 
 import { ConfirmationSheet } from "../../components/ConfirmationSheet";
+import { PawPairSwitch } from "../../components/PawPairSwitch";
 import { colors, shadow } from "../../design";
 import {
   hasAnalyticsConsent,
@@ -470,17 +470,10 @@ export function SettingsScreen({
                   : permissionCopy}
               </Text>
             </View>
-            <Switch
+            <PawPairSwitch
               accessibilityLabel="Local care reminders"
-              accessibilityState={{
-                checked: remindersEnabled,
-                disabled: busy || notificationPermission === "unsupported",
-              }}
               disabled={busy || notificationPermission === "unsupported"}
-              ios_backgroundColor={colors.line}
               onValueChange={(value) => void toggleReminders(value)}
-              style={styles.reminderSwitch}
-              trackColor={{ false: colors.line, true: colors.sage }}
               value={remindersEnabled}
             />
           </View>
@@ -564,14 +557,10 @@ export function SettingsScreen({
                 Helps improve flows and reliability. Never includes pet details, care notes, or health information.
               </Text>
             </View>
-            <Switch
+            <PawPairSwitch
               accessibilityLabel="Anonymous product analytics"
-              accessibilityState={{ checked: analyticsEnabled, disabled: busy }}
               disabled={busy}
-              ios_backgroundColor={colors.line}
               onValueChange={(enabled) => void toggleAnalytics(enabled)}
-              style={styles.reminderSwitch}
-              trackColor={{ false: colors.line, true: colors.sage }}
               value={analyticsEnabled}
             />
           </View>
@@ -703,7 +692,6 @@ const styles = StyleSheet.create({
   privacyOptions: { flexDirection: "row", gap: 8 },
   privacyTitle: { color: colors.ink, fontFamily: "Nunito_800ExtraBold", fontSize: 12 },
   reminderRow: { alignItems: "center", flexDirection: "row", gap: 10, minHeight: 76, paddingHorizontal: 13 },
-  reminderSwitch: { minHeight: 44, minWidth: 44 },
   row: { alignItems: "center", flexDirection: "row", gap: 10, minHeight: 61, paddingHorizontal: 13 },
   rowDetail: { color: colors.muted, fontFamily: "Nunito_600SemiBold", fontSize: 10, marginTop: 2 },
   rowIcon: { alignItems: "center", backgroundColor: colors.skySoft, borderRadius: 18, height: 38, justifyContent: "center", width: 38 },

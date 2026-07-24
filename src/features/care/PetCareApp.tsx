@@ -348,12 +348,12 @@ export function PetCareApp() {
           setSelectedDate(new Date(careNow));
           setTab("home");
           store.addPet(pet, focus);
-          setToast(`A care world is ready for ${pet.name}`);
-      if (intent === "premium") {
-        activationPromptSeen.current = true;
-        void AsyncStorage.setItem(ACTIVATION_PAYWALL_KEY, "shown");
-        setPaywallSource("onboarding");
-      }
+          setToast(null);
+          if (intent === "premium") {
+            activationPromptSeen.current = true;
+            void AsyncStorage.setItem(ACTIVATION_PAYWALL_KEY, "shown");
+            setPaywallSource("onboarding");
+          }
         }}
         topInset={insets.top}
       />

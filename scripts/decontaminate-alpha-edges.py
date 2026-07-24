@@ -72,7 +72,9 @@ def clean_edges(
         near_transparency = dilate(near_transparency)
     boundary = visible & near_transparency
     target = visible & (
-        (alpha < 252) | (boundary & (magenta_spill | all_boundary))
+        (alpha < 252)
+        | magenta_spill
+        | (boundary & all_boundary)
     )
     resolved = visible & ~target
     working = rgb.copy()
