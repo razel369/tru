@@ -2,9 +2,40 @@ import { describe, expect, it } from "vitest";
 
 import type { DoseLog, Pet } from "../../types";
 
-import { migrateLegacyData } from "./migration";
+import { emptyCareState, migrateLegacyData } from "./migration";
 
 describe("legacy medication migration", () => {
+  it("starts with no pets, care moments, logs or health records", () => {
+    expect(emptyCareState()).toEqual({
+      version: 1,
+      pets: [],
+      tasks: [],
+      logs: [],
+      healthRecords: [],
+      activePetId: null,
+    });
+  });
+
+  it("does not invent care moments for a pet without medications", () => {
+    const pet: Pet = {
+      id: "new-pet",
+      name: "Pepper",
+      species: "cat",
+      breed: "Sphynx",
+      age: 2,
+      avatar: "luna",
+      color: "#9B91C8",
+      medications: [],
+    };
+
+    const state = migrateLegacyData([pet], []);
+
+    expect(state.pets).toEqual([pet]);
+    expect(state.tasks).toEqual([]);
+    expect(state.logs).toEqual([]);
+    expect(state.healthRecords).toEqual([]);
+  });
+
   it("preserves pets, medications and completed dose history", () => {
     const pet: Pet = {
       id: "milo",
@@ -44,7 +75,7 @@ describe("legacy medication migration", () => {
       (task) => task.category === "medication",
     );
     expect(state.pets).toEqual([pet]);
-    expect(state.tasks.filter((task) => task.category !== "medication")).toHaveLength(4);
+    expect(state.tasks.filter((task) => task.category !== "medication")).toHaveLength(0);
     expect(medicationTask?.title).toBe("Carprofen");
     expect(medicationTask?.schedule.times).toEqual(["08:00", "20:00"]);
     expect(state.logs[0]).toMatchObject({

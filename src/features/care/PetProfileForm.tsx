@@ -127,7 +127,7 @@ export function PetProfileForm({
     const exactAsset = getPetVisualAsset(exactKey);
     const profile = getBreedVisualProfile(species, previewBreed);
     const pack = resolvePetMotionPackForProfile(exactKey, profile);
-    const placement = resolvePetStagePlacement(exactKey, {
+    const placement = resolvePetStagePlacement(pack?.petKey ?? exactKey, {
       targetFeetY: 0.91,
       targetSubjectHeight: 0.72,
     });

@@ -178,7 +178,7 @@ async function auditPack(directory, runtimePaths = null) {
   inspected.forEach((item) => {
     const file = basename(item.path);
     const isBlinkFrame = /^blink(?:-|\.)/i.test(file);
-    const requiresTransparency = item === idle || !isBlinkFrame;
+    const requiresTransparency = true;
     if (requiresTransparency && !item.hasAlpha) {
       issues.push({ file, message: "PNG has no real alpha channel." });
     }
@@ -208,6 +208,9 @@ async function auditPack(directory, runtimePaths = null) {
       });
       return;
     }
+    // Blink frames are rendered only inside the authored combined-eye clip.
+    // Their full-pet silhouette can differ from idle without moving the eyes.
+    if (isBlinkFrame) return;
 
     const coverageRatio =
       idle.bounds.visiblePixels === 0

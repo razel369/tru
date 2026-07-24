@@ -5,16 +5,16 @@ import {
   buildSchedule,
   createDoseLog,
   dateKey,
-  DEMO_PETS,
   formatTime,
   timeToMinutes,
 } from "./schedule";
+import { TEST_PETS } from "./tests/fixtures/test-pets";
 
 describe("medication schedule", () => {
   const date = new Date(2026, 6, 9, 8, 0);
 
   it("builds and sorts every scheduled dose", () => {
-    const schedule = buildSchedule(DEMO_PETS, [], date, 8 * 60);
+    const schedule = buildSchedule(TEST_PETS, [], date, 8 * 60);
 
     expect(schedule).toHaveLength(5);
     expect(schedule[0]?.scheduledTime).toBe("07:30");
@@ -23,7 +23,7 @@ describe("medication schedule", () => {
   });
 
   it("creates a caregiver-attributed dose log", () => {
-    const dose = buildSchedule(DEMO_PETS, [], date, 8 * 60)[1]!;
+    const dose = buildSchedule(TEST_PETS, [], date, 8 * 60)[1]!;
     const log = createDoseLog(dose, "given", "Maya", date);
 
     expect(log.date).toBe("2026-07-09");
@@ -32,9 +32,9 @@ describe("medication schedule", () => {
   });
 
   it("uses existing logs when rebuilding the day", () => {
-    const dose = buildSchedule(DEMO_PETS, [], date, 8 * 60)[1]!;
+    const dose = buildSchedule(TEST_PETS, [], date, 8 * 60)[1]!;
     const log = createDoseLog(dose, "given", "Maya", date);
-    const rebuilt = buildSchedule(DEMO_PETS, [log], date, 8 * 60);
+    const rebuilt = buildSchedule(TEST_PETS, [log], date, 8 * 60);
 
     expect(rebuilt[1]?.status).toBe("given");
     expect(rebuilt[1]?.log?.completedBy).toBe("Maya");

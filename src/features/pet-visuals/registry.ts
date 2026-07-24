@@ -234,3 +234,7 @@ export function createBreedAssetKey(species: string, breed: string): string {
   const key = "breed:" + species + ":" + (breedSlug || "mixed");
   return BREED_ASSET_ALIASES[key] ?? key;
 }
+
+export function hasExactBreedVisual(species: string, breed: string): boolean {
+  return visualAssets.has(createBreedAssetKey(species, breed));
+}

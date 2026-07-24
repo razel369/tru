@@ -27,11 +27,11 @@ import { createLocalId } from "../../utils/local-id";
 import { INPUT_LIMITS } from "../../utils/input-limits";
 import { usePrefersReducedMotion } from "../accessibility/motion";
 import { trackAnalyticsEvent } from "../analytics/service";
-import type { StarterCareFocus } from "../care/migration";
 import { resolvePetMotionPackForProfile } from "../pet-motion";
 import {
   createBreedAssetKey,
   getPetVisualAsset,
+  hasExactBreedVisual,
   resolvePetStagePlacement,
 } from "../pet-visuals";
 
@@ -41,34 +41,13 @@ const TOTAL_STEPS = 4;
 type OnboardingIntent = "free" | "premium";
 type SupportedSpecies = Extract<Pet["species"], "dog" | "cat">;
 
-const FOCUS_OPTIONS: readonly {
-  body: string;
-  icon: keyof typeof Ionicons.glyphMap;
-  id: StarterCareFocus;
-  title: string;
-}[] = [
-  { body: "Food and water rhythm", icon: "restaurant-outline", id: "meals", title: "Meals" },
-  { body: "Walks, play and movement", icon: "walk-outline", id: "activity", title: "Activity" },
-  { body: "Daily health awareness", icon: "heart-outline", id: "wellness", title: "Wellness" },
-  { body: "Coat, teeth and nails", icon: "cut-outline", id: "grooming", title: "Grooming" },
-  { body: "Clear and trusted dosing", icon: "medkit-outline", id: "medication", title: "Medication" },
-  { body: "Vet visits and follow-ups", icon: "calendar-outline", id: "appointments", title: "Appointments" },
-];
-
-const defaultBreed = (species: SupportedSpecies) =>
-  species === "cat" ? "British Shorthair" : "Golden Retriever";
-
 export function PersonalizedCareOnboarding({
   bottomInset,
   onFinish,
   topInset,
 }: {
   bottomInset: number;
-  onFinish: (
-    pet: Pet,
-    focus: readonly StarterCareFocus[],
-    intent: OnboardingIntent,
-  ) => void;
+  onFinish: (pet: Pet, intent: OnboardingIntent) => void;
   topInset: number;
 }) {
   const { height } = useWindowDimensions();
@@ -76,14 +55,9 @@ export function PersonalizedCareOnboarding({
   const reduceMotion = usePrefersReducedMotion();
   const [step, setStep] = useState(0);
   const [name, setName] = useState("");
-  const [species, setSpecies] = useState<SupportedSpecies>("dog");
-  const [breed, setBreed] = useState(defaultBreed("dog"));
+  const [species, setSpecies] = useState<SupportedSpecies | null>(null);
+  const [breed, setBreed] = useState("");
   const [age, setAge] = useState("");
-  const focus: StarterCareFocus[] = [
-    "meals",
-    "activity",
-    "wellness",
-  ];
   const [error, setError] = useState<string | null>(null);
   const [breedPickerOpen, setBreedPickerOpen] = useState(false);
   const [breedQuery, setBreedQuery] = useState("");
@@ -99,14 +73,28 @@ export function PersonalizedCareOnboarding({
   }, []);
 
   const visual = useMemo(() => {
+    if (!species) {
+      const placement = resolvePetStagePlacement("pet:milo", {
+        maxScale: 2.25,
+        targetFeetY: 0.94,
+        targetSubjectHeight: 0.82,
+      });
+      return {
+        key: "pet:milo",
+        scale: placement.scale,
+        source: assets.milo,
+        translateYRatio: placement.translateYRatio,
+      };
+    }
     const profile = getBreedVisualProfile(species, breed);
     const key = createBreedAssetKey(species, breed);
     const asset = getPetVisualAsset(key);
     const resolvedProfile = asset?.profile ?? profile;
     const pack = resolvePetMotionPackForProfile(key, resolvedProfile);
-    const placement = resolvePetStagePlacement(key, {
+    const placement = resolvePetStagePlacement(pack?.petKey ?? key, {
+      maxScale: 2.25,
       targetFeetY: 0.94,
-      targetSubjectHeight: 0.72,
+      targetSubjectHeight: 0.82,
     });
 
     return {
@@ -121,6 +109,7 @@ export function PersonalizedCareOnboarding({
   }, [breed, species]);
 
   const filteredBreeds = useMemo(() => {
+    if (!species) return [];
     const query = breedQuery.trim().toLocaleLowerCase();
     const options = getBreedOptions(species);
     return query
@@ -173,7 +162,7 @@ export function PersonalizedCareOnboarding({
   const chooseSpecies = (next: SupportedSpecies) => {
     if (next === species) return;
     setSpecies(next);
-    setBreed(defaultBreed(next));
+    setBreed("");
     setBreedQuery("");
     setError(null);
     void Haptics.selectionAsync().catch(() => undefined);
@@ -192,6 +181,10 @@ export function PersonalizedCareOnboarding({
   const next = () => {
     if (step === 1 && !name.trim()) {
       setError("Give your companion a name to make this theirs.");
+      return;
+    }
+    if (step === 1 && !species) {
+      setError("Choose whether your companion is a dog or cat.");
       return;
     }
     if (step === 2) {
@@ -218,7 +211,7 @@ export function PersonalizedCareOnboarding({
   };
 
   const finish = (intent: OnboardingIntent) => {
-    if (submissionLocked.current) return;
+    if (submissionLocked.current || !species) return;
     submissionLocked.current = true;
     const savedName = name.trim();
     const savedBreed = breed.trim();
@@ -244,7 +237,7 @@ export function PersonalizedCareOnboarding({
       Haptics.NotificationFeedbackType.Success,
     ).catch(() => undefined);
     void trackAnalyticsEvent("onboarding_completed", {
-      focus_count: focus.length,
+      first_care_required: true,
       intent,
       species,
     });
@@ -252,7 +245,7 @@ export function PersonalizedCareOnboarding({
       species,
       visual_profile: profile,
     });
-    onFinish(pet, focus, intent);
+    onFinish(pet, intent);
   };
 
   const primaryLabel =
@@ -261,8 +254,8 @@ export function PersonalizedCareOnboarding({
       : step === 1
         ? "Continue"
         : step === 2
-          ? `Create ${name.trim() || "their"}'s day`
-          : `Open ${name.trim() || "their"}'s day`;
+          ? `Save ${name.trim() || "their"}'s profile`
+          : "Add the first care moment";
 
   const renderContent = () => {
     if (step === 0) {
@@ -271,7 +264,7 @@ export function PersonalizedCareOnboarding({
           <Text style={styles.eyebrow}>WELCOME TO PAWPAIR</Text>
           <Text style={styles.title}>Never miss a care moment.</Text>
           <Text style={styles.body}>
-            Set up meals, movement and health reminders for your pet in about a minute.
+            Build a care routine from the moments you choose — nothing is added for you.
           </Text>
           <View style={styles.promiseRow}>
             <Ionicons color={colors.sage} name="shield-checkmark-outline" size={18} />
@@ -347,7 +340,12 @@ export function PersonalizedCareOnboarding({
             <View style={styles.selectorIcon}>
               <Ionicons color={colors.sage} name="paw" size={18} />
             </View>
-            <Text numberOfLines={1} style={styles.selectorText}>{breed}</Text>
+            <Text
+              numberOfLines={1}
+              style={[styles.selectorText, !breed && styles.placeholder]}
+            >
+              {breed || "Choose a breed"}
+            </Text>
             <Ionicons color={colors.muted} name="chevron-down" size={19} />
           </Pressable>
           <Text style={styles.label}>Approximate age (required)</Text>
@@ -370,7 +368,7 @@ export function PersonalizedCareOnboarding({
             </View>
           </View>
           <Text style={styles.hint}>
-            Age helps tailor the starter plan. You can refine it later.
+            Age keeps the profile useful. You can refine it later.
           </Text>
         </>
       );
@@ -379,33 +377,26 @@ export function PersonalizedCareOnboarding({
     if (step === 3) {
       return (
         <>
-          <Text style={styles.eyebrow}>READY FOR TODAY</Text>
-          <Text numberOfLines={2} style={styles.title}>{name.trim()}'s first day is ready.</Text>
-        <Text style={styles.bodySmall}>
-            PawPair created a simple starter plan. Begin with one care moment, then adjust anything as you learn what works.
-        </Text>
-        <View style={styles.revealRow}>
-          {focus.slice(0, 3).map((item) => {
-            const option = FOCUS_OPTIONS.find((candidate) => candidate.id === item);
-            return option ? (
-              <View key={item} style={styles.revealChip}>
-                <Ionicons color={colors.sage} name={option.icon} size={15} />
-                <Text style={styles.revealText}>
-                  {item === "activity" && species === "cat" ? "Play" : option.title}
-                </Text>
-              </View>
-            ) : null;
-          })}
-        </View>
+          <Text style={styles.eyebrow}>PROFILE READY</Text>
+          <Text numberOfLines={2} style={styles.title}>{name.trim()}'s space is ready.</Text>
+          <Text style={styles.bodySmall}>
+            No meals, reminders or health entries were created. You decide what belongs here.
+          </Text>
+          <View style={styles.revealRow}>
+            <View style={styles.revealChip}>
+              <Ionicons color={colors.sage} name="checkmark-circle" size={15} />
+              <Text style={styles.revealText}>Nothing added without you</Text>
+            </View>
+          </View>
           <View style={styles.readyCard}>
             <View style={styles.readyIcon}>
               <Ionicons color={colors.white} name="arrow-forward" size={20} />
             </View>
             <View style={styles.premiumCopy}>
-              <Text style={styles.premiumEyebrow}>YOUR FIRST WIN</Text>
-              <Text style={styles.premiumTitle}>Complete the next care moment.</Text>
+              <Text style={styles.premiumEyebrow}>ONE CLEAR NEXT STEP</Text>
+              <Text style={styles.premiumTitle}>Add their first real care moment.</Text>
               <Text style={styles.premiumBody}>
-                We will show one clear next step before the full plan.
+                Choose the type, time and details. PawPair saves only what you confirm.
               </Text>
             </View>
           </View>
@@ -417,7 +408,7 @@ export function PersonalizedCareOnboarding({
   };
 
   const sceneHeight = step === 0 ? (compact ? 352 : 438) : compact ? 264 : 314;
-  const petHeight = step === 0 ? (compact ? 278 : 330) : compact ? 205 : 238;
+  const petHeight = step === 0 ? (compact ? 278 : 330) : compact ? 244 : 276;
 
   return (
     <KeyboardAvoidingView
@@ -478,7 +469,9 @@ export function PersonalizedCareOnboarding({
             <View style={styles.identityBadge}>
               <View style={styles.identityDot} />
               <Text numberOfLines={1} style={styles.identityText}>{name.trim() || "Your companion"}</Text>
-              <Text numberOfLines={1} style={styles.identityBreed}>· {breed}</Text>
+              {breed ? (
+                <Text numberOfLines={1} style={styles.identityBreed}>· {breed}</Text>
+              ) : null}
             </View>
           )}
         </View>
@@ -540,13 +533,14 @@ export function PersonalizedCareOnboarding({
       <Modal
         animationType="slide"
         onRequestClose={() => setBreedPickerOpen(false)}
-        presentationStyle={Platform.OS === "ios" ? "pageSheet" : "fullScreen"}
+        presentationStyle="fullScreen"
+        statusBarTranslucent={Platform.OS === "android"}
         visible={breedPickerOpen}
       >
         <View style={[styles.modalScreen, { paddingTop: Math.max(topInset, 18) }]}>
           <View style={styles.modalHeader}>
             <View>
-              <Text style={styles.modalEyebrow}>{species.toUpperCase()} BREEDS</Text>
+              <Text style={styles.modalEyebrow}>{species?.toUpperCase()} BREEDS</Text>
               <Text style={styles.modalTitle}>Find their closest match</Text>
             </View>
             <Pressable accessibilityLabel="Close breed picker" accessibilityRole="button" onPress={() => setBreedPickerOpen(false)} style={styles.modalClose}>
@@ -578,6 +572,9 @@ export function PersonalizedCareOnboarding({
             keyExtractor={(item) => item.name}
             renderItem={({ item }) => {
               const selected = item.name === breed;
+              const exactVisual = species
+                ? hasExactBreedVisual(species, item.name)
+                : false;
               return (
                 <Pressable
                   accessibilityRole="button"
@@ -596,7 +593,11 @@ export function PersonalizedCareOnboarding({
                   </View>
                   <View style={styles.breedCopy}>
                     <Text style={[styles.breedName, selected && styles.breedNameSelected]}>{item.name}</Text>
-                    <Text style={styles.breedProfile}>{item.visualProfile.replaceAll("-", " ")}</Text>
+                    <Text style={styles.breedProfile}>
+                      {exactVisual
+                        ? "Exact companion visual"
+                        : "Closest companion visual"}
+                    </Text>
                   </View>
                   {selected && <Ionicons color={colors.coral} name="checkmark-circle" size={22} />}
                 </Pressable>
@@ -667,6 +668,7 @@ const styles = StyleSheet.create({
   optionalText: { color: colors.muted, fontFamily: "Nunito_600SemiBold", fontSize: 10, marginTop: 8, textAlign: "center" },
   petModel: { bottom: 2, position: "absolute", width: "78%" },
   petStage: { alignItems: "center", bottom: 0, justifyContent: "flex-end", left: 0, position: "absolute", right: 0 },
+  placeholder: { color: colors.muted },
   premiumBody: { color: colors.muted, fontFamily: "Nunito_600SemiBold", fontSize: 11, lineHeight: 16, marginTop: 3 },
   premiumCard: { alignItems: "center", backgroundColor: colors.butterSoft, borderColor: colors.butter, borderRadius: 20, borderWidth: 1, flexDirection: "row", gap: 11, marginTop: 14, padding: 13 },
   premiumCopy: { flex: 1 },

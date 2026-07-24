@@ -10,12 +10,7 @@ import {
   pruneLocalHealthAttachments,
   removeLocalHealthAttachment,
 } from "./health-attachments";
-import {
-  createStarterTasks,
-  emptyCareState,
-  upgradeCareState,
-  type StarterCareFocus,
-} from "./migration";
+import { emptyCareState, upgradeCareState } from "./migration";
 import { inventoryUnitsFromPlan, inventoryUnitsUsed } from "./inventory-delta";
 import {
   clearPetCarePersistence,
@@ -141,13 +136,12 @@ export function usePetCareStore() {
       });
   }, [loaded, persistState, state]);
 
-  const addPet = useCallback((pet: Pet, starterFocus?: readonly StarterCareFocus[]) => {
+  const addPet = useCallback((pet: Pet) => {
     setState((current) => {
       if (!current) return current;
       return {
         ...current,
         pets: [...current.pets, pet],
-        tasks: [...current.tasks, ...createStarterTasks(pet, starterFocus)],
         activePetId: pet.id,
       };
     });

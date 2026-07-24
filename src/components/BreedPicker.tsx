@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { getBreedOptions, type PetSpecies } from "../data/pet-breeds";
 import { colors } from "../design";
+import { hasExactBreedVisual } from "../features/pet-visuals/registry";
 import { INPUT_LIMITS } from "../utils/input-limits";
 
 interface BreedPickerProps {
@@ -175,7 +176,9 @@ export function BreedPicker({ species, value, onChange }: BreedPickerProps) {
               </View>
               <View style={styles.optionCopy}>
                 <Text style={styles.optionText}>Use “{query.trim()}”</Text>
-                <Text style={styles.optionHint}>Custom or mixed breed</Text>
+                <Text style={styles.optionHint}>
+                  Saved exactly as typed · closest companion visual
+                </Text>
               </View>
               <Ionicons color={colors.muted} name="arrow-forward" size={17} />
             </Pressable>
@@ -199,6 +202,7 @@ export function BreedPicker({ species, value, onChange }: BreedPickerProps) {
             renderItem={({ item }) => {
               const selected =
                 item.name.toLocaleLowerCase() === value.trim().toLocaleLowerCase();
+              const exactVisual = hasExactBreedVisual(species, item.name);
               return (
                 <Pressable
                   accessibilityLabel={`Choose ${item.name}`}
@@ -233,7 +237,9 @@ export function BreedPicker({ species, value, onChange }: BreedPickerProps) {
                       {item.name}
                     </Text>
                     <Text style={styles.optionHint}>
-                      {item.visualProfile.replaceAll("-", " ")}
+                      {exactVisual
+                        ? "Exact companion visual"
+                        : "Closest companion visual"}
                     </Text>
                   </View>
                   {selected ? (

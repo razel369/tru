@@ -333,7 +333,7 @@ export function PetCareApp() {
       );
     } else {
       store.addPet(pet);
-      setToast("A starter care plan is ready for " + pet.name);
+      setToast(`${pet.name} added · no care moments created`);
     }
     setPetEditor(null);
     setTab(speciesChanged ? "plan" : isFirstPet ? "home" : "pets");
@@ -343,11 +343,13 @@ export function PetCareApp() {
     return (
       <PersonalizedCareOnboarding
         bottomInset={insets.bottom}
-        onFinish={(pet, focus, intent) => {
+        onFinish={(pet, intent) => {
           selectedDateTracksToday.current = true;
           setSelectedDate(new Date(careNow));
-          setTab("home");
-          store.addPet(pet, focus);
+          setAddCategory("feeding");
+          setAddReturnTab("home");
+          setTab("add");
+          store.addPet(pet);
           setToast(null);
           if (intent === "premium") {
             activationPromptSeen.current = true;

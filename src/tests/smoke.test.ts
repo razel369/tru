@@ -9,16 +9,17 @@
 
 import { describe, expect, it } from "vitest";
 
-import { DEMO_PETS, createDoseLog } from "../schedule";
+import { createDoseLog } from "../schedule";
 import { buildScheduleFromEngine } from "../features/schedules/adapter";
 import { canAddMedication, canAddPet, defaultFreeEntitlement } from "../features/subscriptions/entitlements";
 import type { SubscriptionEntitlement } from "../features/subscriptions/types";
 import type { DoseLog, Pet } from "../types";
+import { TEST_PETS } from "./fixtures/test-pets";
 
 describe("smoke: end-to-end app logic", () => {
   it("renders the Today schedule from demo data", () => {
     const date = new Date(2026, 6, 9, 12, 0);
-    const schedule = buildScheduleFromEngine(DEMO_PETS, [], date);
+    const schedule = buildScheduleFromEngine(TEST_PETS, [], date);
     expect(schedule.every((d) => d.pet.id === "milo" || d.pet.id === "luna")).toBe(
       true,
     );
@@ -30,7 +31,7 @@ describe("smoke: end-to-end app logic", () => {
 
   it("logs a dose: the new log is returned by the schedule", () => {
     const date = new Date(2026, 6, 9, 12, 0);
-    const before = buildScheduleFromEngine(DEMO_PETS, [], date);
+    const before = buildScheduleFromEngine(TEST_PETS, [], date);
     const firstDose = before[0];
     expect(firstDose).toBeDefined();
     if (!firstDose) return;
@@ -63,7 +64,7 @@ describe("smoke: end-to-end app logic", () => {
   });
 
   it("pet profile carries the same fields after a round-trip", () => {
-    const milo = DEMO_PETS.find((p) => p.id === "milo");
+    const milo = TEST_PETS.find((p) => p.id === "milo");
     expect(milo).toBeDefined();
     if (!milo) return;
     // The Pet shape is stable. Any future change to Pet must

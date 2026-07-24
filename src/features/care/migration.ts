@@ -7,10 +7,6 @@ import type {
   PetCareState,
 } from "./types";
 
-function starterId(petId: string, suffix: string): string {
-  return "care-" + petId + "-" + suffix;
-}
-
 function routeForMedicationForm(form: MedicationForm): MedicationRoute {
   if (form === "topical") return "topical";
   if (form === "injection") return "injection";
@@ -130,160 +126,6 @@ function legacyTime(value: unknown, id: unknown, fallback?: string) {
   return validTime(fallback) ? fallback : null;
 }
 
-export type StarterCareFocus =
-  | "meals"
-  | "activity"
-  | "wellness"
-  | "grooming"
-  | "medication"
-  | "appointments";
-
-export function createStarterTasks(
-  pet: Pet,
-  focus?: readonly StarterCareFocus[],
-): CareTask[] {
-  const now = new Date().toISOString();
-  const mealTasks: CareTask[] = [
-    {
-      id: starterId(pet.id, "breakfast"),
-      petId: pet.id,
-      category: "feeding",
-      title: "Breakfast",
-      instructions: "Serve the usual morning portion.",
-      schedule: { frequency: "daily", times: ["08:00"] },
-      enabled: true,
-      createdAt: now,
-    },
-    {
-      id: starterId(pet.id, "water"),
-      petId: pet.id,
-      category: "water",
-      title: "Fresh water",
-      instructions: "Refresh the drinking water and clean the bowl if needed.",
-      schedule: { frequency: "daily", times: ["12:00"] },
-      enabled: true,
-      createdAt: now,
-    },
-    {
-      id: starterId(pet.id, "dinner"),
-      petId: pet.id,
-      category: "feeding",
-      title: "Dinner",
-      instructions: "Serve the evening portion.",
-      schedule: { frequency: "daily", times: ["18:30"] },
-      enabled: true,
-      createdAt: now,
-    },
-  ];
-
-  const personalize = (tasks: CareTask[]) => {
-    if (!focus) return tasks;
-    const selected = new Set(focus);
-    const personalized = tasks.filter((task) => {
-      if (task.category === "water") return true;
-      if (task.category === "feeding") return selected.has("meals");
-      if (task.category === "walk" || task.category === "play") {
-        return selected.has("activity");
-      }
-      return true;
-    });
-
-    if (selected.has("wellness")) {
-      personalized.push({
-        id: starterId(pet.id, "wellness"),
-        petId: pet.id,
-        category: "other",
-        title: "Wellness check-in",
-        instructions: "Notice appetite, energy, comfort and anything that feels different.",
-        schedule: { frequency: "weekly", times: ["18:00"], weekdays: [0] },
-        enabled: true,
-        createdAt: now,
-      });
-    }
-    if (selected.has("grooming")) {
-      personalized.push({
-        id: starterId(pet.id, "grooming"),
-        petId: pet.id,
-        category: "grooming",
-        title: "Grooming check",
-        instructions: "Check coat, teeth, ears and nails; groom what needs attention.",
-        schedule: { frequency: "weekly", times: ["17:00"], weekdays: [6] },
-        enabled: true,
-        createdAt: now,
-      });
-    }
-    return personalized;
-  };
-
-  if (pet.species === "dog") {
-    return personalize([
-      ...mealTasks,
-      {
-        id: starterId(pet.id, "activity"),
-        petId: pet.id,
-        category: "walk",
-        title: "Walk",
-        instructions: "A calm walk with time to sniff and explore.",
-        details: { durationMinutes: 30 },
-        schedule: { frequency: "daily", times: ["08:30", "19:00"] },
-        enabled: true,
-        createdAt: now,
-      },
-    ]);
-  }
-
-  if (pet.species === "cat") {
-    return personalize([
-      ...mealTasks,
-      {
-        id: starterId(pet.id, "litter"),
-        petId: pet.id,
-        category: "other",
-        title: "Litter box",
-        instructions: "Scoop, check output and refresh litter as needed.",
-        schedule: { frequency: "daily", times: ["09:00", "20:00"] },
-        enabled: true,
-        createdAt: now,
-      },
-      {
-        id: starterId(pet.id, "activity"),
-        petId: pet.id,
-        category: "play",
-        title: "Play & enrichment",
-        instructions: "Interactive play with time to stalk, chase and reset.",
-        details: { durationMinutes: 15 },
-        schedule: { frequency: "daily", times: ["19:00"] },
-        enabled: true,
-        createdAt: now,
-      },
-    ]);
-  }
-
-  return personalize([
-    {
-      id: starterId(pet.id, "feeding"),
-      petId: pet.id,
-      category: "feeding",
-      title: "Feeding",
-      instructions: "Offer the usual species-appropriate food and portion.",
-      schedule: { frequency: "daily", times: ["09:00"] },
-      enabled: true,
-      createdAt: now,
-    },
-    {
-      id: starterId(pet.id, "wellbeing"),
-      petId: pet.id,
-      category: "other",
-      title: "Daily wellbeing check",
-      instructions:
-        "Check behavior, appetite and the habitat, enclosure or resting area.",
-      schedule: { frequency: "daily", times: ["18:00"] },
-      enabled: true,
-      createdAt: now,
-    },
-  ]);
-}
-
 export function emptyCareState(): PetCareState {
   return {
     version: 1,
@@ -382,10 +224,7 @@ export function migrateLegacyData(
   return {
     version: 1,
     pets,
-    tasks: [
-      ...pets.flatMap((pet) => createStarterTasks(pet)),
-      ...medicationTasks,
-    ],
+    tasks: medicationTasks,
     logs,
     healthRecords: [],
     activePetId: pets[0]?.id ?? null,
