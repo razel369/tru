@@ -35,8 +35,8 @@ final class PawPairWatchBridge: RCTEventEmitter, WCSessionDelegate {
   @objc(sync:resolver:rejecter:)
   func sync(
     _ payload: NSDictionary,
-    resolver resolve: RCTPromiseResolveBlock,
-    rejecter reject: RCTPromiseRejectBlock
+    resolver resolve: @escaping RCTPromiseResolveBlock,
+    rejecter reject: @escaping RCTPromiseRejectBlock
   ) {
     guard WCSession.isSupported() else {
       resolve(false)
