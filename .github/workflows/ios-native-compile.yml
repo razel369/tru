@@ -1,6 +1,9 @@
 name: PawPair iOS native compile
 
 on:
+  push:
+    branches:
+      - cursor/raintank-planner-7a02
   workflow_dispatch:
 
 permissions:
