@@ -38,6 +38,13 @@ function addWatchTarget(project) {
   const existing = findTarget(project, WATCH_TARGET);
   if (existing) return existing;
 
+  // A single-target Expo template has no dependency sections yet. The xcode
+  // package only links a new Watch target when both sections already exist.
+  // Seed them before addTarget so Xcode builds the Watch product before the
+  // iPhone target's "Embed Watch Content" phase attempts to copy it.
+  project.hash.project.objects.PBXTargetDependency ??= {};
+  project.hash.project.objects.PBXContainerItemProxy ??= {};
+
   const target = project.addTarget(
     WATCH_TARGET,
     "watch2_app",
