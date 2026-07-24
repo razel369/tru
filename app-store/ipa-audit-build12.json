@@ -1,0 +1,62 @@
+{
+  "build": {
+    "easBuildId": "1bfd10c9-793e-4354-a73c-29b6d27ac060",
+    "gitCommitHash": "cc85fdfd1ef5d465b92bf1c36ddf4c03a011829d",
+    "fingerprint": "9a9386cfbb25904c7468841d9585f4e3fa825524"
+  },
+  "artifact": {
+    "path": "C:\\Users\\rmalk\\AppData\\Local\\Temp\\PawPair-1.0.0-12.ipa",
+    "bytes": 211252011,
+    "appBundle": "Payload/PawPair.app/",
+    "archiveEntries": 471
+  },
+  "identity": {
+    "bundleIdentifier": "app.pawpair.medtracker",
+    "version": "1.0.0",
+    "build": "12",
+    "deviceFamily": [
+      1,
+      2
+    ],
+    "minimumOSVersion": "16.4"
+  },
+  "configuration": {
+    "requiresFullScreen": false,
+    "iphoneOrientations": [
+      "UIInterfaceOrientationPortrait",
+      "UIInterfaceOrientationPortraitUpsideDown"
+    ],
+    "ipadOrientations": [
+      "UIInterfaceOrientationPortrait",
+      "UIInterfaceOrientationPortraitUpsideDown",
+      "UIInterfaceOrientationLandscapeLeft",
+      "UIInterfaceOrientationLandscapeRight"
+    ],
+    "usesNonExemptEncryption": false
+  },
+  "provisioning": {
+    "apsEnvironment": "production",
+    "applicationIdentifier": "227Y584VN8.app.pawpair.medtracker",
+    "teamIdentifier": "227Y584VN8",
+    "getTaskAllow": false,
+    "provisionsAllDevices": false,
+    "provisionedDevicesPresent": false
+  },
+  "checks": {
+    "singleAppBundle": true,
+    "universalIphoneIpad": true,
+    "bundleIdentifier": true,
+    "version": true,
+    "build": true,
+    "storeProvisioning": true,
+    "notificationEntitlementProduction": true,
+    "notificationsLinked": true,
+    "revenueCatLinked": true,
+    "annualProductId": true,
+    "monthlyProductId": true,
+    "privacyManifestPresent": true
+  },
+  "passed": 12,
+  "total": 12,
+  "status": "PASS"
+}
