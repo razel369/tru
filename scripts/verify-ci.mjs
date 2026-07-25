@@ -8,6 +8,7 @@ if (!npmCli) {
 }
 
 const npxCli = path.join(path.dirname(npmCli), "npx-cli.js");
+const pythonCli = process.platform === "win32" ? "python" : "python3";
 
 const steps = [
   { label: "ESLint", cli: npmCli, args: ["run", "lint"] },
@@ -15,17 +16,31 @@ const steps = [
   { label: "Vitest", cli: npmCli, args: ["test"] },
   { label: "Motion asset audit", cli: npmCli, args: ["run", "audit:motion-assets"] },
   { label: "Pet chroma audit", cli: npmCli, args: ["run", "audit:pet-chroma"] },
-  { label: "Expo Doctor", cli: npxCli, args: ["--yes", "expo-doctor"] },
+  {
+    label: "Blink visual integrity",
+    cli: pythonCli,
+    args: ["scripts/audit-blink-visual-integrity.py"],
+    direct: true,
+  },
+  {
+    label: "Expo Doctor",
+    cli: npxCli,
+    args: ["--offline", "--yes", "expo-doctor"],
+  },
 ];
 
 for (const step of steps) {
   console.log(`\n=== ${step.label} ===`);
-  const result = spawnSync(process.execPath, [step.cli, ...step.args], {
+  const result = spawnSync(
+    step.direct ? step.cli : process.execPath,
+    step.direct ? step.args : [step.cli, ...step.args],
+    {
     cwd: process.cwd(),
     env: process.env,
     stdio: "inherit",
     shell: false,
-  });
+    },
+  );
 
   if (result.error) {
     console.error(`${step.label} could not start: ${result.error.message}`);

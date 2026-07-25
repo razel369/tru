@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - cursor/raintank-planner-7a02
+    paths-ignore:
+      - "app-store/**"
   workflow_dispatch:
 
 permissions:

@@ -205,7 +205,7 @@ export const GENERATED_EXACT_BREED_PACKS: readonly ExactBreedPackDefinition[] = 
     blinkHalf: require("../../../assets/pet-motion/breed-russian-blue/blink-half-v2.png"),
     blink: require("../../../assets/pet-motion/breed-russian-blue/blink-v2.png"),
     feetY: 0.8391,
-    eyes: eyePair(0.3521, 0.5223, 0.3055, 0.1408, 0.0488),
+    eyes: eyePair(0.354916, 0.525116, 0.311356, 0.135168, 0.044896),
     medallion: { centerX: 0.5047, centerY: 0.4805, width: 0.0587, height: 0.0271 },
     rig: {
       base: "cat-compact",
@@ -361,7 +361,7 @@ export const GENERATED_EXACT_BREED_PACKS: readonly ExactBreedPackDefinition[] = 
     blinkHalf: require("../../../assets/pet-motion/breed-miniature-schnauzer/blink-half-v2.png"),
     blink: require("../../../assets/pet-motion/breed-miniature-schnauzer/blink-v2.png"),
     feetY: 0.8646,
-    eyes: eyePair(0.3521, 0.5282, 0.2817, 0.135, 0.0596),
+    eyes: eyePair(0.3548, 0.5309, 0.279316, 0.1296, 0.054832),
     medallion: { centerX: 0.5035, centerY: 0.546, width: 0.0728, height: 0.0336 },
     rig: {
       base: "dog-standard",

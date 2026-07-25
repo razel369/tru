@@ -6,16 +6,41 @@ import { PNG } from "pngjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const motionRoot = path.join(root, "assets", "pet-motion");
-const files = [];
+const motionRegistryRoot = path.join(root, "src", "features", "pet-motion");
 
-for (const directory of fs.readdirSync(motionRoot, { withFileTypes: true })) {
-  if (!directory.isDirectory()) continue;
-  const candidate = path.join(
-    motionRoot,
-    directory.name,
-    "idle-luna-style-v1.png",
-  );
-  if (fs.existsSync(candidate)) files.push(candidate);
+function collectSourceFiles(directory) {
+  const sourceFiles = [];
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    const candidate = path.join(directory, entry.name);
+    if (entry.isDirectory()) {
+      sourceFiles.push(...collectSourceFiles(candidate));
+    } else if (
+      entry.isFile() &&
+      [".ts", ".tsx"].includes(path.extname(entry.name))
+    ) {
+      sourceFiles.push(candidate);
+    }
+  }
+  return sourceFiles;
+}
+
+const files = Array.from(
+  new Set(
+    collectSourceFiles(motionRegistryRoot).flatMap((sourcePath) => {
+      const source = fs.readFileSync(sourcePath, "utf8");
+      const pattern =
+        /require\(\s*["']([^"']*assets[\\/]pet-motion[\\/][^"']+\.png)["']\s*\)/g;
+      return Array.from(source.matchAll(pattern), (match) =>
+        path.resolve(path.dirname(sourcePath), match[1]),
+      );
+    }),
+  ),
+)
+  .filter((filePath) => filePath.startsWith(`${motionRoot}${path.sep}`))
+  .sort();
+
+if (files.length === 0) {
+  throw new Error("No registered runtime pet-motion PNG assets were found.");
 }
 
 const results = files.map((filePath) => {

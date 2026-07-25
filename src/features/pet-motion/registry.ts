@@ -68,9 +68,18 @@ export function auditRegisteredPetMotionBlinks(): readonly PetMotionBlinkAudit[]
     const closedOverlay = pack.rig?.overlays?.blink;
     const halfRegions = halfOverlay?.regions ?? [];
     const closedRegions = closedOverlay?.regions ?? [];
+    const hasHalfBlink = Boolean(pack.states.blinkHalf);
+    const hasClosedBlink = Boolean(pack.states.blink);
 
-    if (!pack.states.blinkHalf) issues.push("missing half-blink frame");
-    if (!pack.states.blink) issues.push("missing closed-blink frame");
+    // Some portraits intentionally remain static because their authored blink
+    // frames failed the visual seam audit. Static is a safe, release-ready
+    // state; a partially configured blink is not.
+    if (!hasHalfBlink && !hasClosedBlink) {
+      return { issues, petKey: pack.petKey, ready: true };
+    }
+
+    if (!hasHalfBlink) issues.push("missing half-blink frame");
+    if (!hasClosedBlink) issues.push("missing closed-blink frame");
     if (pack.states.blinkHalf === pack.states.blink) {
       issues.push("half and closed frames are identical");
     }

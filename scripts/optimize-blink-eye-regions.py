@@ -206,6 +206,15 @@ def tile(module, pack, eyes, label):
 
 
 def sheet(tiles, path):
+    if not tiles:
+        output = Image.new("RGB", (720, 180), (244, 241, 233))
+        ImageDraw.Draw(output).text(
+            (24, 78),
+            "No active blink packs require eye-region changes.",
+            fill=(42, 38, 32),
+        )
+        output.save(path, quality=95, optimize=True)
+        return
     columns = 4
     rows = (len(tiles) + columns - 1) // columns
     output = Image.new("RGB", (columns * 360, rows * 180), (244, 241, 233))
@@ -218,7 +227,12 @@ def main() -> None:
     module = load_audit_module()
     exact = module.parse_exact_packs()
     packs = exact + module.parse_local_packs({pack.key for pack in exact})
-    flagged = [pack for pack in packs if module.measure(pack).get("issues")]
+    disabled_keys = module.parse_disabled_blink_keys()
+    flagged = [
+        pack
+        for pack in packs
+        if pack.key not in disabled_keys and module.measure(pack).get("issues")
+    ]
     suggestions = [result for pack in flagged if (result := optimize(module, pack))]
     payload = {
         "suggestionCount": len(suggestions),

@@ -1,5 +1,6 @@
 import type { PetMotionPack } from "./types";
 import { GENERATED_EXACT_BREED_PACKS } from "./exact-breed-packs";
+import { isAuthoredBlinkEnabled } from "./blink-safety";
 
 const WARM_ROOM_STAGE = require("../../../assets/pet-motion/stages/warm-room-v1.png");
 const LUNA_IDLE = require("../../../assets/pet-motion/pet-luna/idle-v2.png");
@@ -631,7 +632,7 @@ const authoredBlinkSpecs: Readonly<Record<string, AuthoredBlinkSpec>> = {
   "breed:dog:pembroke-welsh-corgi": blinkSpec(
     require("../../../assets/pet-motion/breed-pembroke-welsh-corgi/blink-half-v2.png"),
     require("../../../assets/pet-motion/breed-pembroke-welsh-corgi/blink-v2.png"),
-    eyePair(0.35, 0.555, 0.33, 0.1, 0.05),
+    eyePair(0.352, 0.557, 0.328, 0.096, 0.046),
   ),
   "breed:dog:shiba-inu": blinkSpec(
     require("../../../assets/pet-motion/breed-shiba-inu/blink-half-v2.png"),
@@ -693,7 +694,7 @@ for (let index = 0; index < LOCAL_PET_MOTION_PACKS.length; index += 1) {
   const pack = LOCAL_PET_MOTION_PACKS[index];
   if (!pack) continue;
   const spec = authoredBlinkSpecs[pack.petKey];
-  if (!spec) continue;
+  if (!spec || !isAuthoredBlinkEnabled(pack.petKey)) continue;
 
   const region = combineEyeRegions(spec.eyes);
   const halfRegistration =

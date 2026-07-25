@@ -79,10 +79,11 @@ def clean_edges(
     for _ in range(edge_radius):
         chroma_boundary = dilate(chroma_boundary)
     chroma_boundary &= visible
+    # Only rebuild pixels that are both chroma-dominant and close to real
+    # transparency. Treating every semi-transparent fur pixel as contamination
+    # destroys fine coat detail and creates opaque-looking patches.
     target = visible & (
-        (alpha < 252)
-        | magenta_spill
-        | (chroma_boundary & green_spill)
+        (chroma_boundary & (magenta_spill | green_spill))
         | (boundary & all_boundary)
     )
     resolved = visible & ~target
@@ -100,7 +101,7 @@ def clean_edges(
     remaining_count = int(np.count_nonzero(target & ~resolved))
     rgb[target & resolved] = working[target & resolved]
     residual_green = (
-        chroma_boundary
+        target
         & (rgb[..., 1] > 105)
         & (rgb[..., 1] > np.maximum(rgb[..., 0], rgb[..., 2]) + 1)
     )
@@ -109,7 +110,7 @@ def clean_edges(
         rgb[..., 2][residual_green],
     )
     residual_yellow_green = (
-        chroma_boundary
+        target
         & (rgb[..., 1] > rgb[..., 2] + 20)
         & (rgb[..., 0] < rgb[..., 1] + 40)
     )

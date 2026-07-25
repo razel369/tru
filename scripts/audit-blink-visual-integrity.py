@@ -15,6 +15,7 @@ from PIL import Image, ImageDraw
 ROOT = Path(__file__).resolve().parents[1]
 EXACT_PACKS = ROOT / "src/features/pet-motion/exact-breed-packs.ts"
 LOCAL_PACKS = ROOT / "src/features/pet-motion/local-packs.ts"
+BLINK_SAFETY = ROOT / "src/features/pet-motion/blink-safety.ts"
 OUTPUT = ROOT / "app-store/blink-visual-integrity.json"
 
 
@@ -112,6 +113,17 @@ def parse_local_packs(existing_keys: set[str]) -> list[Pack]:
             continue
         packs.append(Pack(key, idle, half, closed, eyes))
     return packs
+
+
+def parse_disabled_blink_keys() -> set[str]:
+    source = BLINK_SAFETY.read_text(encoding="utf-8")
+    match = re.search(
+        r"DISABLED_AUTHORED_BLINK_KEYS\s*=\s*\[(?P<keys>[\s\S]*?)\]\s*as const",
+        source,
+    )
+    if not match:
+        return set()
+    return set(re.findall(r'"([^"]+)"', match.group("keys")))
 
 
 def contain_to(image: Image.Image, size: tuple[int, int]) -> Image.Image:
@@ -223,10 +235,19 @@ def measure(pack: Pack) -> dict[str, object]:
 def main() -> None:
     exact = parse_exact_packs()
     packs = exact + parse_local_packs({pack.key for pack in exact})
-    results = [measure(pack) for pack in packs]
+    disabled_keys = parse_disabled_blink_keys()
+    active_packs = [pack for pack in packs if pack.key not in disabled_keys]
+    unknown_disabled_keys = sorted(
+        disabled_keys - {pack.key for pack in packs},
+    )
+    results = [measure(pack) for pack in active_packs]
     issues = [result for result in results if result.get("issues")]
     payload = {
-        "packCount": len(results),
+        "packCount": len(packs),
+        "activePackCount": len(active_packs),
+        "disabledPackCount": len(disabled_keys),
+        "disabledKeys": sorted(disabled_keys),
+        "unknownDisabledKeys": unknown_disabled_keys,
         "issueCount": len(issues),
         "passingCount": len(results) - len(issues),
         "issues": issues,
@@ -239,8 +260,11 @@ def main() -> None:
             {
                 "output": str(OUTPUT),
                 "packCount": payload["packCount"],
+                "activePackCount": payload["activePackCount"],
+                "disabledPackCount": payload["disabledPackCount"],
                 "passingCount": payload["passingCount"],
                 "issueCount": payload["issueCount"],
+                "unknownDisabledKeys": unknown_disabled_keys,
                 "issues": [
                     {"key": item["key"], "issues": item["issues"]}
                     for item in issues
@@ -249,6 +273,8 @@ def main() -> None:
             indent=2,
         )
     )
+    if issues or unknown_disabled_keys:
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":
