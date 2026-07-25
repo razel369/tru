@@ -86,6 +86,7 @@
       "expo-font",
       "expo-sqlite",
       "./with-pawpair-notification-icon",
+      "./with-pawpair-system",
       "./with-pawpair-watch",
       [
         "expo-notifications",

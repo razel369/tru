@@ -639,6 +639,29 @@ export function SettingsScreen({
           </View>
         </View>
 
+        <Text style={styles.sectionLabel}>SIRI & SHORTCUTS</Text>
+        <View style={styles.card}>
+          <View style={styles.watchRow}>
+            <View style={styles.shortcutIcon}>
+              <Ionicons color={colors.navy} name="sparkles-outline" size={21} />
+            </View>
+            <View style={styles.flex}>
+              <View style={styles.watchTitleRow}>
+                <Text style={styles.rowLabel}>Three native shortcuts</Text>
+                <View style={[styles.watchBadge, styles.shortcutBadge]}>
+                  <Text style={[styles.watchBadgeText, styles.shortcutBadgeText]}>
+                    READY
+                  </Text>
+                </View>
+              </View>
+              <Text style={styles.rowDetail}>
+                Open Today, add a care moment, or open Pet Health with Siri,
+                Spotlight, Shortcuts, or the Action button.
+              </Text>
+            </View>
+          </View>
+        </View>
+
         <Text style={styles.sectionLabel}>PRIVACY & IMPROVEMENT</Text>
         <View style={styles.card}>
           <View style={styles.reminderRow}>
@@ -795,6 +818,9 @@ const styles = StyleSheet.create({
   sectionLabel: { color: colors.navy, fontFamily: "Nunito_800ExtraBold", fontSize: 9, letterSpacing: 1.1, marginBottom: 8, marginHorizontal: 21, marginTop: 20 },
   settingsButton: { alignItems: "center", backgroundColor: colors.skySoft, borderRadius: 14, justifyContent: "center", marginBottom: 12, marginHorizontal: 13, minHeight: 44 },
   settingsButtonText: { color: colors.navy, fontFamily: "Nunito_800ExtraBold", fontSize: 12 },
+  shortcutBadge: { backgroundColor: colors.skySoft },
+  shortcutBadgeText: { color: colors.navy },
+  shortcutIcon: { alignItems: "center", backgroundColor: colors.skySoft, borderRadius: 20, height: 42, justifyContent: "center", width: 42 },
   title: { color: colors.ink, fontFamily: "Fredoka_600SemiBold", fontSize: 29, lineHeight: 33 },
   versionCard: { alignItems: "center", flexDirection: "row", gap: 10, marginHorizontal: 20, marginTop: 21 },
   versionCopy: { color: colors.muted, fontFamily: "Nunito_600SemiBold", fontSize: 10 },

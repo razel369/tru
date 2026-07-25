@@ -1,7 +1,7 @@
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Alert, StyleSheet, View } from "react-native";
+import { Alert, AppState, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AutoOfflineBanner } from "../../components/feedback/OfflineBanner";
@@ -32,6 +32,11 @@ import { PersonalizedCareOnboarding } from "../onboarding/PersonalizedCareOnboar
 import { LegalDocumentScreen } from "../settings/LegalDocumentScreen";
 import { SettingsScreen } from "../settings/SettingsScreen";
 import { StorageRecoveryScreen } from "../settings/StorageRecoveryScreen";
+import {
+  consumePendingSystemRoute,
+  subscribeSystemRoutes,
+} from "../system/shortcuts";
+import type { PawPairSystemRoute } from "../system/routes";
 import { canAddPet, defaultFreeEntitlement, isPlus } from "../subscriptions/entitlements";
 import { PremiumPaywallScreen } from "../subscriptions/PremiumPaywallScreen";
 import { refreshEntitlement } from "../subscriptions/storekit";
@@ -124,6 +129,56 @@ export function PetCareApp() {
     setRequestedReminderCount(result.requested);
     setNotificationPermission(result.permission);
   }, []);
+
+  const openSystemRoute = useCallback((route: PawPairSystemRoute) => {
+    setSettingsOpen(false);
+    setLegalDocument(null);
+    setConfirmation(null);
+    setLogEditor(null);
+    setPetEditor(null);
+    setMotionLabOpen(false);
+    setEditingTask(null);
+    setNotificationTarget(null);
+    setPaywallSource(null);
+
+    if (route === "health") {
+      setTab("health");
+      return;
+    }
+    if (route === "add") {
+      setAddReturnTab("home");
+      setAddCategory("feeding");
+      setTab("add");
+      return;
+    }
+    selectedDateTracksToday.current = true;
+    setSelectedDate(new Date());
+    setTab("home");
+    setHomeScrollRequest((value) => value + 1);
+  }, []);
+
+  useEffect(() => {
+    if (!store.loaded) return;
+    let active = true;
+    const consume = () => {
+      void consumePendingSystemRoute().then((route) => {
+        if (active && route) openSystemRoute(route);
+      });
+    };
+    consume();
+    const unsubscribe = subscribeSystemRoutes(openSystemRoute);
+    const appStateSubscription = AppState.addEventListener(
+      "change",
+      (state) => {
+        if (state === "active") consume();
+      },
+    );
+    return () => {
+      active = false;
+      unsubscribe();
+      appStateSubscription.remove();
+    };
+  }, [openSystemRoute, store.loaded]);
 
   const refreshCareReminderState = useCallback(async () => {
     try {
