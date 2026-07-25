@@ -50,8 +50,13 @@ export function PersonalizedCareOnboarding({
   onFinish: (pet: Pet, intent: OnboardingIntent) => void;
   topInset: number;
 }) {
-  const { height } = useWindowDimensions();
+  const { height, width } = useWindowDimensions();
   const compact = height < 760;
+  const tablet = width >= 768;
+  const tabletExperienceHeight = Math.min(
+    height - topInset - bottomInset - 48,
+    1040,
+  );
   const reduceMotion = usePrefersReducedMotion();
   const [step, setStep] = useState(0);
   const [name, setName] = useState("");
@@ -415,21 +420,48 @@ export function PersonalizedCareOnboarding({
     return null;
   };
 
-  const sceneHeight = step === 0 ? (compact ? 352 : 438) : compact ? 264 : 314;
-  const petHeight = step === 0 ? (compact ? 278 : 330) : compact ? 244 : 276;
+  const sceneHeight = tablet
+    ? step === 0
+      ? 462
+      : 356
+    : step === 0
+      ? compact
+        ? 352
+        : 438
+      : compact
+        ? 264
+        : 314;
+  const petHeight = tablet
+    ? step === 0
+      ? 350
+      : 304
+    : step === 0
+      ? compact
+        ? 278
+        : 330
+      : compact
+        ? 244
+        : 276;
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.screen}
+      style={[styles.screen, tablet && styles.tabletScreen]}
     >
+      <View
+        style={[
+          styles.experience,
+          tablet && styles.tabletExperience,
+          tablet && { height: tabletExperienceHeight },
+        ]}
+      >
       <ImageBackground
         imageStyle={styles.sceneImage}
         resizeMode="cover"
         source={ONBOARDING_STUDIO}
         style={[styles.scene, { height: sceneHeight }]}
       >
-        <View style={[styles.topChrome, { paddingTop: topInset + 10 }]}>
+        <View style={[styles.topChrome, { paddingTop: tablet ? 26 : topInset + 10 }]}>
           <View style={styles.brandRow}>
             <View style={styles.brandMark}>
               <Ionicons color={colors.white} name="paw" size={15} />
@@ -488,6 +520,7 @@ export function PersonalizedCareOnboarding({
       <Animated.View
         style={[
           styles.sheet,
+          tablet && styles.tabletSheet,
           {
             opacity: transition,
             transform: [{
@@ -500,7 +533,10 @@ export function PersonalizedCareOnboarding({
         ]}
       >
         <ScrollView
-          contentContainerStyle={styles.sheetScroll}
+          contentContainerStyle={[
+            styles.sheetScroll,
+            tablet && styles.tabletSheetScroll,
+          ]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
           style={styles.sheetScrollView}
@@ -518,7 +554,13 @@ export function PersonalizedCareOnboarding({
           )}
         </ScrollView>
 
-        <View style={[styles.actions, { paddingBottom: Math.max(bottomInset, 12) + 6 }]}>
+        <View
+          style={[
+            styles.actions,
+            tablet && styles.tabletActions,
+            { paddingBottom: tablet ? 24 : Math.max(bottomInset, 12) + 6 },
+          ]}
+        >
           <View style={styles.actionRow}>
             {step > 0 && (
               <Pressable accessibilityLabel="Go back" accessibilityRole="button" onPress={() => moveTo(step - 1)} style={styles.backButton}>
@@ -537,6 +579,7 @@ export function PersonalizedCareOnboarding({
           </View>
         </View>
       </Animated.View>
+      </View>
 
       <Modal
         animationType="slide"
@@ -672,6 +715,7 @@ const styles = StyleSheet.create({
   buttonPressed: { opacity: 0.88, transform: [{ scale: 0.99 }] },
   errorRow: { alignItems: "center", backgroundColor: colors.coralSoft, borderRadius: 14, flexDirection: "row", gap: 8, marginTop: 12, padding: 10 },
   errorText: { color: colors.danger, flex: 1, fontFamily: "Nunito_700Bold", fontSize: 12 },
+  experience: { flex: 1, width: "100%" },
   eyebrow: { color: colors.coral, fontFamily: "Fredoka_700Bold", fontSize: 11, letterSpacing: 1.45 },
   focusBody: { color: colors.muted, fontFamily: "Nunito_600SemiBold", fontSize: 10, marginTop: 2 },
   focusCard: { alignItems: "center", backgroundColor: colors.white, borderColor: colors.line, borderRadius: 18, borderWidth: 1, flexDirection: "row", gap: 9, minHeight: 62, paddingHorizontal: 10 },
@@ -737,6 +781,11 @@ const styles = StyleSheet.create({
   speciesRow: { flexDirection: "row", gap: 10 },
   speciesText: { color: colors.ink, fontFamily: "Nunito_800ExtraBold", fontSize: 14 },
   speciesTextSelected: { color: colors.white },
+  tabletActions: { alignSelf: "center", maxWidth: 580, paddingHorizontal: 30, width: "100%" },
+  tabletExperience: { borderRadius: 34, flex: 0, overflow: "hidden" },
+  tabletScreen: { alignItems: "center", justifyContent: "center", paddingVertical: 24 },
+  tabletSheet: { borderBottomLeftRadius: 34, borderBottomRightRadius: 34 },
+  tabletSheetScroll: { alignSelf: "center", flexGrow: 1, justifyContent: "center", maxWidth: 580, paddingHorizontal: 30, width: "100%" },
   title: { color: colors.ink, fontFamily: "Fredoka_600SemiBold", fontSize: 32, letterSpacing: -0.7, lineHeight: 36, marginTop: 4 },
   topChrome: { alignItems: "center", flexDirection: "row", justifyContent: "space-between", left: 18, position: "absolute", right: 18, top: 0, zIndex: 5 },
   yearPill: { alignItems: "center", backgroundColor: colors.sageSoft, borderRadius: 17, justifyContent: "center", minHeight: 52, paddingHorizontal: 15 },
