@@ -6,19 +6,29 @@
     "bundleId": "app.pawpair.medtracker",
     "platform": "IOS",
     "distribution": "STORE",
-    "status": "PREBUILD_APPLE_AND_PHYSICAL_DEVICE_GATES"
+    "status": "NATIVE_SIMULATOR_PASS_SIGNED_AND_PHYSICAL_DEVICE_GATES"
   },
   "currentSourceReadiness": {
-    "asOf": "2026-07-23",
-    "launchCheckpointCommit": "6a2cb27353a42ee70a6086cc8205586c8a95235f",
+    "asOf": "2026-07-25",
+    "launchCheckpointCommit": "5262f4c8e9b5bf7003a4b7d343a4d64ad75bf6e7",
     "typescript": "PASS",
     "eslint": "PASS_ZERO_WARNINGS",
-    "testSuite": "PASS_36_FILES_185_TESTS",
+    "testSuite": "PASS_38_FILES_192_TESTS",
     "expoDoctor": "PASS_20_OF_20",
     "expoSdk": "57.0.0",
     "motionRuntimePacks": 67,
     "motionPngAssets": 201,
     "motionAuditIssues": 0,
+    "petChromaFiles": 66,
+    "petChromaIssues": 0,
+    "nativeReleaseCompile": {
+      "status": "PASS_IPHONE_AND_APPLE_WATCH",
+      "githubRunId": 30151569353,
+      "githubRunAttempt": 2,
+      "url": "https://github.com/razel369/tru/actions/runs/30151569353",
+      "iphoneLaunchScreenshot": "PASS_RELEASE_SIMULATOR",
+      "watchEmptyStateScreenshot": "PASS_RELEASE_SIMULATOR_NO_MOCK_DATA"
+    },
     "launchReadiness": "BLOCKED_23_OF_43",
     "launchReadinessBlockers": [
       "FINAL_IPHONE_CAPTURE_01",
@@ -42,7 +52,7 @@
       "FINAL_IPAD_ASO_SCREENSHOT_04",
       "FINAL_IPAD_ASO_SCREENSHOT_05"
     ],
-    "signedProductionBuild": "PENDING_AFTER_APPLE_CONFIGURATION",
+    "signedProductionBuild": "BLOCKED_EAS_FREE_IOS_QUOTA_RESET_2026_08_01",
     "revenueCat": "PRODUCTION_KEY_AND_DEFAULT_OFFERING_PRODUCTS_VERIFIED_ENTITLEMENT_AND_STOREKIT_PENDING"
   },
   "externalServices": {
@@ -86,24 +96,21 @@
   },
   "latestHistoricalSignedArtifact": {
     "version": "1.0.0",
-    "build": "11",
+    "build": "15",
     "scope": "HISTORICAL_SIGNED_ARTIFACT_SUPERSEDED_BY_CURRENT_SOURCE",
-    "easBuildId": "451f6ff8-4232-482d-a1fd-0694d3ee1ee3",
-    "auditFile": "ipa-audit-build11.json",
-    "allAuditChecksPass": true,
-    "auditCheckCount": 16,
-    "ipaBytes": 204955504,
-    "deviceFamilies": [
-      1
-    ],
-    "currentSourceIncluded": false
+    "easBuildId": "87d6fa94-46c9-484f-b2e3-60b989d64c40",
+    "gitCommitHash": "86a238f01542f3893359f984c64e951e8c025e4e",
+    "currentSourceIncluded": false,
+    "appleWatchIncluded": false,
+    "eligibleForReview": false
   },
   "submissionGates": {
     "appStoreConnectConfiguration": "PENDING_INTERACTIVE_SIGN_IN",
     "revenueCatEntitlementAndStoreKit": "PENDING",
-    "finalProductionBuild": "PENDING",
-    "finalNativeIphoneQa": "PENDING",
+    "finalProductionBuild": "BLOCKED_EAS_FREE_IOS_QUOTA_RESET_2026_08_01",
+    "finalNativeIphoneQa": "PARTIAL_RELEASE_SIMULATOR_LAUNCH_PASS_PHYSICAL_TOUCH_AND_GPU_PENDING",
     "finalNativeIpadQa": "PENDING",
+    "finalNativeWatchQa": "PARTIAL_RELEASE_SIMULATOR_EMPTY_STATE_PASS_PHYSICAL_SYNC_AND_ACTIONS_PENDING",
     "finalSignedIpaAudit": "PENDING",
     "finalIphoneScreenshots": "PENDING_FIVE_EXACT_BINARY_CAPTURES_AND_COMPOSITES",
     "finalIpadScreenshots": "PENDING_FIVE_EXACT_BINARY_CAPTURES_AND_COMPOSITES",
