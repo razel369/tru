@@ -57,13 +57,13 @@ function addWatchTarget(project) {
   target.pbxNativeTarget.productType =
     '"com.apple.product-type.application"';
   const swiftFiles = [
-    `${WATCH_TARGET}/PawPairWatchApp.swift`,
-    `${WATCH_TARGET}/WatchCareStore.swift`,
-    `${WATCH_TARGET}/CareHomeView.swift`,
+    "PawPairWatchApp.swift",
+    "WatchCareStore.swift",
+    "CareHomeView.swift",
   ];
-  const resourceFiles = [`${WATCH_TARGET}/Assets.xcassets`];
+  const resourceFiles = ["Assets.xcassets"];
   const group = project.addPbxGroup(
-    [...swiftFiles, `${WATCH_TARGET}/Info.plist`, ...resourceFiles],
+    [...swiftFiles, "Info.plist", ...resourceFiles],
     WATCH_TARGET,
     WATCH_TARGET,
   );
