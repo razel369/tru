@@ -53,11 +53,65 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             build | tee xcodebuild.log
 
-      - name: Preserve Xcode log
+      - name: Select an available iPhone simulator
+        run: |
+          simulator_udid="$(
+            xcrun simctl list devices available -j |
+              node -e '
+                let input = "";
+                process.stdin.on("data", chunk => input += chunk);
+                process.stdin.on("end", () => {
+                  const devices = Object.values(JSON.parse(input).devices).flat();
+                  const preferred = devices.find(
+                    device => device.isAvailable && device.name === "iPhone 17 Pro"
+                  );
+                  const fallback = devices.find(
+                    device => device.isAvailable && device.name.startsWith("iPhone")
+                  );
+                  const selected = preferred ?? fallback;
+                  if (!selected) process.exit(1);
+                  process.stdout.write(selected.udid);
+                });
+              '
+          )"
+          echo "IOS_SIMULATOR_UDID=$simulator_udid" >> "$GITHUB_ENV"
+
+      - name: Build the launch candidate for iPhone Simulator
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -workspace ios/PawPair.xcworkspace \
+            -scheme PawPair \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -destination "id=$IOS_SIMULATOR_UDID" \
+            -derivedDataPath ios/build-simulator \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build | tee xcodebuild-simulator.log
+
+      - name: Capture a clean native iPhone launch
+        run: |
+          xcrun simctl boot "$IOS_SIMULATOR_UDID" || true
+          xcrun simctl bootstatus "$IOS_SIMULATOR_UDID" -b
+          xcrun simctl install \
+            "$IOS_SIMULATOR_UDID" \
+            ios/build-simulator/Build/Products/Release-iphonesimulator/PawPair.app
+          xcrun simctl launch "$IOS_SIMULATOR_UDID" app.pawpair.medtracker
+          sleep 12
+          mkdir -p native-qa
+          xcrun simctl io \
+            "$IOS_SIMULATOR_UDID" \
+            screenshot native-qa/iphone-launch.png
+
+      - name: Preserve native QA artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: pawpair-ios-native-xcode-log
-          path: xcodebuild.log
+          name: pawpair-ios-native-qa
+          path: |
+            xcodebuild.log
+            xcodebuild-simulator.log
+            native-qa/iphone-launch.png
           if-no-files-found: ignore
           retention-days: 7
