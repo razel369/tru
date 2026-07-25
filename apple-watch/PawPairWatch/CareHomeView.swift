@@ -53,7 +53,11 @@ struct CareHomeView: View {
         .multilineTextAlignment(.center)
         .padding(.top, 9)
 
-      Text("Open PawPair on iPhone\nto sync your plan.")
+      Text(
+        store.snapshot.generatedAt.isEmpty
+          ? "Open PawPair on iPhone\nto sync your plan."
+          : "No care moments are waiting.\nYou’re all caught up."
+      )
         .font(.caption2)
         .foregroundStyle(PawPairWatchPalette.cream.opacity(0.72))
         .multilineTextAlignment(.center)
@@ -93,6 +97,14 @@ struct CareHomeView: View {
             onSkip: { store.mark(item, status: "skipped") }
           )
         }
+
+        Label(
+          store.pendingIds.isEmpty ? "Synced with iPhone" : "Syncing changes…",
+          systemImage: store.pendingIds.isEmpty ? "iphone" : "arrow.triangle.2.circlepath"
+        )
+        .font(.system(size: 9, weight: .semibold, design: .rounded))
+        .foregroundStyle(PawPairWatchPalette.cream.opacity(0.64))
+        .padding(.top, 2)
       }
       .padding(.horizontal, 4)
       .padding(.bottom, 12)
@@ -163,6 +175,7 @@ private struct CareMomentCard: View {
   }
 
   private var statusLabel: String {
+    if isPending { return "SYNC" }
     switch item.status {
     case "done": "DONE"
     case "missed": "MISSED"
@@ -173,7 +186,8 @@ private struct CareMomentCard: View {
   }
 
   private var statusColor: Color {
-    item.status == "missed" ? .red : PawPairWatchPalette.coral
+    if isPending { return PawPairWatchPalette.sage }
+    return item.status == "missed" ? .red : PawPairWatchPalette.coral
   }
 
   private var symbol: String {

@@ -25,7 +25,7 @@ final class PawPairWatchBridge: RCTEventEmitter, WCSessionDelegate {
   }
 
   override func supportedEvents() -> [String]! {
-    ["PawPairWatchAction"]
+    ["PawPairWatchAction", "PawPairWatchStatus"]
   }
 
   override func startObserving() {
@@ -66,13 +66,24 @@ final class PawPairWatchBridge: RCTEventEmitter, WCSessionDelegate {
     }
   }
 
+  @objc(getStatus:rejecter:)
+  func getStatus(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    rejecter reject: @escaping RCTPromiseRejectBlock
+  ) {
+    DispatchQueue.main.async {
+      resolve(self.connectionStatus())
+    }
+  }
+
   func session(
     _ session: WCSession,
     activationDidCompleteWith activationState: WCSessionActivationState,
     error: Error?
   ) {
-    guard activationState == .activated else { return }
     DispatchQueue.main.async { [weak self] in
+      self?.emitConnectionStatus()
+      guard activationState == .activated else { return }
       guard let self, let context = self.pendingContext else { return }
       try? session.updateApplicationContext(context)
       self.pendingContext = nil
@@ -83,6 +94,18 @@ final class PawPairWatchBridge: RCTEventEmitter, WCSessionDelegate {
 
   func sessionDidDeactivate(_ session: WCSession) {
     session.activate()
+  }
+
+  func sessionReachabilityDidChange(_ session: WCSession) {
+    DispatchQueue.main.async { [weak self] in
+      self?.emitConnectionStatus()
+    }
+  }
+
+  func sessionWatchStateDidChange(_ session: WCSession) {
+    DispatchQueue.main.async { [weak self] in
+      self?.emitConnectionStatus()
+    }
   }
 
   func session(
@@ -148,5 +171,39 @@ final class PawPairWatchBridge: RCTEventEmitter, WCSessionDelegate {
 
   private func persistPendingActions() {
     UserDefaults.standard.set(pendingActions, forKey: pendingActionsKey)
+  }
+
+  private func connectionStatus() -> [String: Any] {
+    guard WCSession.isSupported() else {
+      return [
+        "supported": false,
+        "paired": false,
+        "watchAppInstalled": false,
+        "reachable": false,
+        "activationState": "notActivated",
+      ]
+    }
+    let session = WCSession.default
+    let activationState: String
+    switch session.activationState {
+    case .activated:
+      activationState = "activated"
+    case .inactive:
+      activationState = "inactive"
+    default:
+      activationState = "notActivated"
+    }
+    return [
+      "supported": true,
+      "paired": session.isPaired,
+      "watchAppInstalled": session.isWatchAppInstalled,
+      "reachable": session.isReachable,
+      "activationState": activationState,
+    ]
+  }
+
+  private func emitConnectionStatus() {
+    guard observing else { return }
+    sendEvent(withName: "PawPairWatchStatus", body: connectionStatus())
   }
 }

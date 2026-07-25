@@ -45,13 +45,6 @@ export function BreedPicker({ species, value, onChange }: BreedPickerProps) {
     );
   }, [query, species]);
 
-  const normalizedQuery = query.trim().toLocaleLowerCase();
-  const hasExactMatch = getBreedOptions(species).some(
-    (option) =>
-      option.name.toLocaleLowerCase() === normalizedQuery &&
-      hasExactBreedVisual(species, option.name),
-  );
-
   const close = () => {
     Keyboard.dismiss();
     setOpen(false);
@@ -165,28 +158,13 @@ export function BreedPicker({ species, value, onChange }: BreedPickerProps) {
             ) : null}
           </View>
 
-          {normalizedQuery && !hasExactMatch ? (
-            <Pressable
-              accessibilityLabel={`Use custom breed ${query.trim()}`}
-              accessibilityRole="button"
-              onPress={() => chooseBreed(query.trim())}
-              style={({ pressed }) => [
-                styles.customRow,
-                pressed && styles.optionPressed,
-              ]}
-            >
-              <View style={styles.customIcon}>
-                <Ionicons color={colors.coral} name="create-outline" size={16} />
-              </View>
-              <View style={styles.optionCopy}>
-                <Text style={styles.optionText}>Use “{query.trim()}”</Text>
-                <Text style={styles.optionHint}>
-                  Saved exactly as typed · neutral {species} visual
-                </Text>
-              </View>
-              <Ionicons color={colors.muted} name="arrow-forward" size={17} />
-            </Pressable>
-          ) : null}
+          <View style={styles.verifiedNotice}>
+            <Ionicons color={colors.sage} name="checkmark-circle" size={17} />
+            <Text style={styles.verifiedNoticeText}>
+              Every breed shown has its own verified PawPair companion. More
+              breeds are being prepared.
+            </Text>
+          </View>
 
           <FlatList
             contentContainerStyle={styles.listContent}
@@ -199,7 +177,8 @@ export function BreedPicker({ species, value, onChange }: BreedPickerProps) {
                 <Ionicons color={colors.sage} name="search-outline" size={24} />
                 <Text style={styles.emptyTitle}>No exact match</Text>
                 <Text style={styles.emptyCopy}>
-                  Use the custom option above or try a broader search.
+                  That breed does not have a verified companion model yet. Try
+                  a broader search.
                 </Text>
               </View>
             }
@@ -275,26 +254,6 @@ const styles = StyleSheet.create({
     height: 42,
     justifyContent: "center",
     width: 42,
-  },
-  customIcon: {
-    alignItems: "center",
-    backgroundColor: colors.coralSoft,
-    borderRadius: 17,
-    height: 34,
-    justifyContent: "center",
-    width: 34,
-  },
-  customRow: {
-    alignItems: "center",
-    backgroundColor: colors.coralSoft,
-    borderColor: colors.coral,
-    borderRadius: 18,
-    borderWidth: 1,
-    flexDirection: "row",
-    gap: 10,
-    marginBottom: 10,
-    minHeight: 60,
-    paddingHorizontal: 12,
   },
   emptyCopy: {
     color: colors.muted,
@@ -448,5 +407,22 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: "Nunito_700Bold",
     fontSize: 12,
+  },
+  verifiedNotice: {
+    alignItems: "flex-start",
+    backgroundColor: colors.sageSoft,
+    borderRadius: 16,
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 10,
+    paddingHorizontal: 11,
+    paddingVertical: 10,
+  },
+  verifiedNoticeText: {
+    color: colors.navy,
+    flex: 1,
+    fontFamily: "Nunito_700Bold",
+    fontSize: 10,
+    lineHeight: 15,
   },
 });

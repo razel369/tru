@@ -25,6 +25,7 @@ import { usePrefersReducedMotion } from "../accessibility/motion";
 import {
   createBreedAssetKey,
   getPetVisualAsset,
+  hasExactBreedVisual,
 } from "../pet-visuals/registry";
 import { resolvePetStagePlacement } from "../pet-visuals/subject-framing";
 import { resolvePetMotionPackForProfile } from "../pet-motion";
@@ -33,13 +34,6 @@ import {
   petAgeYearsFromBirthDate,
 } from "./pet-identity";
 import { tryAcquireSubmissionLock } from "./submission-lock";
-
-const defaultBreedForSpecies = (species: Pet["species"]) =>
-  species === "dog"
-    ? "Great Dane"
-    : species === "cat"
-      ? "British Shorthair"
-      : "";
 
 const SEX_OPTIONS: { label: string; value: PetSex }[] = [
   { label: "Female", value: "female" },
@@ -118,15 +112,19 @@ export function PetProfileForm({
     vetPhone,
   }).current;
 
-  const previewBreed = breed.trim() || defaultBreedForSpecies(species);
+  const previewBreed = breed.trim();
   const derivedAge = dateOfBirth.trim()
     ? petAgeYearsFromBirthDate(dateOfBirth.trim())
     : null;
   const preview = useMemo(() => {
     const exactKey = createBreedAssetKey(species, previewBreed);
-    const exactAsset = getPetVisualAsset(exactKey);
+    const hasExactVisual =
+      Boolean(previewBreed) && hasExactBreedVisual(species, previewBreed);
+    const exactAsset = hasExactVisual ? getPetVisualAsset(exactKey) : undefined;
     const profile = getBreedVisualProfile(species, previewBreed);
-    const pack = resolvePetMotionPackForProfile(exactKey, profile);
+    const pack = hasExactVisual
+      ? resolvePetMotionPackForProfile(exactKey, profile)
+      : null;
     const placement = resolvePetStagePlacement(pack?.petKey ?? exactKey, {
       targetFeetY: 0.91,
       targetSubjectHeight: 0.72,
@@ -194,7 +192,16 @@ export function PetProfileForm({
       setError(
         species === "other"
           ? "Add your pet's kind."
-          : "Choose or type your pet's breed.",
+          : "Choose your pet's breed.",
+      );
+      return;
+    }
+    if (
+      species !== "other" &&
+      !hasExactBreedVisual(species, breed.trim())
+    ) {
+      setError(
+        "Choose a breed with a verified PawPair companion model.",
       );
       return;
     }

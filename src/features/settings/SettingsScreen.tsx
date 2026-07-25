@@ -29,6 +29,11 @@ import type { PetCareState } from "../care/types";
 import type { NotificationPermissionState } from "../notifications/types";
 import type { CareReminderPrivacy } from "../notifications/care-runtime";
 import {
+  getWatchConnectionStatus,
+  subscribeWatchConnectionStatus,
+  type WatchConnectionStatus,
+} from "../watch/bridge";
+import {
   PortableBackupPasswordSheet,
   type PortableBackupPasswordMode,
 } from "./PortableBackupPasswordSheet";
@@ -113,6 +118,9 @@ export function SettingsScreen({
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [preparedRestore, setPreparedRestore] = useState<PreparedRestore | null>(null);
   const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
+  const [watchStatus, setWatchStatus] = useState<WatchConnectionStatus | null>(
+    null,
+  );
   const [settingsNotice, setSettingsNotice] = useState<{
     text: string;
     tone: "error" | "success";
@@ -127,6 +135,19 @@ export function SettingsScreen({
     });
     return () => {
       active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    const update = (status: WatchConnectionStatus) => {
+      if (active) setWatchStatus(status);
+    };
+    void getWatchConnectionStatus().then(update);
+    const unsubscribe = subscribeWatchConnectionStatus(update);
+    return () => {
+      active = false;
+      unsubscribe();
     };
   }, []);
 
@@ -182,8 +203,50 @@ export function SettingsScreen({
       : notificationPermission === "unsupported"
         ? "Available on iPhone"
         : remindersEnabled
-          ? `${scheduledReminderCount} local reminders scheduled`
-          : "Off until you choose to enable it";
+        ? `${scheduledReminderCount} local reminders scheduled`
+        : "Off until you choose to enable it";
+  const watchPresentation =
+    Platform.OS !== "ios"
+      ? {
+          badge: "IPHONE",
+          copy: "Apple Watch care actions are available with PawPair on iPhone.",
+          connected: false,
+        }
+      : !watchStatus
+        ? {
+            badge: "CHECKING",
+            copy: "Checking this iPhone’s Apple Watch connection.",
+            connected: false,
+          }
+        : !watchStatus.supported
+          ? {
+              badge: "IPHONE",
+              copy: "Apple Watch sync requires a compatible iPhone.",
+              connected: false,
+            }
+          : !watchStatus.paired
+            ? {
+                badge: "SET UP",
+                copy: "Pair an Apple Watch in Apple’s Watch app to begin.",
+                connected: false,
+              }
+            : !watchStatus.watchAppInstalled
+              ? {
+                  badge: "INSTALL",
+                  copy: "Install PawPair from the Watch app on this iPhone.",
+                  connected: false,
+                }
+              : watchStatus.reachable
+                ? {
+                    badge: "CONNECTED",
+                    copy: "Care moments and Done or Skip actions sync instantly.",
+                    connected: true,
+                  }
+                : {
+                    badge: "READY",
+                    copy: "Care updates sync automatically when your watch is nearby.",
+                    connected: true,
+                  };
 
   const showSettingsMessage = (
     title: string,
@@ -545,6 +608,37 @@ export function SettingsScreen({
           )}
         </View>
 
+        <Text style={styles.sectionLabel}>APPLE WATCH</Text>
+        <View style={styles.card}>
+          <View style={styles.watchRow}>
+            <View style={styles.watchIcon}>
+              <Ionicons color={colors.coral} name="watch-outline" size={21} />
+            </View>
+            <View style={styles.flex}>
+              <View style={styles.watchTitleRow}>
+                <Text style={styles.rowLabel}>PawPair on your wrist</Text>
+                <View
+                  style={[
+                    styles.watchBadge,
+                    watchPresentation.connected && styles.watchBadgeConnected,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.watchBadgeText,
+                      watchPresentation.connected &&
+                        styles.watchBadgeTextConnected,
+                    ]}
+                  >
+                    {watchPresentation.badge}
+                  </Text>
+                </View>
+              </View>
+              <Text style={styles.rowDetail}>{watchPresentation.copy}</Text>
+            </View>
+          </View>
+        </View>
+
         <Text style={styles.sectionLabel}>PRIVACY & IMPROVEMENT</Text>
         <View style={styles.card}>
           <View style={styles.reminderRow}>
@@ -706,4 +800,11 @@ const styles = StyleSheet.create({
   versionCopy: { color: colors.muted, fontFamily: "Nunito_600SemiBold", fontSize: 10 },
   versionMark: { alignItems: "center", backgroundColor: "rgba(255,117,102,0.10)", borderRadius: 17, height: 34, justifyContent: "center", width: 34 },
   versionTitle: { color: colors.ink, fontFamily: "Nunito_800ExtraBold", fontSize: 11 },
+  watchBadge: { backgroundColor: colors.background, borderRadius: 10, paddingHorizontal: 7, paddingVertical: 4 },
+  watchBadgeConnected: { backgroundColor: colors.sageSoft },
+  watchBadgeText: { color: colors.muted, fontFamily: "Nunito_800ExtraBold", fontSize: 7.5, letterSpacing: 0.55 },
+  watchBadgeTextConnected: { color: colors.sage },
+  watchIcon: { alignItems: "center", backgroundColor: colors.coralSoft, borderRadius: 20, height: 42, justifyContent: "center", width: 42 },
+  watchRow: { alignItems: "center", flexDirection: "row", gap: 11, minHeight: 82, paddingHorizontal: 13 },
+  watchTitleRow: { alignItems: "center", flexDirection: "row", gap: 8 },
 });

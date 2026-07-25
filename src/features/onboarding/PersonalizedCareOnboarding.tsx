@@ -126,11 +126,6 @@ export function PersonalizedCareOnboarding({
         )
       : options;
   }, [breedQuery, species]);
-  const customBreed = breedQuery.trim();
-  const hasExactBreedQuery = filteredBreeds.some(
-    (option) =>
-      option.name.toLocaleLowerCase() === customBreed.toLocaleLowerCase(),
-  );
 
   useEffect(() => {
     transition.stopAnimation();
@@ -621,31 +616,13 @@ export function PersonalizedCareOnboarding({
               </Pressable>
             )}
           </View>
-          {customBreed && !hasExactBreedQuery ? (
-            <Pressable
-              accessibilityLabel={`Use custom breed ${customBreed}`}
-              accessibilityRole="button"
-              onPress={() => {
-                setBreed(customBreed);
-                setBreedQuery("");
-                setBreedPickerOpen(false);
-                setError(null);
-                void Haptics.selectionAsync().catch(() => undefined);
-              }}
-              style={[styles.breedRow, styles.customBreedRow]}
-            >
-              <View style={[styles.breedAvatar, styles.customBreedAvatar]}>
-                <Ionicons color={colors.coral} name="create-outline" size={17} />
-              </View>
-              <View style={styles.breedCopy}>
-                <Text style={styles.breedName}>Use “{customBreed}”</Text>
-                <Text style={styles.breedProfile}>
-                  Saved as typed · neutral {species} visual
-                </Text>
-              </View>
-              <Ionicons color={colors.muted} name="arrow-forward" size={18} />
-            </Pressable>
-          ) : null}
+          <View style={styles.verifiedBreedNotice}>
+            <Ionicons color={colors.sage} name="checkmark-circle" size={17} />
+            <Text style={styles.verifiedBreedNoticeText}>
+              Every breed shown has its own verified PawPair companion. More
+              breeds are being prepared.
+            </Text>
+          </View>
           <FlatList
             contentContainerStyle={{ paddingBottom: Math.max(bottomInset, 20) + 24 }}
             data={filteredBreeds}
@@ -710,8 +687,6 @@ const styles = StyleSheet.create({
   breedProfile: { color: colors.muted, fontFamily: "Nunito_600SemiBold", fontSize: 11, marginTop: 2, textTransform: "capitalize" },
   breedRow: { alignItems: "center", backgroundColor: colors.white, borderColor: colors.line, borderRadius: 20, borderWidth: 1, flexDirection: "row", gap: 12, marginBottom: 9, minHeight: 66, paddingHorizontal: 13 },
   breedRowSelected: { backgroundColor: colors.coralSoft, borderColor: colors.coral },
-  customBreedAvatar: { backgroundColor: colors.coralSoft },
-  customBreedRow: { backgroundColor: colors.coralSoft, borderColor: colors.coral },
   buttonPressed: { opacity: 0.88, transform: [{ scale: 0.99 }] },
   errorRow: { alignItems: "center", backgroundColor: colors.coralSoft, borderRadius: 14, flexDirection: "row", gap: 8, marginTop: 12, padding: 10 },
   errorText: { color: colors.danger, flex: 1, fontFamily: "Nunito_700Bold", fontSize: 12 },
@@ -788,6 +763,8 @@ const styles = StyleSheet.create({
   tabletSheetScroll: { alignSelf: "center", flexGrow: 1, justifyContent: "center", maxWidth: 580, paddingHorizontal: 30, width: "100%" },
   title: { color: colors.ink, fontFamily: "Fredoka_600SemiBold", fontSize: 32, letterSpacing: -0.7, lineHeight: 36, marginTop: 4 },
   topChrome: { alignItems: "center", flexDirection: "row", justifyContent: "space-between", left: 18, position: "absolute", right: 18, top: 0, zIndex: 5 },
+  verifiedBreedNotice: { alignItems: "flex-start", backgroundColor: colors.sageSoft, borderRadius: 16, flexDirection: "row", gap: 8, marginBottom: 10, paddingHorizontal: 11, paddingVertical: 10 },
+  verifiedBreedNoticeText: { color: colors.navy, flex: 1, fontFamily: "Nunito_700Bold", fontSize: 10, lineHeight: 15 },
   yearPill: { alignItems: "center", backgroundColor: colors.sageSoft, borderRadius: 17, justifyContent: "center", minHeight: 52, paddingHorizontal: 15 },
   yearText: { color: colors.sage, fontFamily: "Nunito_800ExtraBold", fontSize: 12 },
 });

@@ -38,4 +38,41 @@ describe("Apple Watch snapshot", () => {
       ],
     });
   });
+
+  it("keeps actionable care ahead of completed history on the small watch list", () => {
+    const occurrence = (
+      id: string,
+      scheduledTime: string,
+      status: ScheduledCare["status"],
+    ) =>
+      ({
+        id,
+        pet: { id: "pet-1", name: "Luna" },
+        task: {
+          id: `task-${id}`,
+          title: id,
+          category: "feeding",
+          instructions: "",
+        },
+        scheduledTime,
+        status,
+      }) as ScheduledCare;
+    const completed = Array.from({ length: 12 }, (_, index) =>
+      occurrence(`done-${index}`, `${String(index).padStart(2, "0")}:00`, "done"),
+    );
+    const due = occurrence("due-now", "18:00", "due");
+    const upcoming = occurrence("next", "19:00", "upcoming");
+
+    const snapshot = buildWatchSnapshot(
+      [...completed, upcoming, due],
+      "pet-1",
+      new Date("2026-07-24T05:00:00Z"),
+    );
+
+    expect(snapshot.items).toHaveLength(12);
+    expect(snapshot.items.slice(0, 2).map((item) => item.id)).toEqual([
+      "due-now",
+      "next",
+    ]);
+  });
 });

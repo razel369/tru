@@ -311,7 +311,7 @@ export function PetCareApp() {
   useEffect(() => {
     if (!store.loaded) return;
     void syncWatchCare(
-      buildWatchSnapshot(watchHomeSchedule, store.state.activePetId, careNow),
+      buildWatchSnapshot(watchHomeSchedule, store.state.activePetId),
     );
   }, [careNow, store.loaded, store.state.activePetId, watchHomeSchedule]);
 

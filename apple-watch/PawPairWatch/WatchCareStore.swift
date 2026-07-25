@@ -30,6 +30,7 @@ final class WatchCareStore: NSObject, ObservableObject {
   @Published private(set) var pendingIds = Set<String>()
 
   private let cacheKey = "pawpair.watch.snapshot.v1"
+  private let pendingIdsKey = "pawpair.watch.pending-ids.v1"
 
   override init() {
     super.init()
@@ -42,6 +43,7 @@ final class WatchCareStore: NSObject, ObservableObject {
 
   func mark(_ item: WatchCareItem, status: String) {
     pendingIds.insert(item.id)
+    persistPendingIds()
     applyLocalStatus(item.id, status: status)
     let payload: [String: Any] = [
       "type": "careAction",
@@ -53,17 +55,13 @@ final class WatchCareStore: NSObject, ObservableObject {
     if session.isReachable {
       session.sendMessage(
         payload,
-        replyHandler: { [weak self] _ in
-          Task { @MainActor in self?.pendingIds.remove(item.id) }
-        },
-        errorHandler: { [weak self] _ in
+        replyHandler: { _ in },
+        errorHandler: { _ in
           session.transferUserInfo(payload)
-          Task { @MainActor in self?.pendingIds.remove(item.id) }
         }
       )
     } else {
       session.transferUserInfo(payload)
-      pendingIds.remove(item.id)
     }
   }
 
@@ -95,9 +93,43 @@ final class WatchCareStore: NSObject, ObservableObject {
     do {
       let data = try JSONSerialization.data(withJSONObject: context)
       let decoded = try JSONDecoder().decode(WatchCareSnapshot.self, from: data)
-      snapshot = decoded
-      pendingIds = pendingIds.intersection(Set(decoded.items.map(\.id)))
-      UserDefaults.standard.set(data, forKey: cacheKey)
+      if !snapshot.generatedAt.isEmpty && decoded.generatedAt < snapshot.generatedAt {
+        return
+      }
+
+      let currentItems = Dictionary(
+        uniqueKeysWithValues: snapshot.items.map { ($0.id, $0) }
+      )
+      var stillPending = Set<String>()
+      let mergedItems = decoded.items.map { item in
+        guard
+          pendingIds.contains(item.id),
+          let current = currentItems[item.id],
+          item.status != current.status
+        else {
+          return item
+        }
+        stillPending.insert(item.id)
+        return WatchCareItem(
+          id: item.id,
+          petId: item.petId,
+          petName: item.petName,
+          title: item.title,
+          time: item.time,
+          status: current.status,
+          category: item.category,
+          instructions: item.instructions
+        )
+      }
+      snapshot = WatchCareSnapshot(
+        version: decoded.version,
+        generatedAt: decoded.generatedAt,
+        activePetId: decoded.activePetId,
+        items: mergedItems
+      )
+      pendingIds = stillPending
+      persist(snapshot)
+      persistPendingIds()
     } catch {
       return
     }
@@ -111,11 +143,18 @@ final class WatchCareStore: NSObject, ObservableObject {
       return
     }
     snapshot = decoded
+    let storedPendingIds =
+      UserDefaults.standard.stringArray(forKey: pendingIdsKey) ?? []
+    pendingIds = Set(storedPendingIds).intersection(Set(decoded.items.map(\.id)))
   }
 
   private func persist(_ snapshot: WatchCareSnapshot) {
     guard let data = try? JSONEncoder().encode(snapshot) else { return }
     UserDefaults.standard.set(data, forKey: cacheKey)
+  }
+
+  private func persistPendingIds() {
+    UserDefaults.standard.set(Array(pendingIds).sorted(), forKey: pendingIdsKey)
   }
 }
 
