@@ -104,6 +104,47 @@ jobs:
             "$IOS_SIMULATOR_UDID" \
             screenshot native-qa/iphone-launch.png
 
+      - name: Select an available 13-inch iPad simulator
+        run: |
+          ipad_simulator_udid="$(
+            xcrun simctl list devices available -j |
+              node -e '
+                let input = "";
+                process.stdin.on("data", chunk => input += chunk);
+                process.stdin.on("end", () => {
+                  const devices = Object.values(JSON.parse(input).devices).flat();
+                  const preferredNames = [
+                    "iPad Pro 13-inch (M5)",
+                    "iPad Pro 13-inch (M4)",
+                    "iPad Air 13-inch (M3)"
+                  ];
+                  const preferred = preferredNames
+                    .map(name => devices.find(device => device.isAvailable && device.name === name))
+                    .find(Boolean);
+                  const fallback = devices.find(
+                    device => device.isAvailable && device.name.startsWith("iPad")
+                  );
+                  const selected = preferred ?? fallback;
+                  if (!selected) process.exit(1);
+                  process.stdout.write(selected.udid);
+                });
+              '
+          )"
+          echo "IPAD_SIMULATOR_UDID=$ipad_simulator_udid" >> "$GITHUB_ENV"
+
+      - name: Capture a clean native iPad launch
+        run: |
+          xcrun simctl boot "$IPAD_SIMULATOR_UDID" || true
+          xcrun simctl bootstatus "$IPAD_SIMULATOR_UDID" -b
+          xcrun simctl install \
+            "$IPAD_SIMULATOR_UDID" \
+            ios/build-simulator/Build/Products/Release-iphonesimulator/PawPair.app
+          xcrun simctl launch "$IPAD_SIMULATOR_UDID" app.pawpair.medtracker
+          sleep 12
+          xcrun simctl io \
+            "$IPAD_SIMULATOR_UDID" \
+            screenshot native-qa/ipad-launch.png
+
       - name: Select an available Apple Watch simulator
         run: |
           watch_simulator_udid="$(
@@ -156,6 +197,7 @@ jobs:
             xcodebuild.log
             xcodebuild-simulator.log
             native-qa/iphone-launch.png
+            native-qa/ipad-launch.png
             native-qa/watch-launch.png
           if-no-files-found: ignore
           retention-days: 7
