@@ -104,6 +104,49 @@ jobs:
             "$IOS_SIMULATOR_UDID" \
             screenshot native-qa/iphone-launch.png
 
+      - name: Select an available Apple Watch simulator
+        run: |
+          watch_simulator_udid="$(
+            xcrun simctl list devices available -j |
+              node -e '
+                let input = "";
+                process.stdin.on("data", chunk => input += chunk);
+                process.stdin.on("end", () => {
+                  const devices = Object.values(JSON.parse(input).devices).flat();
+                  const preferredNames = [
+                    "Apple Watch Ultra 3 (49mm)",
+                    "Apple Watch Series 11 (46mm)",
+                    "Apple Watch Ultra 2 (49mm)"
+                  ];
+                  const preferred = preferredNames
+                    .map(name => devices.find(device => device.isAvailable && device.name === name))
+                    .find(Boolean);
+                  const fallback = devices.find(
+                    device => device.isAvailable && device.name.startsWith("Apple Watch")
+                  );
+                  const selected = preferred ?? fallback;
+                  if (!selected) process.exit(1);
+                  process.stdout.write(selected.udid);
+                });
+              '
+          )"
+          echo "WATCH_SIMULATOR_UDID=$watch_simulator_udid" >> "$GITHUB_ENV"
+
+      - name: Capture the native Apple Watch launch
+        run: |
+          xcrun simctl boot "$WATCH_SIMULATOR_UDID" || true
+          xcrun simctl bootstatus "$WATCH_SIMULATOR_UDID" -b
+          xcrun simctl install \
+            "$WATCH_SIMULATOR_UDID" \
+            ios/build-simulator/Build/Products/Release-watchsimulator/PawPairWatch.app
+          xcrun simctl launch \
+            "$WATCH_SIMULATOR_UDID" \
+            app.pawpair.medtracker.watchkitapp
+          sleep 10
+          xcrun simctl io \
+            "$WATCH_SIMULATOR_UDID" \
+            screenshot native-qa/watch-launch.png
+
       - name: Preserve native QA artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -113,5 +156,6 @@ jobs:
             xcodebuild.log
             xcodebuild-simulator.log
             native-qa/iphone-launch.png
+            native-qa/watch-launch.png
           if-no-files-found: ignore
           retention-days: 7
