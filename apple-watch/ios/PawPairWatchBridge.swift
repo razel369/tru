@@ -6,9 +6,13 @@ import WatchConnectivity
 final class PawPairWatchBridge: RCTEventEmitter, WCSessionDelegate {
   private var observing = false
   private var pendingContext: [String: Any]?
+  private var pendingActions: [[String: String]] = []
+  private let pendingActionsKey = "pawpair.watch.pending-actions.v1"
 
   override init() {
     super.init()
+    pendingActions =
+      UserDefaults.standard.array(forKey: pendingActionsKey) as? [[String: String]] ?? []
     if WCSession.isSupported() {
       let session = WCSession.default
       session.delegate = self
@@ -26,6 +30,7 @@ final class PawPairWatchBridge: RCTEventEmitter, WCSessionDelegate {
 
   override func startObserving() {
     observing = true
+    flushPendingActions()
   }
 
   override func stopObserving() {
@@ -84,31 +89,64 @@ final class PawPairWatchBridge: RCTEventEmitter, WCSessionDelegate {
     _ session: WCSession,
     didReceiveMessage message: [String: Any]
   ) {
-    emitAction(message)
+    queueOrEmitAction(message)
+  }
+
+  func session(
+    _ session: WCSession,
+    didReceiveMessage message: [String: Any],
+    replyHandler: @escaping ([String: Any]) -> Void
+  ) {
+    let accepted = queueOrEmitAction(message)
+    replyHandler(["accepted": accepted])
   }
 
   func session(
     _ session: WCSession,
     didReceiveUserInfo userInfo: [String: Any] = [:]
   ) {
-    emitAction(userInfo)
+    queueOrEmitAction(userInfo)
   }
 
-  private func emitAction(_ payload: [String: Any]) {
+  @discardableResult
+  private func queueOrEmitAction(_ payload: [String: Any]) -> Bool {
     guard
-      observing,
       payload["type"] as? String == "careAction",
       let occurrenceId = payload["occurrenceId"] as? String,
-      let status = payload["status"] as? String
+      let status = payload["status"] as? String,
+      status == "done" || status == "skipped"
     else {
-      return
+      return false
     }
 
+    let action = ["occurrenceId": occurrenceId, "status": status]
     DispatchQueue.main.async { [weak self] in
-      self?.sendEvent(
-        withName: "PawPairWatchAction",
-        body: ["occurrenceId": occurrenceId, "status": status]
-      )
+      guard let self else { return }
+      if self.observing {
+        self.sendEvent(withName: "PawPairWatchAction", body: action)
+        return
+      }
+
+      self.pendingActions.append(action)
+      if self.pendingActions.count > 50 {
+        self.pendingActions.removeFirst(self.pendingActions.count - 50)
+      }
+      self.persistPendingActions()
     }
+    return true
+  }
+
+  private func flushPendingActions() {
+    guard observing, !pendingActions.isEmpty else { return }
+    let actions = pendingActions
+    pendingActions.removeAll()
+    persistPendingActions()
+    actions.forEach {
+      sendEvent(withName: "PawPairWatchAction", body: $0)
+    }
+  }
+
+  private func persistPendingActions() {
+    UserDefaults.standard.set(pendingActions, forKey: pendingActionsKey)
   }
 }

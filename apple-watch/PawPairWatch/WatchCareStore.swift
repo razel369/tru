@@ -42,6 +42,7 @@ final class WatchCareStore: NSObject, ObservableObject {
 
   func mark(_ item: WatchCareItem, status: String) {
     pendingIds.insert(item.id)
+    applyLocalStatus(item.id, status: status)
     let payload: [String: Any] = [
       "type": "careAction",
       "occurrenceId": item.id,
@@ -50,12 +51,43 @@ final class WatchCareStore: NSObject, ObservableObject {
     ]
     let session = WCSession.default
     if session.isReachable {
-      session.sendMessage(payload, replyHandler: nil) { [weak self] _ in
-        Task { @MainActor in self?.pendingIds.remove(item.id) }
-      }
+      session.sendMessage(
+        payload,
+        replyHandler: { [weak self] _ in
+          Task { @MainActor in self?.pendingIds.remove(item.id) }
+        },
+        errorHandler: { [weak self] _ in
+          session.transferUserInfo(payload)
+          Task { @MainActor in self?.pendingIds.remove(item.id) }
+        }
+      )
     } else {
       session.transferUserInfo(payload)
+      pendingIds.remove(item.id)
     }
+  }
+
+  private func applyLocalStatus(_ itemId: String, status: String) {
+    let items = snapshot.items.map { item in
+      guard item.id == itemId else { return item }
+      return WatchCareItem(
+        id: item.id,
+        petId: item.petId,
+        petName: item.petName,
+        title: item.title,
+        time: item.time,
+        status: status,
+        category: item.category,
+        instructions: item.instructions
+      )
+    }
+    snapshot = WatchCareSnapshot(
+      version: snapshot.version,
+      generatedAt: snapshot.generatedAt,
+      activePetId: snapshot.activePetId,
+      items: items
+    )
+    persist(snapshot)
   }
 
   private func accept(_ context: [String: Any]) {
@@ -79,6 +111,11 @@ final class WatchCareStore: NSObject, ObservableObject {
       return
     }
     snapshot = decoded
+  }
+
+  private func persist(_ snapshot: WatchCareSnapshot) {
+    guard let data = try? JSONEncoder().encode(snapshot) else { return }
+    UserDefaults.standard.set(data, forKey: cacheKey)
   }
 }
 
