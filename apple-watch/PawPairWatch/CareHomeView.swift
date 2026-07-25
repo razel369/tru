@@ -177,11 +177,11 @@ private struct CareMomentCard: View {
   private var statusLabel: String {
     if isPending { return "SYNC" }
     switch item.status {
-    case "done": "DONE"
-    case "missed": "MISSED"
-    case "due": "NOW"
-    case "skipped": "SKIPPED"
-    default: "NEXT"
+    case "done": return "DONE"
+    case "missed": return "MISSED"
+    case "due": return "NOW"
+    case "skipped": return "SKIPPED"
+    default: return "NEXT"
     }
   }
 
