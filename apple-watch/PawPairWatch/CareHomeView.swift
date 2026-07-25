@@ -17,35 +17,54 @@ struct CareHomeView: View {
           emptyState
         } else {
           careList
+            .navigationTitle("PawPair")
+            .navigationBarTitleDisplayMode(.inline)
         }
       }
       .background(PawPairWatchPalette.navy.ignoresSafeArea())
-      .navigationTitle("PawPair")
-      .navigationBarTitleDisplayMode(.inline)
     }
     .tint(PawPairWatchPalette.coral)
   }
 
   private var emptyState: some View {
-    VStack(spacing: 10) {
+    VStack(spacing: 0) {
+      HStack(spacing: 6) {
+        Image(systemName: "pawprint.fill")
+        Text("PawPair")
+      }
+      .font(.system(size: 12, weight: .bold, design: .rounded))
+      .foregroundStyle(PawPairWatchPalette.cream.opacity(0.74))
+      .frame(maxWidth: .infinity, alignment: .leading)
+
+      Spacer(minLength: 8)
+
       ZStack {
         Circle()
           .fill(PawPairWatchPalette.coral.opacity(0.18))
-          .frame(width: 54, height: 54)
+          .frame(width: 50, height: 50)
         Image(systemName: "pawprint.fill")
-          .font(.system(size: 23, weight: .bold))
+          .font(.system(size: 21, weight: .bold))
           .foregroundStyle(PawPairWatchPalette.coral)
       }
+
       Text("Ready when they are")
         .font(.headline)
         .foregroundStyle(PawPairWatchPalette.cream)
         .multilineTextAlignment(.center)
-      Text("Open PawPair on iPhone to sync the care you create.")
+        .padding(.top, 9)
+
+      Text("Open PawPair on iPhone\nto sync your care plan.")
         .font(.caption2)
         .foregroundStyle(PawPairWatchPalette.cream.opacity(0.72))
         .multilineTextAlignment(.center)
+        .padding(.top, 6)
+
+      Spacer(minLength: 10)
     }
-    .padding(.horizontal, 16)
+    .padding(.horizontal, 14)
+    .padding(.top, 8)
+    .padding(.bottom, 12)
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
   }
 
   private var careList: some View {
