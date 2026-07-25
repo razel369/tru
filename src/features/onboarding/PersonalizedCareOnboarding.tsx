@@ -89,6 +89,7 @@ export function PersonalizedCareOnboarding({
         key: "pet:milo",
         scale: placement.scale,
         source: pack?.states.idle ?? assets.milo,
+        translateXRatio: placement.translateXRatio,
         translateYRatio: placement.translateYRatio,
       };
     }
@@ -110,6 +111,7 @@ export function PersonalizedCareOnboarding({
         pack?.states.idle ??
         asset?.petSource ??
         (species === "cat" ? assets.luna : assets.milo),
+      translateXRatio: placement.translateXRatio,
       translateYRatio: placement.translateYRatio,
     };
   }, [breed, species]);
@@ -485,6 +487,9 @@ export function PersonalizedCareOnboarding({
                 height: petHeight,
                 opacity: petReveal,
                 transform: [
+                  {
+                    translateX: width * 0.78 * visual.translateXRatio,
+                  },
                   {
                     translateY: petFloat.interpolate({
                       inputRange: [0, 1],

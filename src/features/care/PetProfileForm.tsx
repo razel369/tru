@@ -389,6 +389,10 @@ export function PetProfileForm({
                 {
                   transform: [
                     {
+                      translateX:
+                        184 * preview.placement.translateXRatio,
+                    },
+                    {
                       translateY: previewMotion.interpolate({
                         inputRange: [0, 1],
                         outputRange: [

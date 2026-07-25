@@ -162,6 +162,10 @@ const PET_SUBJECT_FRAMING: Readonly<Record<string, PetSubjectFraming>> = {
 ${body}
 };
 
+export const PET_SUBJECT_FRAMING_KEYS = Object.freeze(
+  Object.keys(PET_SUBJECT_FRAMING),
+);
+
 const DEFAULT_FRAMING: PetSubjectFraming = {
   centerX: 0.5,
   feetY: 0.8,

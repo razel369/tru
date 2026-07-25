@@ -17,7 +17,11 @@ import {
 import { assets, colors, shadow } from "../../design";
 import type { Pet } from "../../types";
 import { resolvePetMotionPackForProfile } from "../pet-motion";
-import { createBreedAssetKey, resolvePetVisual } from "../pet-visuals";
+import {
+  createBreedAssetKey,
+  resolvePetStagePlacement,
+  resolvePetVisual,
+} from "../pet-visuals";
 import type { PremiumEntryPoint } from "../subscriptions/types";
 
 import { CareHandoffSheet } from "./CareHandoffSheet";
@@ -37,8 +41,7 @@ function presentationForPet(pet: Pet) {
   const motionPack = resolvePetMotionPackForProfile(motionKey, visual.profile);
   return {
     image: motionPack?.states.idle ?? visual.petSource,
-    key: motionKey,
-    layout: visual.layout,
+    key: motionPack?.petKey ?? motionKey,
   };
 }
 
@@ -163,9 +166,15 @@ export function PetsHubScreen({
       ),
     );
   };
-  const petScale = activePresentation.layout.scale;
-  const petOffsetX = (activePresentation.layout.anchorX - 0.5) * 180;
-  const petOffsetY = (activePresentation.layout.feetY - 0.8) * 160;
+  const activePlacement = resolvePetStagePlacement(activePresentation.key, {
+    maxScale: 2.35,
+    minScale: 0.74,
+    targetFeetY: 0.96,
+    targetSubjectHeight: 0.82,
+  });
+  const petScale = activePlacement.scale;
+  const petOffsetX = activePlacement.translateXRatio * 224;
+  const petOffsetY = activePlacement.translateYRatio * 218;
 
   return (
     <View style={[styles.screen, { paddingTop: topInset }]}>
@@ -508,9 +517,15 @@ export function PetsHubScreen({
           {pets.map((pet) => {
             const selected = pet.id === activePet.id;
             const presentation = presentationForPet(pet);
-            const thumbScale = presentation.layout.scale;
-            const thumbOffsetX = (presentation.layout.anchorX - 0.5) * 56;
-            const thumbOffsetY = (presentation.layout.feetY - 0.8) * 44;
+            const thumbPlacement = resolvePetStagePlacement(presentation.key, {
+              maxScale: 2.4,
+              minScale: 0.72,
+              targetFeetY: 0.94,
+              targetSubjectHeight: 0.78,
+            });
+            const thumbScale = thumbPlacement.scale;
+            const thumbOffsetX = thumbPlacement.translateXRatio * 70;
+            const thumbOffsetY = thumbPlacement.translateYRatio * 68;
             return (
               <Pressable
                 accessibilityLabel={`Switch to ${pet.name}`}

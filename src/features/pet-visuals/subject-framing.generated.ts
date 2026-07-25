@@ -24,7 +24,7 @@ const PET_SUBJECT_FRAMING: Readonly<Record<string, PetSubjectFraming>> = {
   "breed:cat:maine-coon": { centerX: 0.482981, feetY: 0.77856, subjectHeight: 0.62588, subjectWidth: 0.836854 },
   "breed:cat:munchkin": { centerX: 0.501174, feetY: 0.810943, subjectHeight: 0.611051, subjectWidth: 0.734742 },
   "breed:cat:norwegian-forest-cat": { centerX: 0.492958, feetY: 0.820693, subjectHeight: 0.659805, subjectWidth: 0.887324 },
-  "breed:cat:oriental-shorthair": { centerX: 0.504695, feetY: 0.880282, subjectHeight: 0.747562, subjectWidth: 0.676056 },
+  "breed:cat:oriental-shorthair": { centerX: 0.504695, feetY: 0.879198, subjectHeight: 0.745937, subjectWidth: 0.673709 },
   "breed:cat:persian": { centerX: 0.479484, feetY: 0.765727, subjectHeight: 0.559111, subjectWidth: 0.846424 },
   "breed:cat:ragdoll": { centerX: 0.485346, feetY: 0.770607, subjectHeight: 0.569957, subjectWidth: 0.837046 },
   "breed:cat:russian-blue": { centerX: 0.477113, feetY: 0.83857, subjectHeight: 0.657638, subjectWidth: 0.742958 },
@@ -79,6 +79,10 @@ const PET_SUBJECT_FRAMING: Readonly<Record<string, PetSubjectFraming>> = {
   "pet:luna": { centerX: 0.502347, feetY: 0.704767, subjectHeight: 0.514085, subjectWidth: 0.617371 },
   "pet:milo": { centerX: 0.521714, feetY: 0.79415, subjectHeight: 0.645179, subjectWidth: 0.632629 },
 };
+
+export const PET_SUBJECT_FRAMING_KEYS = Object.freeze(
+  Object.keys(PET_SUBJECT_FRAMING),
+);
 
 const DEFAULT_FRAMING: PetSubjectFraming = {
   centerX: 0.5,

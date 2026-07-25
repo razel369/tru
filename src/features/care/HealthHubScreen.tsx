@@ -15,6 +15,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  useWindowDimensions,
   View,
 } from "react-native";
 
@@ -23,7 +24,11 @@ import type { Pet } from "../../types";
 import { INPUT_LIMITS } from "../../utils/input-limits";
 import { createLocalId } from "../../utils/local-id";
 import { resolvePetMotionPackForProfile } from "../pet-motion";
-import { createBreedAssetKey, resolvePetVisual } from "../pet-visuals";
+import {
+  createBreedAssetKey,
+  resolvePetStagePlacement,
+  resolvePetVisual,
+} from "../pet-visuals";
 
 import { careDateKey } from "./engine";
 import { tryAcquireSubmissionLock } from "./submission-lock";
@@ -134,6 +139,7 @@ export function HealthHubScreen({
   onFocusRecordHandled?: () => void;
   onUpdateRecord: (record: HealthRecord) => void;
 }) {
+  const { width: viewportWidth } = useWindowDimensions();
   const activePet = pets.find((pet) => pet.id === activePetId) ?? pets[0];
   const [showForm, setShowForm] = useState(false);
   const [filter, setFilter] = useState<HealthFilter>("all");
@@ -214,9 +220,22 @@ export function HealthHubScreen({
   const visual = resolvePetVisual(activePet, fallback, assets.heroScene);
   const motionKey =
     visual.assetKey ?? createBreedAssetKey(activePet.species, activePet.breed);
+  const motionPack = resolvePetMotionPackForProfile(motionKey, visual.profile);
   const petSource =
-    resolvePetMotionPackForProfile(motionKey, visual.profile)?.states.idle ??
-    visual.petSource;
+    motionPack?.states.idle ?? visual.petSource;
+  const healthPetWidth = Math.max(
+    148,
+    Math.min(216, (viewportWidth - 36) * 0.46),
+  );
+  const healthPetPlacement = resolvePetStagePlacement(
+    motionPack?.petKey ?? motionKey,
+    {
+    maxScale: 2.25,
+    minScale: 0.72,
+    targetFeetY: 0.94,
+    targetSubjectHeight: 0.79,
+    },
+  );
   const selectedType = HEALTH_RECORD_TYPES.find((item) => item.type === type);
   const scoreTone =
     passport.passportScore >= 80
@@ -591,7 +610,28 @@ export function HealthHubScreen({
               </View>
               <View style={styles.heroPetCastShadow} />
               <View style={styles.heroPetContactShadow} />
-              <Image resizeMode="contain" source={petSource} style={styles.heroPet} />
+              <Image
+                accessibilityIgnoresInvertColors
+                resizeMode="contain"
+                source={petSource}
+                style={[
+                  styles.heroPet,
+                  {
+                    transform: [
+                      {
+                        translateX:
+                          healthPetWidth *
+                          healthPetPlacement.translateXRatio,
+                      },
+                      {
+                        translateY:
+                          208 * healthPetPlacement.translateYRatio,
+                      },
+                      { scale: healthPetPlacement.scale },
+                    ],
+                  },
+                ]}
+              />
             </LinearGradient>
 
             <View style={styles.metricGrid}>
