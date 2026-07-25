@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   DISABLED_AUTHORED_BLINK_KEYS,
   isAuthoredBlinkEnabled,
+  requiresAuthoredBlinkAssets,
 } from "./blink-safety";
 
 describe("authored blink release safety", () => {
@@ -37,5 +38,15 @@ describe("authored blink release safety", () => {
     ].forEach((key) => {
       expect(isAuthoredBlinkEnabled(key), key).toBe(true);
     });
+  });
+
+  it("treats static-safe packs as ready without waiting for absent blink assets", () => {
+    expect(requiresAuthoredBlinkAssets({})).toBe(false);
+    expect(requiresAuthoredBlinkAssets({ blinkHalf: { uri: "half.png" } })).toBe(
+      true,
+    );
+    expect(requiresAuthoredBlinkAssets({ blink: { uri: "blink.png" } })).toBe(
+      true,
+    );
   });
 });

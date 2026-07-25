@@ -27,6 +27,7 @@ import {
   type PetMotionState,
 } from "../pet-motion";
 import { resolvePetBlinkProfile } from "../pet-motion/blink-profile";
+import { requiresAuthoredBlinkAssets } from "../pet-motion/blink-safety";
 import { resolvePetLifeProfile } from "../pet-motion/life-profile";
 
 const USE_NATIVE_DRIVER = Platform.OS !== "web";
@@ -235,7 +236,9 @@ export function AnimatedPetHero({
     [],
   );
   const motionReadyForPack =
-    !motionPack || readyMotionPackKeys.has(activeMotionPackKey);
+    !motionPack ||
+    !requiresAuthoredBlinkAssets(motionPack.states) ||
+    readyMotionPackKeys.has(activeMotionPackKey);
   useEffect(() => {
     onMotionReadyChange?.(motionReadyForPack);
   }, [motionReadyForPack, onMotionReadyChange]);
