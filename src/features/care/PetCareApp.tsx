@@ -285,18 +285,40 @@ export function PetCareApp() {
       ? schedule.filter((item) => item.pet.id === petId)
       : [];
   }, [schedule, store.state.activePetId, store.state.pets]);
+  const watchSchedule = useMemo(
+    () =>
+      buildCareSchedule(
+        store.state.tasks,
+        store.state.logs,
+        store.state.pets,
+        new Date(careNow),
+        careNow,
+      ),
+    [
+      careNow,
+      store.state.logs,
+      store.state.pets,
+      store.state.tasks,
+    ],
+  );
+  const watchHomeSchedule = useMemo(() => {
+    const petId = store.state.activePetId ?? store.state.pets[0]?.id;
+    return petId
+      ? watchSchedule.filter((item) => item.pet.id === petId)
+      : [];
+  }, [store.state.activePetId, store.state.pets, watchSchedule]);
 
   useEffect(() => {
     if (!store.loaded) return;
     void syncWatchCare(
-      buildWatchSnapshot(homeSchedule, store.state.activePetId, careNow),
+      buildWatchSnapshot(watchHomeSchedule, store.state.activePetId, careNow),
     );
-  }, [careNow, homeSchedule, store.loaded, store.state.activePetId]);
+  }, [careNow, store.loaded, store.state.activePetId, watchHomeSchedule]);
 
   useEffect(
     () =>
       subscribeWatchCareActions((action) => {
-        const occurrence = schedule.find(
+        const occurrence = watchSchedule.find(
           (item) => item.id === action.occurrenceId,
         );
         if (!occurrence) return;
@@ -310,7 +332,7 @@ export function PetCareApp() {
           Haptics.NotificationFeedbackType.Success,
         ).catch(() => undefined);
       }),
-    [logNotificationOccurrence, schedule],
+    [logNotificationOccurrence, watchSchedule],
   );
   const careInsights = useMemo(
     () =>
