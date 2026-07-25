@@ -53,10 +53,13 @@ struct CareHomeView: View {
         .multilineTextAlignment(.center)
         .padding(.top, 9)
 
-      Text("Open PawPair on iPhone\nto sync your care plan.")
+      Text("Open PawPair on iPhone\nto sync your plan.")
         .font(.caption2)
         .foregroundStyle(PawPairWatchPalette.cream.opacity(0.72))
         .multilineTextAlignment(.center)
+        .lineLimit(2)
+        .fixedSize(horizontal: false, vertical: true)
+        .layoutPriority(1)
         .padding(.top, 6)
 
       Spacer(minLength: 10)
