@@ -450,7 +450,7 @@ jobs:
           const fs = require("node:fs");
           const logPath = process.argv[2];
           const safePattern =
-            /Signing for|requires a development team|requires a provisioning profile|No profiles for|doesn't include|error:|Error:|build command failed|Run fastlane|Build failed/i;
+            /Signing for|requires a development team|requires a provisioning profile|No profiles for|doesn't include|credentials|provisioning|distribution certificate|Apple Team|app extension|bundle identifier|unable to|failed to|CommandError|GraphQL|build request|non-interactive|error:|Error:|build command failed|Run fastlane|Build failed/i;
           const safeLines = fs
             .readFileSync(logPath, "utf8")
             .split(/\r?\n/)
