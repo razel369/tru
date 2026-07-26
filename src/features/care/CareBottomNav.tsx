@@ -1,5 +1,18 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  GlassView,
+  isGlassEffectAPIAvailable,
+  isLiquidGlassAvailable,
+} from "expo-glass-effect";
+import { useEffect, useState } from "react";
+import {
+  AccessibilityInfo,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 import { colors, shadow } from "../../design";
 
@@ -27,8 +40,31 @@ export function CareBottomNav({
   bottomInset: number;
   onChange: (tab: CareTab) => void;
 }) {
-  return (
-    <View style={[styles.wrap, { paddingBottom: Math.max(bottomInset, 10) }]}>
+  const [reduceTransparency, setReduceTransparency] = useState(false);
+
+  useEffect(() => {
+    if (Platform.OS !== "ios") return;
+    let active = true;
+    void AccessibilityInfo.isReduceTransparencyEnabled().then((enabled) => {
+      if (active) setReduceTransparency(enabled);
+    });
+    const subscription = AccessibilityInfo.addEventListener(
+      "reduceTransparencyChanged",
+      setReduceTransparency,
+    );
+    return () => {
+      active = false;
+      subscription.remove();
+    };
+  }, []);
+
+  const useNativeGlass =
+    Platform.OS === "ios" &&
+    !reduceTransparency &&
+    isGlassEffectAPIAvailable() &&
+    isLiquidGlassAvailable();
+  const items = (
+    <>
       {ITEMS.map((item) => {
         const selected = active === item.key;
         const isAdd = item.key === "add";
@@ -75,7 +111,26 @@ export function CareBottomNav({
           </Pressable>
         );
       })}
-    </View>
+    </>
+  );
+
+  const surfaceStyle = [
+    styles.wrap,
+    useNativeGlass ? styles.wrapGlass : styles.wrapFallback,
+    { paddingBottom: Math.max(bottomInset, 10) },
+  ];
+
+  return useNativeGlass ? (
+    <GlassView
+      colorScheme="light"
+      glassEffectStyle="regular"
+      style={surfaceStyle}
+      tintColor="rgba(255, 248, 236, 0.18)"
+    >
+      {items}
+    </GlassView>
+  ) : (
+    <View style={surfaceStyle}>{items}</View>
   );
 }
 
@@ -118,14 +173,28 @@ const styles = StyleSheet.create({
   pressed: { opacity: 0.72, transform: [{ scale: 0.97 }] },
   wrap: {
     alignItems: "center",
-    backgroundColor: "rgba(255,252,247,0.94)",
-    elevation: 8,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
     flexDirection: "row",
     paddingHorizontal: 8,
     paddingTop: 7,
+  },
+  wrapFallback: {
+    backgroundColor: "rgba(255,252,247,0.96)",
+    borderColor: "rgba(7,22,58,0.05)",
+    borderTopWidth: StyleSheet.hairlineWidth,
+    elevation: 8,
     shadowColor: colors.navy,
     shadowOffset: { height: -5, width: 0 },
     shadowOpacity: 0.045,
     shadowRadius: 18,
+  },
+  wrapGlass: {
+    borderColor: "rgba(255,255,255,0.28)",
+    borderTopWidth: StyleSheet.hairlineWidth,
+    shadowColor: colors.navy,
+    shadowOffset: { height: -3, width: 0 },
+    shadowOpacity: 0.06,
+    shadowRadius: 16,
   },
 });
