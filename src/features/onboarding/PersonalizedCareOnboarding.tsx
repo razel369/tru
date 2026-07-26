@@ -19,7 +19,6 @@ import {
 
 import { assets, colors } from "../../design";
 import {
-  getBreedOptions,
   getBreedVisualProfile,
 } from "../../data/pet-breeds";
 import type { Pet } from "../../types";
@@ -30,8 +29,8 @@ import { trackAnalyticsEvent } from "../analytics/service";
 import { resolvePetMotionPackForProfile } from "../pet-motion";
 import {
   createBreedAssetKey,
+  getVerifiedBreedOptions,
   getPetVisualAsset,
-  hasExactBreedVisual,
   resolvePetStagePlacement,
 } from "../pet-visuals";
 
@@ -119,9 +118,7 @@ export function PersonalizedCareOnboarding({
   const filteredBreeds = useMemo(() => {
     if (!species) return [];
     const query = breedQuery.trim().toLocaleLowerCase();
-    const options = getBreedOptions(species).filter((option) =>
-      hasExactBreedVisual(species, option.name),
-    );
+    const options = getVerifiedBreedOptions(species);
     return query
       ? options.filter((option) =>
           option.name.toLocaleLowerCase().includes(query),

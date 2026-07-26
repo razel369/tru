@@ -1,4 +1,9 @@
-import { PET_SCENE_LAYOUTS } from "../../data/pet-breeds";
+import {
+  getBreedOptions,
+  PET_SCENE_LAYOUTS,
+  type BreedOption,
+  type PetSpecies,
+} from "../../data/pet-breeds";
 import { GENERATED_EXACT_BREED_PACKS } from "../pet-motion/exact-breed-packs";
 
 import type { PetVisualAsset } from "./types";
@@ -218,7 +223,6 @@ export function getPetVisualAsset(key: string): PetVisualAsset | undefined {
 }
 
 const BREED_ASSET_ALIASES: Readonly<Record<string, string>> = {
-  "breed:cat:british-shorthair": "pet:luna",
   "breed:dog:german-shepherd-dog": "breed:dog:german-shepherd",
   "breed:dog:poodle-standard": "breed:dog:standard-poodle",
 };
@@ -237,4 +241,12 @@ export function createBreedAssetKey(species: string, breed: string): string {
 
 export function hasExactBreedVisual(species: string, breed: string): boolean {
   return visualAssets.has(createBreedAssetKey(species, breed));
+}
+
+export function getVerifiedBreedOptions(
+  species: PetSpecies,
+): readonly BreedOption[] {
+  return getBreedOptions(species).filter((option) =>
+    hasExactBreedVisual(species, option.name),
+  );
 }

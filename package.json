@@ -12,6 +12,7 @@
     "test": "vitest run",
     "audit:motion-assets": "node scripts/audit-pet-motion-assets.mjs",
     "audit:pet-chroma": "node scripts/audit-pet-chroma.mjs",
+    "audit:breed-models": "node scripts/audit-breed-visual-coverage.mjs --picker-strict",
     "generate:pet-framing": "node scripts/generate-pet-subject-framing.mjs",
     "verify:ci": "node scripts/verify-ci.mjs"
   },

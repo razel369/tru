@@ -1,9 +1,10 @@
 {
-  "generatedAt": "2026-07-24T17:21:31.262Z",
+  "generatedAt": "2026-07-26T09:48:32.692Z",
   "summary": {
     "total": 189,
     "exact": 65,
     "fallback": 124,
+    "pickerUnsafe": 0,
     "exactPercent": 34.39
   },
   "bySpecies": {
@@ -27,6 +28,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:akita",
       "resolvedKey": "breed:dog:akita",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -35,6 +39,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:alaskan-malamute",
       "resolvedKey": "breed:dog:alaskan-malamute",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -43,6 +50,9 @@
       "visualProfile": "dog-fluffy",
       "catalogKey": "breed:dog:australian-shepherd",
       "resolvedKey": "breed:dog:australian-shepherd",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -51,6 +61,9 @@
       "visualProfile": "dog-long-low",
       "catalogKey": "breed:dog:basset-hound",
       "resolvedKey": "breed:dog:basset-hound",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -59,6 +72,9 @@
       "visualProfile": "dog-compact",
       "catalogKey": "breed:dog:beagle",
       "resolvedKey": "breed:dog:beagle",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -67,6 +83,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:bernese-mountain-dog",
       "resolvedKey": "breed:dog:bernese-mountain-dog",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -75,6 +94,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:bichon-frise",
       "resolvedKey": "breed:dog:bichon-frise",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -83,6 +105,9 @@
       "visualProfile": "dog-standard",
       "catalogKey": "breed:dog:border-collie",
       "resolvedKey": "breed:dog:border-collie",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -91,6 +116,9 @@
       "visualProfile": "dog-compact",
       "catalogKey": "breed:dog:boston-terrier",
       "resolvedKey": "breed:dog:boston-terrier",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -99,6 +127,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:boxer",
       "resolvedKey": "breed:dog:boxer",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -107,6 +138,9 @@
       "visualProfile": "dog-compact",
       "catalogKey": "breed:dog:bulldog",
       "resolvedKey": "breed:dog:bulldog",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -115,6 +149,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:cane-corso",
       "resolvedKey": "breed:dog:cane-corso",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -123,6 +160,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:cavalier-king-charles-spaniel",
       "resolvedKey": "breed:dog:cavalier-king-charles-spaniel",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -131,6 +171,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:chihuahua",
       "resolvedKey": "breed:dog:chihuahua",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -139,6 +182,9 @@
       "visualProfile": "dog-fluffy",
       "catalogKey": "breed:dog:chow-chow",
       "resolvedKey": "breed:dog:chow-chow",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -147,6 +193,9 @@
       "visualProfile": "dog-long-low",
       "catalogKey": "breed:dog:dachshund",
       "resolvedKey": "breed:dog:dachshund",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -155,6 +204,9 @@
       "visualProfile": "dog-tall",
       "catalogKey": "breed:dog:dalmatian",
       "resolvedKey": "breed:dog:dalmatian",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -163,6 +215,9 @@
       "visualProfile": "dog-tall",
       "catalogKey": "breed:dog:dobermann",
       "resolvedKey": "breed:dog:dobermann",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -171,6 +226,9 @@
       "visualProfile": "dog-compact",
       "catalogKey": "breed:dog:english-cocker-spaniel",
       "resolvedKey": "breed:dog:english-cocker-spaniel",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -179,6 +237,9 @@
       "visualProfile": "dog-compact",
       "catalogKey": "breed:dog:french-bulldog",
       "resolvedKey": "breed:dog:french-bulldog",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -187,6 +248,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:german-shepherd-dog",
       "resolvedKey": "breed:dog:german-shepherd",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -195,6 +259,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:golden-retriever",
       "resolvedKey": "breed:dog:golden-retriever",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -203,6 +270,9 @@
       "visualProfile": "dog-tall",
       "catalogKey": "breed:dog:great-dane",
       "resolvedKey": "breed:dog:great-dane",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -211,6 +281,9 @@
       "visualProfile": "dog-tall",
       "catalogKey": "breed:dog:greyhound",
       "resolvedKey": "breed:dog:greyhound",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -219,6 +292,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:havanese",
       "resolvedKey": "breed:dog:havanese",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -227,6 +303,9 @@
       "visualProfile": "dog-compact",
       "catalogKey": "breed:dog:jack-russell-terrier",
       "resolvedKey": "breed:dog:jack-russell-terrier",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -235,6 +314,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:labrador-retriever",
       "resolvedKey": "breed:dog:labrador-retriever",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -243,6 +325,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:maltese",
       "resolvedKey": "breed:dog:maltese",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -251,6 +336,9 @@
       "visualProfile": "dog-compact",
       "catalogKey": "breed:dog:miniature-schnauzer",
       "resolvedKey": "breed:dog:miniature-schnauzer",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -259,6 +347,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:papillon",
       "resolvedKey": "breed:dog:papillon",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -267,6 +358,9 @@
       "visualProfile": "dog-long-low",
       "catalogKey": "breed:dog:pembroke-welsh-corgi",
       "resolvedKey": "breed:dog:pembroke-welsh-corgi",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -275,6 +369,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:pomeranian",
       "resolvedKey": "breed:dog:pomeranian",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -283,6 +380,9 @@
       "visualProfile": "dog-tall",
       "catalogKey": "breed:dog:poodle-standard",
       "resolvedKey": "breed:dog:standard-poodle",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -291,6 +391,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:poodle-toy",
       "resolvedKey": "breed:dog:poodle-toy",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -299,6 +402,9 @@
       "visualProfile": "dog-compact",
       "catalogKey": "breed:dog:pug",
       "resolvedKey": "breed:dog:pug",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -307,6 +413,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:rottweiler",
       "resolvedKey": "breed:dog:rottweiler",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -315,6 +424,9 @@
       "visualProfile": "dog-fluffy",
       "catalogKey": "breed:dog:samoyed",
       "resolvedKey": "breed:dog:samoyed",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -323,6 +435,9 @@
       "visualProfile": "dog-standard",
       "catalogKey": "breed:dog:shiba-inu",
       "resolvedKey": "breed:dog:shiba-inu",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -331,6 +446,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:shih-tzu",
       "resolvedKey": "breed:dog:shih-tzu",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -339,6 +457,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:siberian-husky",
       "resolvedKey": "breed:dog:siberian-husky",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -347,6 +468,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:west-highland-white-terrier",
       "resolvedKey": "breed:dog:west-highland-white-terrier",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -355,6 +479,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:yorkshire-terrier",
       "resolvedKey": "breed:dog:yorkshire-terrier",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -363,6 +490,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:domestic-shorthair",
       "resolvedKey": "breed:cat:domestic-shorthair",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -371,6 +501,9 @@
       "visualProfile": "cat-longhair",
       "catalogKey": "breed:cat:domestic-longhair",
       "resolvedKey": "breed:cat:domestic-longhair",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -379,6 +512,9 @@
       "visualProfile": "cat-tall",
       "catalogKey": "breed:cat:abyssinian",
       "resolvedKey": "breed:cat:abyssinian",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -387,6 +523,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:american-shorthair",
       "resolvedKey": "breed:cat:american-shorthair",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -395,6 +534,9 @@
       "visualProfile": "cat-tall",
       "catalogKey": "breed:cat:bengal",
       "resolvedKey": "breed:cat:bengal",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -403,6 +545,9 @@
       "visualProfile": "cat-longhair",
       "catalogKey": "breed:cat:birman",
       "resolvedKey": "breed:cat:birman",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -411,6 +556,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:bombay",
       "resolvedKey": "breed:cat:bombay",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -418,7 +566,10 @@
       "name": "British Shorthair",
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:british-shorthair",
-      "resolvedKey": "pet:luna",
+      "resolvedKey": "breed:cat:british-shorthair",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -427,6 +578,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:burmese",
       "resolvedKey": "breed:cat:burmese",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -435,6 +589,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:devon-rex",
       "resolvedKey": "breed:cat:devon-rex",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -443,6 +600,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:exotic-shorthair",
       "resolvedKey": "breed:cat:exotic-shorthair",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -451,6 +611,9 @@
       "visualProfile": "cat-longhair",
       "catalogKey": "breed:cat:maine-coon",
       "resolvedKey": "breed:cat:maine-coon",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -459,6 +622,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:munchkin",
       "resolvedKey": "breed:cat:munchkin",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -467,6 +633,9 @@
       "visualProfile": "cat-longhair",
       "catalogKey": "breed:cat:norwegian-forest-cat",
       "resolvedKey": "breed:cat:norwegian-forest-cat",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -475,6 +644,9 @@
       "visualProfile": "cat-tall",
       "catalogKey": "breed:cat:oriental-shorthair",
       "resolvedKey": "breed:cat:oriental-shorthair",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -483,6 +655,9 @@
       "visualProfile": "cat-longhair",
       "catalogKey": "breed:cat:persian",
       "resolvedKey": "breed:cat:persian",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -491,6 +666,9 @@
       "visualProfile": "cat-longhair",
       "catalogKey": "breed:cat:ragdoll",
       "resolvedKey": "breed:cat:ragdoll",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -499,6 +677,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:russian-blue",
       "resolvedKey": "breed:cat:russian-blue",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -507,6 +688,9 @@
       "visualProfile": "cat-tall",
       "catalogKey": "breed:cat:savannah",
       "resolvedKey": "breed:cat:savannah",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -515,6 +699,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:scottish-fold",
       "resolvedKey": "breed:cat:scottish-fold",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -523,6 +710,9 @@
       "visualProfile": "cat-tall",
       "catalogKey": "breed:cat:siamese",
       "resolvedKey": "breed:cat:siamese",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -531,6 +721,9 @@
       "visualProfile": "cat-longhair",
       "catalogKey": "breed:cat:siberian",
       "resolvedKey": "breed:cat:siberian",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     },
     {
@@ -539,6 +732,9 @@
       "visualProfile": "cat-hairless",
       "catalogKey": "breed:cat:sphynx",
       "resolvedKey": "breed:cat:sphynx",
+      "hasVisual": true,
+      "hasMotion": true,
+      "identityMatched": true,
       "status": "exact"
     }
   ],
@@ -549,6 +745,9 @@
       "visualProfile": "dog-standard",
       "catalogKey": "breed:dog:mixed-breed",
       "resolvedKey": "breed:dog:mixed-breed",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -557,6 +756,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:affenpinscher",
       "resolvedKey": "breed:dog:affenpinscher",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -565,6 +767,9 @@
       "visualProfile": "dog-tall",
       "catalogKey": "breed:dog:afghan-hound",
       "resolvedKey": "breed:dog:afghan-hound",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -573,6 +778,9 @@
       "visualProfile": "dog-tall",
       "catalogKey": "breed:dog:airedale-terrier",
       "resolvedKey": "breed:dog:airedale-terrier",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -581,6 +789,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:american-akita",
       "resolvedKey": "breed:dog:american-akita",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -589,6 +800,9 @@
       "visualProfile": "dog-compact",
       "catalogKey": "breed:dog:american-bulldog",
       "resolvedKey": "breed:dog:american-bulldog",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -597,6 +811,9 @@
       "visualProfile": "dog-compact",
       "catalogKey": "breed:dog:american-cocker-spaniel",
       "resolvedKey": "breed:dog:american-cocker-spaniel",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -605,6 +822,9 @@
       "visualProfile": "dog-compact",
       "catalogKey": "breed:dog:american-staffordshire-terrier",
       "resolvedKey": "breed:dog:american-staffordshire-terrier",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -613,6 +833,9 @@
       "visualProfile": "dog-standard",
       "catalogKey": "breed:dog:australian-cattle-dog",
       "resolvedKey": "breed:dog:australian-cattle-dog",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -621,6 +844,9 @@
       "visualProfile": "dog-standard",
       "catalogKey": "breed:dog:australian-kelpie",
       "resolvedKey": "breed:dog:australian-kelpie",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -629,6 +855,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:australian-terrier",
       "resolvedKey": "breed:dog:australian-terrier",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -637,6 +866,9 @@
       "visualProfile": "dog-standard",
       "catalogKey": "breed:dog:basenji",
       "resolvedKey": "breed:dog:basenji",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -645,6 +877,9 @@
       "visualProfile": "dog-fluffy",
       "catalogKey": "breed:dog:bearded-collie",
       "resolvedKey": "breed:dog:bearded-collie",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -653,6 +888,9 @@
       "visualProfile": "dog-standard",
       "catalogKey": "breed:dog:bedlington-terrier",
       "resolvedKey": "breed:dog:bedlington-terrier",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -661,6 +899,9 @@
       "visualProfile": "dog-standard",
       "catalogKey": "breed:dog:belgian-shepherd-dog",
       "resolvedKey": "breed:dog:belgian-shepherd-dog",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -669,6 +910,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:bloodhound",
       "resolvedKey": "breed:dog:bloodhound",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -677,6 +921,9 @@
       "visualProfile": "dog-compact",
       "catalogKey": "breed:dog:border-terrier",
       "resolvedKey": "breed:dog:border-terrier",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -685,6 +932,9 @@
       "visualProfile": "dog-tall",
       "catalogKey": "breed:dog:borzoi",
       "resolvedKey": "breed:dog:borzoi",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -693,6 +943,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:bouvier-des-flandres",
       "resolvedKey": "breed:dog:bouvier-des-flandres",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -701,6 +954,9 @@
       "visualProfile": "dog-standard",
       "catalogKey": "breed:dog:brittany",
       "resolvedKey": "breed:dog:brittany",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -709,6 +965,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:brussels-griffon",
       "resolvedKey": "breed:dog:brussels-griffon",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -717,6 +976,9 @@
       "visualProfile": "dog-compact",
       "catalogKey": "breed:dog:bull-terrier",
       "resolvedKey": "breed:dog:bull-terrier",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -725,6 +987,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:bullmastiff",
       "resolvedKey": "breed:dog:bullmastiff",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -733,6 +998,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:cairn-terrier",
       "resolvedKey": "breed:dog:cairn-terrier",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -741,6 +1009,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:chinese-crested",
       "resolvedKey": "breed:dog:chinese-crested",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -749,6 +1020,9 @@
       "visualProfile": "dog-compact",
       "catalogKey": "breed:dog:clumber-spaniel",
       "resolvedKey": "breed:dog:clumber-spaniel",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -757,6 +1031,9 @@
       "visualProfile": "dog-fluffy",
       "catalogKey": "breed:dog:collie",
       "resolvedKey": "breed:dog:collie",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -765,6 +1042,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:coton-de-tulear",
       "resolvedKey": "breed:dog:coton-de-tulear",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -773,6 +1053,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:dogo-argentino",
       "resolvedKey": "breed:dog:dogo-argentino",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -781,6 +1064,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:dogue-de-bordeaux",
       "resolvedKey": "breed:dog:dogue-de-bordeaux",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -789,6 +1075,9 @@
       "visualProfile": "dog-tall",
       "catalogKey": "breed:dog:english-foxhound",
       "resolvedKey": "breed:dog:english-foxhound",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -797,6 +1086,9 @@
       "visualProfile": "dog-tall",
       "catalogKey": "breed:dog:english-setter",
       "resolvedKey": "breed:dog:english-setter",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -805,6 +1097,9 @@
       "visualProfile": "dog-standard",
       "catalogKey": "breed:dog:english-springer-spaniel",
       "resolvedKey": "breed:dog:english-springer-spaniel",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -813,6 +1108,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:english-toy-spaniel",
       "resolvedKey": "breed:dog:english-toy-spaniel",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -821,6 +1119,9 @@
       "visualProfile": "dog-fluffy",
       "catalogKey": "breed:dog:finnish-lapphund",
       "resolvedKey": "breed:dog:finnish-lapphund",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -829,6 +1130,9 @@
       "visualProfile": "dog-fluffy",
       "catalogKey": "breed:dog:finnish-spitz",
       "resolvedKey": "breed:dog:finnish-spitz",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -837,6 +1141,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:flat-coated-retriever",
       "resolvedKey": "breed:dog:flat-coated-retriever",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -845,6 +1152,9 @@
       "visualProfile": "dog-standard",
       "catalogKey": "breed:dog:german-pinscher",
       "resolvedKey": "breed:dog:german-pinscher",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -853,6 +1163,9 @@
       "visualProfile": "dog-tall",
       "catalogKey": "breed:dog:german-shorthaired-pointer",
       "resolvedKey": "breed:dog:german-shorthaired-pointer",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -861,6 +1174,9 @@
       "visualProfile": "dog-fluffy",
       "catalogKey": "breed:dog:german-spitz",
       "resolvedKey": "breed:dog:german-spitz",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -869,6 +1185,9 @@
       "visualProfile": "dog-tall",
       "catalogKey": "breed:dog:german-wirehaired-pointer",
       "resolvedKey": "breed:dog:german-wirehaired-pointer",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -877,6 +1196,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:giant-schnauzer",
       "resolvedKey": "breed:dog:giant-schnauzer",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -885,6 +1207,9 @@
       "visualProfile": "dog-tall",
       "catalogKey": "breed:dog:gordon-setter",
       "resolvedKey": "breed:dog:gordon-setter",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -893,6 +1218,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:great-pyrenees",
       "resolvedKey": "breed:dog:great-pyrenees",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -901,6 +1229,9 @@
       "visualProfile": "dog-tall",
       "catalogKey": "breed:dog:hungarian-vizsla",
       "resolvedKey": "breed:dog:hungarian-vizsla",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -909,6 +1240,9 @@
       "visualProfile": "dog-tall",
       "catalogKey": "breed:dog:irish-setter",
       "resolvedKey": "breed:dog:irish-setter",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -917,6 +1251,9 @@
       "visualProfile": "dog-standard",
       "catalogKey": "breed:dog:irish-terrier",
       "resolvedKey": "breed:dog:irish-terrier",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -925,6 +1262,9 @@
       "visualProfile": "dog-tall",
       "catalogKey": "breed:dog:irish-wolfhound",
       "resolvedKey": "breed:dog:irish-wolfhound",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -933,6 +1273,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:italian-greyhound",
       "resolvedKey": "breed:dog:italian-greyhound",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -941,6 +1284,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:japanese-chin",
       "resolvedKey": "breed:dog:japanese-chin",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -949,6 +1295,9 @@
       "visualProfile": "dog-fluffy",
       "catalogKey": "breed:dog:japanese-spitz",
       "resolvedKey": "breed:dog:japanese-spitz",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -957,6 +1306,9 @@
       "visualProfile": "dog-fluffy",
       "catalogKey": "breed:dog:keeshond",
       "resolvedKey": "breed:dog:keeshond",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -965,6 +1317,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:komondor",
       "resolvedKey": "breed:dog:komondor",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -973,6 +1328,9 @@
       "visualProfile": "dog-standard",
       "catalogKey": "breed:dog:lagotto-romagnolo",
       "resolvedKey": "breed:dog:lagotto-romagnolo",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -981,6 +1339,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:leonberger",
       "resolvedKey": "breed:dog:leonberger",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -989,6 +1350,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:lhasa-apso",
       "resolvedKey": "breed:dog:lhasa-apso",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -997,6 +1361,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:mastiff",
       "resolvedKey": "breed:dog:mastiff",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1005,6 +1372,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:miniature-pinscher",
       "resolvedKey": "breed:dog:miniature-pinscher",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1013,6 +1383,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:newfoundland",
       "resolvedKey": "breed:dog:newfoundland",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1021,6 +1394,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:norfolk-terrier",
       "resolvedKey": "breed:dog:norfolk-terrier",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1029,6 +1405,9 @@
       "visualProfile": "dog-fluffy",
       "catalogKey": "breed:dog:norwegian-elkhound",
       "resolvedKey": "breed:dog:norwegian-elkhound",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1037,6 +1416,9 @@
       "visualProfile": "dog-standard",
       "catalogKey": "breed:dog:nova-scotia-duck-tolling-retriever",
       "resolvedKey": "breed:dog:nova-scotia-duck-tolling-retriever",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1045,6 +1427,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:old-english-sheepdog",
       "resolvedKey": "breed:dog:old-english-sheepdog",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1053,6 +1438,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:pekingese",
       "resolvedKey": "breed:dog:pekingese",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1061,6 +1449,9 @@
       "visualProfile": "dog-compact",
       "catalogKey": "breed:dog:poodle-miniature",
       "resolvedKey": "breed:dog:poodle-miniature",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1069,6 +1460,9 @@
       "visualProfile": "dog-standard",
       "catalogKey": "breed:dog:portuguese-water-dog",
       "resolvedKey": "breed:dog:portuguese-water-dog",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1077,6 +1471,9 @@
       "visualProfile": "dog-tall",
       "catalogKey": "breed:dog:rhodesian-ridgeback",
       "resolvedKey": "breed:dog:rhodesian-ridgeback",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1085,6 +1482,9 @@
       "visualProfile": "dog-tall",
       "catalogKey": "breed:dog:saluki",
       "resolvedKey": "breed:dog:saluki",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1093,6 +1493,9 @@
       "visualProfile": "dog-standard",
       "catalogKey": "breed:dog:schnauzer",
       "resolvedKey": "breed:dog:schnauzer",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1101,6 +1504,9 @@
       "visualProfile": "dog-compact",
       "catalogKey": "breed:dog:scottish-terrier",
       "resolvedKey": "breed:dog:scottish-terrier",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1109,6 +1515,9 @@
       "visualProfile": "dog-compact",
       "catalogKey": "breed:dog:shar-pei",
       "resolvedKey": "breed:dog:shar-pei",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1117,6 +1526,9 @@
       "visualProfile": "dog-fluffy",
       "catalogKey": "breed:dog:shetland-sheepdog",
       "resolvedKey": "breed:dog:shetland-sheepdog",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1125,6 +1537,9 @@
       "visualProfile": "dog-standard",
       "catalogKey": "breed:dog:soft-coated-wheaten-terrier",
       "resolvedKey": "breed:dog:soft-coated-wheaten-terrier",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1133,6 +1548,9 @@
       "visualProfile": "dog-compact",
       "catalogKey": "breed:dog:staffordshire-bull-terrier",
       "resolvedKey": "breed:dog:staffordshire-bull-terrier",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1141,6 +1559,9 @@
       "visualProfile": "dog-large",
       "catalogKey": "breed:dog:st-bernard",
       "resolvedKey": "breed:dog:st-bernard",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1149,6 +1570,9 @@
       "visualProfile": "dog-toy",
       "catalogKey": "breed:dog:toy-fox-terrier",
       "resolvedKey": "breed:dog:toy-fox-terrier",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1157,6 +1581,9 @@
       "visualProfile": "dog-tall",
       "catalogKey": "breed:dog:weimaraner",
       "resolvedKey": "breed:dog:weimaraner",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1165,6 +1592,9 @@
       "visualProfile": "dog-standard",
       "catalogKey": "breed:dog:welsh-springer-spaniel",
       "resolvedKey": "breed:dog:welsh-springer-spaniel",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1173,6 +1603,9 @@
       "visualProfile": "dog-tall",
       "catalogKey": "breed:dog:whippet",
       "resolvedKey": "breed:dog:whippet",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1181,6 +1614,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:mixed-breed",
       "resolvedKey": "breed:cat:mixed-breed",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1189,6 +1625,9 @@
       "visualProfile": "cat-longhair",
       "catalogKey": "breed:cat:domestic-medium-hair",
       "resolvedKey": "breed:cat:domestic-medium-hair",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1197,6 +1636,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:american-bobtail",
       "resolvedKey": "breed:cat:american-bobtail",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1205,6 +1647,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:american-curl",
       "resolvedKey": "breed:cat:american-curl",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1213,6 +1658,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:american-wirehair",
       "resolvedKey": "breed:cat:american-wirehair",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1221,6 +1669,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:australian-mist",
       "resolvedKey": "breed:cat:australian-mist",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1229,6 +1680,9 @@
       "visualProfile": "cat-tall",
       "catalogKey": "breed:cat:balinese",
       "resolvedKey": "breed:cat:balinese",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1237,6 +1691,9 @@
       "visualProfile": "cat-longhair",
       "catalogKey": "breed:cat:british-longhair",
       "resolvedKey": "breed:cat:british-longhair",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1245,6 +1702,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:burmilla",
       "resolvedKey": "breed:cat:burmilla",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1253,6 +1713,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:chartreux",
       "resolvedKey": "breed:cat:chartreux",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1261,6 +1724,9 @@
       "visualProfile": "cat-tall",
       "catalogKey": "breed:cat:chausie",
       "resolvedKey": "breed:cat:chausie",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1269,6 +1735,9 @@
       "visualProfile": "cat-tall",
       "catalogKey": "breed:cat:cornish-rex",
       "resolvedKey": "breed:cat:cornish-rex",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1277,6 +1746,9 @@
       "visualProfile": "cat-longhair",
       "catalogKey": "breed:cat:cymric",
       "resolvedKey": "breed:cat:cymric",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1285,6 +1757,9 @@
       "visualProfile": "cat-hairless",
       "catalogKey": "breed:cat:donskoy",
       "resolvedKey": "breed:cat:donskoy",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1293,6 +1768,9 @@
       "visualProfile": "cat-tall",
       "catalogKey": "breed:cat:egyptian-mau",
       "resolvedKey": "breed:cat:egyptian-mau",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1301,6 +1779,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:european-shorthair",
       "resolvedKey": "breed:cat:european-shorthair",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1309,6 +1790,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:havana-brown",
       "resolvedKey": "breed:cat:havana-brown",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1317,6 +1801,9 @@
       "visualProfile": "cat-tall",
       "catalogKey": "breed:cat:highlander",
       "resolvedKey": "breed:cat:highlander",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1325,6 +1812,9 @@
       "visualProfile": "cat-longhair",
       "catalogKey": "breed:cat:himalayan",
       "resolvedKey": "breed:cat:himalayan",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1333,6 +1823,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:japanese-bobtail",
       "resolvedKey": "breed:cat:japanese-bobtail",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1341,6 +1834,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:khao-manee",
       "resolvedKey": "breed:cat:khao-manee",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1349,6 +1845,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:korat",
       "resolvedKey": "breed:cat:korat",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1357,6 +1856,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:kurilian-bobtail",
       "resolvedKey": "breed:cat:kurilian-bobtail",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1365,6 +1867,9 @@
       "visualProfile": "cat-longhair",
       "catalogKey": "breed:cat:laperm",
       "resolvedKey": "breed:cat:laperm",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1373,6 +1878,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:lykoi",
       "resolvedKey": "breed:cat:lykoi",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1381,6 +1889,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:manx",
       "resolvedKey": "breed:cat:manx",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1389,6 +1900,9 @@
       "visualProfile": "cat-hairless",
       "catalogKey": "breed:cat:minskin",
       "resolvedKey": "breed:cat:minskin",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1397,6 +1911,9 @@
       "visualProfile": "cat-longhair",
       "catalogKey": "breed:cat:nebelung",
       "resolvedKey": "breed:cat:nebelung",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1405,6 +1922,9 @@
       "visualProfile": "cat-tall",
       "catalogKey": "breed:cat:ocicat",
       "resolvedKey": "breed:cat:ocicat",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1413,6 +1933,9 @@
       "visualProfile": "cat-longhair",
       "catalogKey": "breed:cat:oriental-longhair",
       "resolvedKey": "breed:cat:oriental-longhair",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1421,6 +1944,9 @@
       "visualProfile": "cat-hairless",
       "catalogKey": "breed:cat:peterbald",
       "resolvedKey": "breed:cat:peterbald",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1429,6 +1955,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:pixiebob",
       "resolvedKey": "breed:cat:pixiebob",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1437,6 +1966,9 @@
       "visualProfile": "cat-longhair",
       "catalogKey": "breed:cat:ragamuffin",
       "resolvedKey": "breed:cat:ragamuffin",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1445,6 +1977,9 @@
       "visualProfile": "cat-longhair",
       "catalogKey": "breed:cat:selkirk-rex",
       "resolvedKey": "breed:cat:selkirk-rex",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1453,6 +1988,9 @@
       "visualProfile": "cat-tall",
       "catalogKey": "breed:cat:serengeti",
       "resolvedKey": "breed:cat:serengeti",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1461,6 +1999,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:singapura",
       "resolvedKey": "breed:cat:singapura",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1469,6 +2010,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:snowshoe",
       "resolvedKey": "breed:cat:snowshoe",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1477,6 +2021,9 @@
       "visualProfile": "cat-tall",
       "catalogKey": "breed:cat:sokoke",
       "resolvedKey": "breed:cat:sokoke",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1485,6 +2032,9 @@
       "visualProfile": "cat-longhair",
       "catalogKey": "breed:cat:somali",
       "resolvedKey": "breed:cat:somali",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1493,6 +2043,9 @@
       "visualProfile": "cat-tall",
       "catalogKey": "breed:cat:thai",
       "resolvedKey": "breed:cat:thai",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1501,6 +2054,9 @@
       "visualProfile": "cat-tall",
       "catalogKey": "breed:cat:tonkinese",
       "resolvedKey": "breed:cat:tonkinese",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1509,6 +2065,9 @@
       "visualProfile": "cat-compact",
       "catalogKey": "breed:cat:toybob",
       "resolvedKey": "breed:cat:toybob",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1517,6 +2076,9 @@
       "visualProfile": "cat-tall",
       "catalogKey": "breed:cat:toyger",
       "resolvedKey": "breed:cat:toyger",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1525,6 +2087,9 @@
       "visualProfile": "cat-longhair",
       "catalogKey": "breed:cat:turkish-angora",
       "resolvedKey": "breed:cat:turkish-angora",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     },
     {
@@ -1533,7 +2098,11 @@
       "visualProfile": "cat-longhair",
       "catalogKey": "breed:cat:turkish-van",
       "resolvedKey": "breed:cat:turkish-van",
+      "hasVisual": false,
+      "hasMotion": false,
+      "identityMatched": true,
       "status": "fallback"
     }
-  ]
+  ],
+  "pickerUnsafe": []
 }

@@ -46,7 +46,15 @@ const aliases = new Map(
   ),
 );
 
-const exactPackKeys = new Set(
+const visualAssetKeys = new Set(
+  [
+    ...(visualRegistrySource + "\n" + generatedPackSource).matchAll(
+      /"(breed:(?:dog|cat):[^"]+)"/g,
+    ),
+  ].map(([, key]) => key),
+);
+
+const motionPackKeys = new Set(
   [
     ...(motionPackSource + "\n" + generatedPackSource).matchAll(
       /"((?:(?:breed:(?:dog|cat))|pet):[^"]+)"/g,
@@ -57,16 +65,26 @@ const exactPackKeys = new Set(
 const rows = [...parseCatalog("dog", "dog"), ...parseCatalog("cat", "cat")].map(
   (breed) => {
     const resolvedKey = aliases.get(breed.catalogKey) ?? breed.catalogKey;
+    const hasVisual = visualAssetKeys.has(resolvedKey);
+    const hasMotion = motionPackKeys.has(resolvedKey);
+    const identityMatched = !resolvedKey.startsWith("pet:");
     return {
       ...breed,
       resolvedKey,
-      status: exactPackKeys.has(resolvedKey) ? "exact" : "fallback",
+      hasVisual,
+      hasMotion,
+      identityMatched,
+      status:
+        hasVisual && hasMotion && identityMatched ? "exact" : "fallback",
     };
   },
 );
 
 const exact = rows.filter((row) => row.status === "exact");
 const fallback = rows.filter((row) => row.status === "fallback");
+const pickerUnsafe = rows.filter(
+  (row) => row.hasVisual && (!row.hasMotion || !row.identityMatched),
+);
 const bySpecies = Object.fromEntries(
   ["dog", "cat"].map((species) => {
     const speciesRows = rows.filter((row) => row.species === species);
@@ -91,11 +109,13 @@ const report = {
     total: rows.length,
     exact: exact.length,
     fallback: fallback.length,
+    pickerUnsafe: pickerUnsafe.length,
     exactPercent: Number(((exact.length / rows.length) * 100).toFixed(2)),
   },
   bySpecies,
   exact,
   fallback,
+  pickerUnsafe,
 };
 
 const outputPath = path.join(projectRoot, "app-store", "breed-visual-coverage.json");
@@ -106,5 +126,12 @@ process.stdout.write(
 );
 
 if (process.argv.includes("--strict") && fallback.length > 0) {
+  process.exitCode = 1;
+}
+
+if (process.argv.includes("--picker-strict") && pickerUnsafe.length > 0) {
+  console.error(
+    "A breed picker entry can resolve to a missing or mismatched companion.",
+  );
   process.exitCode = 1;
 }

@@ -1,5 +1,6 @@
 export {
   createBreedAssetKey,
+  getVerifiedBreedOptions,
   getPetVisualAsset,
   hasExactBreedVisual,
   registerPetVisualAsset,

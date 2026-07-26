@@ -13,9 +13,9 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { getBreedOptions, type PetSpecies } from "../data/pet-breeds";
+import { type PetSpecies } from "../data/pet-breeds";
 import { colors } from "../design";
-import { hasExactBreedVisual } from "../features/pet-visuals/registry";
+import { getVerifiedBreedOptions } from "../features/pet-visuals/registry";
 import { INPUT_LIMITS } from "../utils/input-limits";
 
 interface BreedPickerProps {
@@ -36,9 +36,7 @@ export function BreedPicker({ species, value, onChange }: BreedPickerProps) {
 
   const options = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase();
-    const breeds = getBreedOptions(species).filter((option) =>
-      hasExactBreedVisual(species, option.name),
-    );
+    const breeds = getVerifiedBreedOptions(species);
     if (!normalizedQuery) return breeds;
     return breeds.filter((option) =>
       option.name.toLocaleLowerCase().includes(normalizedQuery),
