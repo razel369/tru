@@ -561,8 +561,8 @@ const authoredBlinkSpecs: Readonly<Record<string, AuthoredBlinkSpec>> = {
     eyePair(0.382, 0.555, 0.269, 0.09, 0.046),
   ),
   "breed:cat:maine-coon": blinkSpec(
-    require("../../../assets/pet-motion/breed-maine-coon/blink-half-v2.png"),
-    require("../../../assets/pet-motion/breed-maine-coon/blink-v2.png"),
+    require("../../../assets/pet-motion/breed-maine-coon/blink-half-v3.png"),
+    require("../../../assets/pet-motion/breed-maine-coon/blink-v3.png"),
     eyePair(0.402, 0.566, 0.278, 0.086, 0.046),
   ),
   "breed:cat:sphynx": blinkSpec(
@@ -571,8 +571,8 @@ const authoredBlinkSpecs: Readonly<Record<string, AuthoredBlinkSpec>> = {
     eyePair(0.361, 0.547, 0.278, 0.096, 0.05),
   ),
   "breed:dog:chihuahua": blinkSpec(
-    require("../../../assets/pet-motion/breed-chihuahua/blink-half-v2.png"),
-    require("../../../assets/pet-motion/breed-chihuahua/blink-v2.png"),
+    require("../../../assets/pet-motion/breed-chihuahua/blink-half-v3.png"),
+    require("../../../assets/pet-motion/breed-chihuahua/blink-v3.png"),
     eyePair(0.306, 0.52, 0.28, 0.106, 0.056),
   ),
   "breed:dog:french-bulldog": blinkSpec(
@@ -645,8 +645,8 @@ const authoredBlinkSpecs: Readonly<Record<string, AuthoredBlinkSpec>> = {
     eyePair(0.375, 0.534, 0.279, 0.086, 0.042),
   ),
   "breed:cat:persian": blinkSpec(
-    require("../../../assets/pet-motion/breed-persian/blink-half-v2.png"),
-    require("../../../assets/pet-motion/breed-persian/blink-v2.png"),
+    require("../../../assets/pet-motion/breed-persian/blink-half-v3.png"),
+    require("../../../assets/pet-motion/breed-persian/blink-v3.png"),
     eyePair(0.387, 0.555, 0.286, 0.09, 0.046),
   ),
   "breed:cat:ragdoll": blinkSpec(
@@ -655,8 +655,8 @@ const authoredBlinkSpecs: Readonly<Record<string, AuthoredBlinkSpec>> = {
     eyePair(0.402, 0.552, 0.279, 0.086, 0.046),
   ),
   "breed:cat:bengal": blinkSpec(
-    require("../../../assets/pet-motion/breed-bengal/blink-half-v2.png"),
-    require("../../../assets/pet-motion/breed-bengal/blink-v2.png"),
+    require("../../../assets/pet-motion/breed-bengal/blink-half-v3.png"),
+    require("../../../assets/pet-motion/breed-bengal/blink-v3.png"),
     eyePair(0.371, 0.525, 0.238, 0.086, 0.046),
   ),
   "breed:cat:scottish-fold": blinkSpec(

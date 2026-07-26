@@ -14,6 +14,7 @@ describe("native motion QA environment settings", () => {
 
   it("keeps QA disabled for ordinary App Store launches", () => {
     expect(resolveNativeMotionQASettings(undefined)).toEqual({
+      autoBlinkInspection: false,
       autoStressInteractions: false,
       enabled: false,
     });
@@ -23,6 +24,7 @@ describe("native motion QA environment settings", () => {
         PawPairMotionQAStress: "false",
       }),
     ).toEqual({
+      autoBlinkInspection: false,
       autoStressInteractions: false,
       enabled: false,
     });
@@ -35,7 +37,21 @@ describe("native motion QA environment settings", () => {
         PawPairMotionQAStress: "YES",
       }),
     ).toEqual({
+      autoBlinkInspection: false,
       autoStressInteractions: true,
+      enabled: true,
+    });
+  });
+
+  it("enables the deterministic blink inspection independently", () => {
+    expect(
+      resolveNativeMotionQASettings({
+        PawPairMotionQA: "1",
+        PawPairMotionQABlink: "1",
+      }),
+    ).toEqual({
+      autoBlinkInspection: true,
+      autoStressInteractions: false,
       enabled: true,
     });
   });

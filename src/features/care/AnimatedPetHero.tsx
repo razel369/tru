@@ -79,6 +79,7 @@ export function AnimatedPetHero({
   inspectionMode?: boolean;
   onMotionReadyChange?: (ready: boolean) => void;
   motionCommand?: {
+    closedHoldMs?: number;
     durationMs?: number;
     id: number;
     sequenceScale?: number;
@@ -120,6 +121,7 @@ export function AnimatedPetHero({
     ReadonlySet<string>
   >(() => new Set());
   const pendingBlink = useRef<{
+    closedHoldMs?: number;
     interruptExpression: boolean;
     sequenceScale: number;
   } | null>(null);
@@ -593,14 +595,22 @@ export function AnimatedPetHero({
     ],
   );
 
-  const runBlink = useCallback((sequenceScale = 1, interruptExpression = true) => {
+  const runBlink = useCallback((
+    sequenceScale = 1,
+    interruptExpression = true,
+    closedHoldOverrideMs?: number,
+  ) => {
     if (!appActive || !motionPack?.states.blink) return;
     if (motionFailedForPack) {
       pendingBlink.current = null;
       return;
     }
     if (!motionReadyForPack) {
-      pendingBlink.current = { interruptExpression, sequenceScale };
+      pendingBlink.current = {
+        closedHoldMs: closedHoldOverrideMs,
+        interruptExpression,
+        sequenceScale,
+      };
       return;
     }
     if (!interruptExpression && (expressionTimer.current || motionState !== "idle")) {
@@ -640,7 +650,9 @@ export function AnimatedPetHero({
     const closeDuration = Math.round(sampleRange(blinkProfile.closeMs) * blinkScale);
     const halfCloseHold = Math.round(blinkProfile.halfCloseHoldMs * blinkScale);
     const closeBlend = Math.round(blinkProfile.closeBlendMs * blinkScale);
-    const closedHold = Math.round(sampleRange(blinkProfile.closedHoldMs) * blinkScale);
+    const closedHold =
+      closedHoldOverrideMs ??
+      Math.round(sampleRange(blinkProfile.closedHoldMs) * blinkScale);
     const openBlend = Math.round(blinkProfile.openBlendMs * blinkScale);
     const halfOpenHold = Math.round(blinkProfile.halfOpenHoldMs * blinkScale);
     const openDuration = Math.round(sampleRange(blinkProfile.openMs) * blinkScale);
@@ -756,7 +768,11 @@ export function AnimatedPetHero({
     if (!motionReadyForPack || !pendingBlink.current) return;
     const queuedBlink = pendingBlink.current;
     pendingBlink.current = null;
-    runBlink(queuedBlink.sequenceScale, queuedBlink.interruptExpression);
+    runBlink(
+      queuedBlink.sequenceScale,
+      queuedBlink.interruptExpression,
+      queuedBlink.closedHoldMs,
+    );
   }, [motionReadyForPack, runBlink]);
 
   const runProceduralHalfBlink = useCallback((durationMs = 900) => {
@@ -892,7 +908,11 @@ export function AnimatedPetHero({
     }
 
     if (motionCommand.state === "blink") {
-      runBlink(motionCommand.sequenceScale ?? 1);
+      runBlink(
+        motionCommand.sequenceScale ?? 1,
+        true,
+        motionCommand.closedHoldMs,
+      );
       return;
     }
 

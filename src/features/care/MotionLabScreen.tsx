@@ -21,7 +21,18 @@ import { getPetVisualAsset } from "../pet-visuals/registry";
 import { AnimatedPetHero } from "./AnimatedPetHero";
 
 const MOTION_STRESS_MARKER = "pawpair-motion-stress.json";
+const MOTION_BLINK_MARKER = "pawpair-motion-blink.json";
 const MOTION_STRESS_ATTEMPTS = 10;
+
+function writeMotionBlinkMarker(status: "ready" | "running") {
+  try {
+    const file = new File(Paths.document, MOTION_BLINK_MARKER);
+    file.create({ intermediates: true, overwrite: true });
+    file.write(JSON.stringify({ status, updatedAt: new Date().toISOString() }));
+  } catch {
+    // The native CI check treats a missing marker as a failed blink run.
+  }
+}
 
 function writeMotionStressMarker(
   status: "running" | "stable",
@@ -67,11 +78,13 @@ export function MotionLabScreen({
   topInset,
   bottomInset,
   onClose,
+  autoBlinkInspection = false,
   autoStressInteractions = false,
 }: {
   topInset: number;
   bottomInset: number;
   onClose: () => void;
+  autoBlinkInspection?: boolean;
   autoStressInteractions?: boolean;
 }) {
   const petKeys = useMemo(
@@ -94,6 +107,7 @@ export function MotionLabScreen({
   );
   const [motionCommand, setMotionCommand] = useState<
     {
+      closedHoldMs?: number;
       durationMs?: number;
       id: number;
       sequenceScale?: number;
@@ -119,6 +133,18 @@ export function MotionLabScreen({
     }, 0);
     return () => clearTimeout(timer);
   }, [isPackTransitioning, selectedKey]);
+
+  useEffect(() => {
+    if (!autoBlinkInspection || !motionReady) return;
+    writeMotionBlinkMarker("ready");
+    setMotionCommand((previous) => ({
+      closedHoldMs: 3000,
+      id: (previous?.id ?? 0) + 1,
+      sequenceScale: 1,
+      state: "blink",
+    }));
+    writeMotionBlinkMarker("running");
+  }, [autoBlinkInspection, motionReady]);
 
   useEffect(() => {
     if (!autoStressInteractions) return;

@@ -460,6 +460,7 @@ export function PetCareApp() {
   if (nativeMotionQA.enabled) {
     return (
       <MotionLabScreen
+        autoBlinkInspection={nativeMotionQA.autoBlinkInspection}
         autoStressInteractions={nativeMotionQA.autoStressInteractions}
         bottomInset={insets.bottom}
         onClose={() => undefined}

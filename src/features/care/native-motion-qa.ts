@@ -1,4 +1,5 @@
 export type NativeMotionQASettings = {
+  autoBlinkInspection: boolean;
   autoStressInteractions: boolean;
   enabled: boolean;
 };
@@ -13,6 +14,9 @@ export function resolveNativeMotionQASettings(
   settings: Readonly<Record<string, unknown>> | null | undefined,
 ): NativeMotionQASettings {
   return {
+    autoBlinkInspection: isEnabledValue(
+      settings?.PawPairMotionQABlink,
+    ),
     autoStressInteractions: isEnabledValue(
       settings?.PawPairMotionQAStress,
     ),

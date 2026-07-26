@@ -1,0 +1,433 @@
+{
+  "compositeCount": 7,
+  "invariant": "Only feathered eye regions differ from the idle portrait.",
+  "frames": [
+    {
+      "key": "breed:cat:abyssinian",
+      "method": "imagegen-eyelid-donor-sift-composite",
+      "eyes": [
+        0.3815,
+        0.5458,
+        0.2329,
+        0.1291,
+        0.0488
+      ],
+      "half": {
+        "path": "assets\\pet-motion\\breed-abyssinian\\blink-half-v4.png",
+        "generatedSize": [
+          852,
+          1846
+        ],
+        "generatedSha256": "a80201d1b18fc84598aaab089a9e38a864c5cdb9c21d1400c847ae35c28e5db0",
+        "outputSha256": "4366339761dc6d1fb8bebd6e44802b3938a4c081a544d664839ebbbad5dbcdf8",
+        "registration": {
+          "matches": 134,
+          "inliers": 123,
+          "matrix": [
+            [
+              0.99447792,
+              0.00021117,
+              3.56680167
+            ],
+            [
+              -0.00021117,
+              0.99447792,
+              3.82784266
+            ]
+          ]
+        }
+      },
+      "closed": {
+        "path": "assets\\pet-motion\\breed-abyssinian\\blink-v4.png",
+        "generatedSize": [
+          852,
+          1846
+        ],
+        "generatedSha256": "04d90a674a81bf32eaa55a0e14c91b7c6fd43445f4a503dd981d4a163631b3bf",
+        "outputSha256": "74aaf8a644c8d30ed48ad8f6068210425e851b421796b3ad216e60b3e66d0b9e",
+        "registration": {
+          "matches": 132,
+          "inliers": 112,
+          "matrix": [
+            [
+              0.99508758,
+              0.00266387,
+              -12.06743698
+            ],
+            [
+              -0.00266387,
+              0.99508758,
+              -1.6062135
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "key": "breed:cat:norwegian-forest-cat",
+      "method": "imagegen-eyelid-donor-sift-composite",
+      "eyes": [
+        0.3815,
+        0.5458,
+        0.2736,
+        0.135,
+        0.0515
+      ],
+      "half": {
+        "path": "assets\\pet-motion\\breed-norwegian-forest-cat\\blink-half-v4.png",
+        "generatedSize": [
+          853,
+          1844
+        ],
+        "generatedSha256": "bb3e025097513254212f8fe5c7a34841b1ce4cec6a74c389e0c7f105acaef869",
+        "outputSha256": "8e462a50df32ec6893a7c9d8aeeec69f219908ceee30e000083f8d2eb3d50341",
+        "registration": {
+          "matches": 305,
+          "inliers": 292,
+          "matrix": [
+            [
+              1.00173352,
+              3.785e-05,
+              0.93791272
+            ],
+            [
+              -3.785e-05,
+              1.00173352,
+              -1.80129236
+            ]
+          ]
+        }
+      },
+      "closed": {
+        "path": "assets\\pet-motion\\breed-norwegian-forest-cat\\blink-v4.png",
+        "generatedSize": [
+          852,
+          1846
+        ],
+        "generatedSha256": "2d00b272cbf9ec43273cef856549d4fe18edb037e60903f12fc2f0da9647d99b",
+        "outputSha256": "c9bb21becf88e5faf6d39b0b63fd1ad52f4259a260fb5aad1ae3b0e3af0ecc65",
+        "registration": {
+          "matches": 284,
+          "inliers": 252,
+          "matrix": [
+            [
+              0.99965635,
+              0.00142501,
+              -6.49302186
+            ],
+            [
+              -0.00142501,
+              0.99965635,
+              -0.08132689
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "key": "breed:cat:devon-rex",
+      "method": "imagegen-eyelid-donor-sift-composite",
+      "eyes": [
+        0.3462,
+        0.5164,
+        0.299,
+        0.1526,
+        0.0542
+      ],
+      "half": {
+        "path": "assets\\pet-motion\\breed-devon-rex\\blink-half-v4.png",
+        "generatedSize": [
+          852,
+          1846
+        ],
+        "generatedSha256": "47b78568fd3db3baa791342f756e9d2fe7342158761694d5648e65068ca9ada1",
+        "outputSha256": "1bb098f4d1ef4845c1fd0e02ad1c42a34f1fa9cefc3fa418da17fbf55e01fe87",
+        "registration": {
+          "matches": 266,
+          "inliers": 252,
+          "matrix": [
+            [
+              1.00181628,
+              0.00019303,
+              1.45567378
+            ],
+            [
+              -0.00019303,
+              1.00181628,
+              -2.61552995
+            ]
+          ]
+        }
+      },
+      "closed": {
+        "path": "assets\\pet-motion\\breed-devon-rex\\blink-v4.png",
+        "generatedSize": [
+          852,
+          1846
+        ],
+        "generatedSha256": "e77128db267a6317565cf07f09fe73980d175a49124f758acf2d86a89dbbbc07",
+        "outputSha256": "e0d932ff44a0be762e8a1d4aa3acdfc2624bffc40920c5c535e5397b11f393b4",
+        "registration": {
+          "matches": 230,
+          "inliers": 222,
+          "matrix": [
+            [
+              1.00133776,
+              -0.00021971,
+              2.19333544
+            ],
+            [
+              0.00021971,
+              1.00133776,
+              -1.41612857
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "key": "breed:dog:australian-shepherd",
+      "method": "imagegen-eyelid-donor-sift-composite",
+      "eyes": [
+        0.3697,
+        0.5223,
+        0.2194,
+        0.1115,
+        0.046
+      ],
+      "half": {
+        "path": "assets\\pet-motion\\breed-australian-shepherd\\blink-half-v4.png",
+        "generatedSize": [
+          852,
+          1846
+        ],
+        "generatedSha256": "3cf4cada30b5b1ed39e43d4fb97315304e8b7135c265b42d9bb0a7bc6424674e",
+        "outputSha256": "65258d70675df92da02dabee98691f62b3338b7c9bd627db352f863d5277e242",
+        "registration": {
+          "matches": 221,
+          "inliers": 201,
+          "matrix": [
+            [
+              1.00468148,
+              0.00063212,
+              -0.9921563
+            ],
+            [
+              -0.00063212,
+              1.00468148,
+              -3.8975178
+            ]
+          ]
+        }
+      },
+      "closed": {
+        "path": "assets\\pet-motion\\breed-australian-shepherd\\blink-v4.png",
+        "generatedSize": [
+          852,
+          1846
+        ],
+        "generatedSha256": "c85d8026d8119c71e061fdb1201096e804417070bd6a410cb8532978adde1c35",
+        "outputSha256": "f8ed6f8748437bc36202cdb8ff2b450ad55627c7b90e94a0006e8c29ade1e0e1",
+        "registration": {
+          "matches": 255,
+          "inliers": 244,
+          "matrix": [
+            [
+              1.00131581,
+              0.00066724,
+              0.78739452
+            ],
+            [
+              -0.00066724,
+              1.00131581,
+              0.08276158
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "key": "breed:dog:cavalier-king-charles-spaniel",
+      "method": "imagegen-eyelid-donor-sift-composite",
+      "eyes": [
+        0.358,
+        0.5282,
+        0.279,
+        0.135,
+        0.0596
+      ],
+      "half": {
+        "path": "assets\\pet-motion\\breed-cavalier-king-charles-spaniel\\blink-half-v4.png",
+        "generatedSize": [
+          852,
+          1846
+        ],
+        "generatedSha256": "0c202eaa91362adc1c01324763b75e74b88c8026634aab0412b0ff4adfbe763e",
+        "outputSha256": "ca99aa0464f73af5a5ae87f84167a8e4d5f18738a64f777b40d018f368f97db3",
+        "registration": {
+          "matches": 165,
+          "inliers": 146,
+          "matrix": [
+            [
+              1.00328982,
+              -0.00077877,
+              1.39813659
+            ],
+            [
+              0.00077877,
+              1.00328982,
+              -2.70910281
+            ]
+          ]
+        }
+      },
+      "closed": {
+        "path": "assets\\pet-motion\\breed-cavalier-king-charles-spaniel\\blink-v4.png",
+        "generatedSize": [
+          852,
+          1846
+        ],
+        "generatedSha256": "3cfc18aeedd40351e69cf3dbf1078372e8d2d362e2a108bdf7c4053d875f265e",
+        "outputSha256": "03597a51c844b7e9900d1f4cb8009499bd046aa7136198dcf3f22911c67c882f",
+        "registration": {
+          "matches": 147,
+          "inliers": 128,
+          "matrix": [
+            [
+              1.00543167,
+              -0.00069905,
+              -0.39298978
+            ],
+            [
+              0.00069905,
+              1.00543167,
+              -4.73235688
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "key": "breed:dog:bulldog",
+      "method": "imagegen-eyelid-donor-sift-composite",
+      "eyes": [
+        0.3052,
+        0.5516,
+        0.2898,
+        0.1408,
+        0.0596
+      ],
+      "half": {
+        "path": "assets\\pet-motion\\breed-english-bulldog\\blink-half-v4.png",
+        "generatedSize": [
+          852,
+          1846
+        ],
+        "generatedSha256": "4d33839dd646b557b9797635498e42e7bf357606644bcb48ff8f869d8c61f2b7",
+        "outputSha256": "91f39a48b4fa061231e905e23fa476bf06a8de430616039dcee3f19d0a276313",
+        "registration": {
+          "matches": 256,
+          "inliers": 241,
+          "matrix": [
+            [
+              1.003738,
+              0.00092415,
+              -1.96222943
+            ],
+            [
+              -0.00092415,
+              1.003738,
+              -2.6642459
+            ]
+          ]
+        }
+      },
+      "closed": {
+        "path": "assets\\pet-motion\\breed-english-bulldog\\blink-v4.png",
+        "generatedSize": [
+          852,
+          1846
+        ],
+        "generatedSha256": "631757b225f11d88382b56d98275a6cfcad76241511b4d5e5061b8529da14aa2",
+        "outputSha256": "24093c24cad78bc72c6761c8769e1244047a352e8126a5f4b5f1fc8871a16cf4",
+        "registration": {
+          "matches": 281,
+          "inliers": 272,
+          "matrix": [
+            [
+              0.99963484,
+              0.00118952,
+              -0.86889862
+            ],
+            [
+              -0.00118952,
+              0.99963484,
+              0.38768769
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "key": "breed:cat:munchkin",
+      "method": "imagegen-eyelid-donor-sift-composite",
+      "eyes": [
+        0.3228,
+        0.534,
+        0.3115,
+        0.1467,
+        0.0758
+      ],
+      "half": {
+        "path": "assets\\pet-motion\\breed-munchkin\\blink-half-v4.png",
+        "generatedSize": [
+          852,
+          1846
+        ],
+        "generatedSha256": "0f2d3289b1e123c1011134397e60fb5a06a6ba79de7804f4cbaeafe5c2e94fdb",
+        "outputSha256": "6121d3628f362279c7babcd99a38feeeea41bc33532e504f9d20acef39238ede",
+        "registration": {
+          "matches": 302,
+          "inliers": 278,
+          "matrix": [
+            [
+              1.00437746,
+              0.00059786,
+              0.47140844
+            ],
+            [
+              -0.00059786,
+              1.00437746,
+              -3.65919537
+            ]
+          ]
+        }
+      },
+      "closed": {
+        "path": "assets\\pet-motion\\breed-munchkin\\blink-v4.png",
+        "generatedSize": [
+          852,
+          1846
+        ],
+        "generatedSha256": "d1c99417380a6e98a86398a5b04789e2546ab77d4f1ff526f3d563c10621549d",
+        "outputSha256": "4585f11de5dc88a0266507b28e6a16c0a9a6108561dd1d7c8c18287d675f941e",
+        "registration": {
+          "matches": 221,
+          "inliers": 202,
+          "matrix": [
+            [
+              0.99747398,
+              0.0023918,
+              -2.49814448
+            ],
+            [
+              -0.0023918,
+              0.99747398,
+              1.0361275
+            ]
+          ]
+        }
+      }
+    }
+  ]
+}

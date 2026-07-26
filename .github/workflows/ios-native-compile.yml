@@ -155,6 +155,41 @@ jobs:
               app.pawpair.medtracker \
               data
           )"
+          blink_marker="$app_container/Documents/pawpair-motion-blink.json"
+          rm -f "$blink_marker"
+          SIMCTL_CHILD_PAWPAIR_MOTION_QA=1 \
+          SIMCTL_CHILD_PAWPAIR_MOTION_QA_BLINK=1 \
+          xcrun simctl launch \
+            "$IOS_SIMULATOR_UDID" \
+            app.pawpair.medtracker
+          blink_started=0
+          for attempt in {1..30}; do
+            if test -f "$blink_marker" && node -e '
+              const fs = require("fs");
+              const result = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+              process.exit(result.status === "running" ? 0 : 1);
+            ' "$blink_marker"; then
+              blink_started=1
+              break
+            fi
+            sleep 1
+          done
+          if test "$blink_started" -ne 1; then
+            echo "Deterministic native blink did not start within 30 seconds."
+            exit 1
+          fi
+          sleep 1
+          xcrun simctl io \
+            "$IOS_SIMULATOR_UDID" \
+            screenshot native-qa/iphone-motion-blink.png
+          node scripts/verify-native-blink-screenshots.mjs \
+            native-qa/iphone-motion-baseline.png \
+            native-qa/iphone-motion-blink.png \
+            native-qa/motion-blink-comparison.json
+
+          xcrun simctl terminate \
+            "$IOS_SIMULATOR_UDID" \
+            app.pawpair.medtracker
           stress_marker="$app_container/Documents/pawpair-motion-stress.json"
           rm -f "$stress_marker"
           SIMCTL_CHILD_PAWPAIR_MOTION_QA=1 \
@@ -382,7 +417,9 @@ jobs:
             xcodebuild-simulator.log
             native-qa/iphone-launch.png
             native-qa/iphone-motion-baseline.png
+            native-qa/iphone-motion-blink.png
             native-qa/iphone-motion-after-stress.png
+            native-qa/motion-blink-comparison.json
             native-qa/motion-stress-comparison.json
             native-qa/motion-stress-runtime.json
             native-qa/ipad-launch.png

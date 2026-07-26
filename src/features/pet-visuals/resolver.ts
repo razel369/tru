@@ -4,6 +4,7 @@ import { getBreedVisualProfile, PET_SCENE_LAYOUTS } from "../../data/pet-breeds"
 import type { Pet } from "../../types";
 
 import { createBreedAssetKey, getPetVisualAsset } from "./registry";
+import { resolveFallbackPetMotionKey } from "./fallback-motion";
 import type {
   PetVisualAsset,
   PetVisualGenerationRequest,
@@ -31,6 +32,7 @@ export function resolvePetVisual(
   fallbackSceneSource?: ImageSourcePropType,
 ): ResolvedPetVisual {
   const asset = findBestAsset(pet);
+  const fallbackAssetKey = resolveFallbackPetMotionKey(pet.avatar);
   const profile =
     pet.visual?.profile ??
     pet.visualProfile ??
@@ -39,7 +41,10 @@ export function resolvePetVisual(
   const sceneContainsPet = asset?.mode === "integrated-scene" && Boolean(asset.sceneSource);
 
   return {
-    assetKey: asset?.key ?? null,
+    // Existing pets can predate the verified-breed picker. Their fallback
+    // artwork is the avatar they already chose, so use that same identity's
+    // motion pack instead of resolving the unsupported breed to a static pet.
+    assetKey: asset?.key ?? fallbackAssetKey,
     mode: asset?.mode ?? "anchored-cutout",
     status: asset ? "ready" : pet.visual?.status ?? "fallback",
     profile,
