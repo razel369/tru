@@ -328,6 +328,16 @@ jobs:
           xcrun simctl install \
             "$WATCH_SIMULATOR_UDID" \
             ios/build-simulator/Build/Products/Release-watchsimulator/PawPairWatch.app
+          xcrun simctl launch \
+            "$WATCH_SIMULATOR_UDID" \
+            app.pawpair.medtracker.watchkitapp
+          sleep 10
+          xcrun simctl io \
+            "$WATCH_SIMULATOR_UDID" \
+            screenshot native-qa/watch-empty.png
+          xcrun simctl terminate \
+            "$WATCH_SIMULATOR_UDID" \
+            app.pawpair.medtracker.watchkitapp
           watch_snapshot_hex="$(
             cat native-qa/app-store-fixture/watch-snapshot.hex
           )"
@@ -359,6 +369,7 @@ jobs:
             native-qa/motion-stress-comparison.json
             native-qa/motion-stress-runtime.json
             native-qa/ipad-launch.png
+            native-qa/watch-empty.png
             native-qa/watch-launch.png
             native-qa/app-store-fixture/care-state.json
             native-qa/app-store-fixture/watch-snapshot.json
