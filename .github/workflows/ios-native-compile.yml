@@ -61,6 +61,16 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             build | tee xcodebuild.log
+          watch_product="ios/build/Build/Products/Release-watchos/PawPairWatch.app"
+          test -d "$watch_product"
+          watch_icon_asset="$(
+            find "$watch_product" \
+              -maxdepth 1 \
+              \( -name 'Assets.car' -o -name 'AppIcon*.png' \) \
+              -print \
+              -quit
+          )"
+          test -n "$watch_icon_asset"
 
       - name: Select an available iPhone simulator
         run: |
@@ -482,6 +492,26 @@ jobs:
             find "$app_path/Watch" -maxdepth 1 -name '*.app' -print -quit
           )"
           test -n "$watch_app"
+          test -f "$app_path/_CodeSignature/CodeResources"
+          test -f "$watch_app/_CodeSignature/CodeResources"
+          test -f "$app_path/PrivacyInfo.xcprivacy"
+          test -f "$watch_app/PrivacyInfo.xcprivacy"
+          test -f "$app_path/embedded.mobileprovision"
+          test -f "$watch_app/embedded.mobileprovision"
+          watch_icon_asset="$(
+            find "$watch_app" \
+              -maxdepth 1 \
+              \( -name 'Assets.car' -o -name 'AppIcon*.png' \) \
+              -print \
+              -quit
+          )"
+          test -n "$watch_icon_asset"
+          /usr/bin/codesign \
+            --verify \
+            --deep \
+            --strict \
+            --verbose=2 \
+            "$app_path"
           {
             echo "gitCommitHash=$GITHUB_SHA"
             echo "githubRunId=$GITHUB_RUN_ID"
@@ -497,6 +527,7 @@ jobs:
                 "$app_path/Info.plist"
             )"
             echo "watchApp=$(basename "$watch_app")"
+            echo "watchIconAsset=$(basename "$watch_icon_asset")"
           } > "$RUNNER_TEMP/release-summary.txt"
           cat "$RUNNER_TEMP/release-summary.txt"
 
