@@ -408,7 +408,7 @@ jobs:
       - name: Install locked dependencies and EAS CLI
         run: |
           npm ci
-          npm install --global eas-cli@16.30.0
+          npm install --global eas-cli@21.2.0
 
       - name: Authenticate the ephemeral EAS session
         env:
@@ -433,12 +433,44 @@ jobs:
         env:
           EAS_LOCAL_BUILD_WORKINGDIR: ${{ runner.temp }}/pawpair-eas-local
         run: |
+          build_log="$RUNNER_TEMP/pawpair-eas-local-build.log"
+          trap 'rm -f "$build_log"' EXIT
+          set +e
           eas build \
             --platform ios \
             --profile production \
             --local \
             --non-interactive \
-            --output "$RUNNER_TEMP/PawPair.ipa"
+            --output "$RUNNER_TEMP/PawPair.ipa" \
+            > "$build_log" 2>&1
+          build_status=$?
+          set -e
+          if test "$build_status" -ne 0; then
+            node - "$build_log" <<'NODE'
+          const fs = require("node:fs");
+          const logPath = process.argv[2];
+          const safePattern =
+            /Signing for|requires a development team|requires a provisioning profile|No profiles for|doesn't include|error:|Error:|build command failed|Run fastlane|Build failed/i;
+          const safeLines = fs
+            .readFileSync(logPath, "utf8")
+            .split(/\r?\n/)
+            .filter((line) => line.length > 0 && line.length < 500)
+            .filter((line) => safePattern.test(line))
+            .filter(
+              (line) =>
+                !/password|certificateP12|provisioningProfileData|sessionSecret|base64/i.test(
+                  line,
+                ),
+            )
+            .slice(-80);
+          console.error(
+            safeLines.length > 0
+              ? safeLines.join("\n")
+              : "Local EAS build failed; unsafe raw output was suppressed.",
+          );
+          NODE
+            exit "$build_status"
+          fi
 
       - name: Inspect the signed archive
         run: |

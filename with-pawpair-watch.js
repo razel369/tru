@@ -8,6 +8,7 @@ const {
 
 const WATCH_TARGET = "PawPairWatch";
 const WATCH_BUNDLE_ID = "app.pawpair.medtracker.watchkitapp";
+const APPLE_TEAM_ID = "227Y584VN8";
 
 function unquote(value) {
   return String(value ?? "").replace(/^"|"$/g, "");
@@ -94,6 +95,7 @@ function addWatchTarget(project) {
     CLANG_ENABLE_MODULES: "YES",
     CODE_SIGN_STYLE: "Automatic",
     CURRENT_PROJECT_VERSION: '"$(CURRENT_PROJECT_VERSION)"',
+    DEVELOPMENT_TEAM: APPLE_TEAM_ID,
     ENABLE_PREVIEWS: "YES",
     GENERATE_INFOPLIST_FILE: "NO",
     INFOPLIST_FILE: `"${WATCH_TARGET}/Info.plist"`,
@@ -190,5 +192,6 @@ function withPawPairWatch(config) {
 }
 
 module.exports = withPawPairWatch;
+module.exports.APPLE_TEAM_ID = APPLE_TEAM_ID;
 module.exports.WATCH_BUNDLE_ID = WATCH_BUNDLE_ID;
 module.exports.WATCH_TARGET = WATCH_TARGET;

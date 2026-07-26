@@ -10,6 +10,7 @@
     "ios": {
       "supportsTablet": true,
       "requireFullScreen": false,
+      "appleTeamId": "227Y584VN8",
       "bundleIdentifier": "app.pawpair.medtracker",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
@@ -108,7 +109,19 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "cf604bac-300f-4ce7-b632-72593cef6674"
+        "projectId": "cf604bac-300f-4ce7-b632-72593cef6674",
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "targetName": "PawPairWatch",
+                  "bundleIdentifier": "app.pawpair.medtracker.watchkitapp"
+                }
+              ]
+            }
+          }
+        }
       }
     },
     "updates": {
