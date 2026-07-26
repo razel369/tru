@@ -1,7 +1,14 @@
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Alert, AppState, StyleSheet, View } from "react-native";
+import {
+  Alert,
+  AppState,
+  NativeModules,
+  Platform,
+  StyleSheet,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AutoOfflineBanner } from "../../components/feedback/OfflineBanner";
@@ -55,6 +62,7 @@ import { buildCareSchedule } from "./engine";
 import { HealthHubScreen } from "./HealthHubScreen";
 import { HomeCareScreen } from "./HomeCareScreen";
 import { MotionLabScreen } from "./MotionLabScreen";
+import { resolveNativeMotionQASettings } from "./native-motion-qa";
 import { buildMedicationSupplyStatuses } from "./medication-supply";
 import { scheduledCareFromNotificationAction } from "./notification-occurrence";
 import { PetProfileForm } from "./PetProfileForm";
@@ -75,6 +83,13 @@ type PendingConfirmation = {
 };
 
 const ACTIVATION_PAYWALL_KEY = "pawpair.premium.activation-paywall.v1";
+const nativeMotionQA = resolveNativeMotionQASettings(
+  Platform.OS === "ios"
+    ? (NativeModules.SettingsManager?.settings as
+        | Readonly<Record<string, unknown>>
+        | undefined)
+    : undefined,
+);
 
 function isSameLocalDate(first: Date, second: Date) {
   return (
@@ -424,6 +439,17 @@ export function PetCareApp() {
         bottomInset={insets.bottom}
         onReset={store.clearAllData}
         onRestore={store.replaceAllData}
+        topInset={insets.top}
+      />
+    );
+  }
+
+  if (nativeMotionQA.enabled) {
+    return (
+      <MotionLabScreen
+        autoStressInteractions={nativeMotionQA.autoStressInteractions}
+        bottomInset={insets.bottom}
+        onClose={() => undefined}
         topInset={insets.top}
       />
     );

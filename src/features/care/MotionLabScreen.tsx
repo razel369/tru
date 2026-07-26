@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { File, Paths } from "expo-file-system";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Pressable,
@@ -18,6 +19,28 @@ import {
 import { getPetVisualAsset } from "../pet-visuals/registry";
 
 import { AnimatedPetHero } from "./AnimatedPetHero";
+
+const MOTION_STRESS_MARKER = "pawpair-motion-stress.json";
+const MOTION_STRESS_ATTEMPTS = 10;
+
+function writeMotionStressMarker(
+  status: "running" | "stable",
+  attempts: number,
+) {
+  try {
+    const file = new File(Paths.document, MOTION_STRESS_MARKER);
+    file.create({ intermediates: true, overwrite: true });
+    file.write(
+      JSON.stringify({
+        attempts,
+        completedAt: status === "stable" ? new Date().toISOString() : null,
+        status,
+      }),
+    );
+  } catch {
+    // The native CI check treats a missing marker as a failed stress run.
+  }
+}
 
 const STATE_OPTIONS: readonly {
   icon: keyof typeof Ionicons.glyphMap;
@@ -44,10 +67,12 @@ export function MotionLabScreen({
   topInset,
   bottomInset,
   onClose,
+  autoStressInteractions = false,
 }: {
   topInset: number;
   bottomInset: number;
   onClose: () => void;
+  autoStressInteractions?: boolean;
 }) {
   const petKeys = useMemo(
     () =>
@@ -76,6 +101,12 @@ export function MotionLabScreen({
     } | undefined
   >();
   const [reactionToken, setReactionToken] = useState(0);
+  const [interactionCommand, setInteractionCommand] = useState<
+    { id: number; kind: "body" | "head" } | undefined
+  >();
+  const [stressStatus, setStressStatus] = useState<
+    "idle" | "running" | "stable"
+  >(autoStressInteractions ? "running" : "idle");
   const packTransitionRef = useRef(false);
   const [isPackTransitioning, setIsPackTransitioning] = useState(false);
   const [motionReady, setMotionReady] = useState(false);
@@ -88,6 +119,33 @@ export function MotionLabScreen({
     }, 0);
     return () => clearTimeout(timer);
   }, [isPackTransitioning, selectedKey]);
+
+  useEffect(() => {
+    if (!autoStressInteractions) return;
+
+    let sent = 0;
+    let settleTimer: ReturnType<typeof setTimeout> | undefined;
+    writeMotionStressMarker("running", sent);
+    const interval = setInterval(() => {
+      sent += 1;
+      setInteractionCommand({
+        id: sent,
+        kind: sent % 2 === 0 ? "head" : "body",
+      });
+      if (sent < MOTION_STRESS_ATTEMPTS) return;
+
+      clearInterval(interval);
+      settleTimer = setTimeout(() => {
+        setStressStatus("stable");
+        writeMotionStressMarker("stable", sent);
+      }, 700);
+    }, 980);
+
+    return () => {
+      clearInterval(interval);
+      if (settleTimer) clearTimeout(settleTimer);
+    };
+  }, [autoStressInteractions]);
 
   const pack = selectedKey ? resolvePetMotionPack(selectedKey) : null;
   const visual = selectedKey ? getPetVisualAsset(selectedKey) : undefined;
@@ -119,6 +177,7 @@ export function MotionLabScreen({
       <View style={styles.preview} testID="motion-lab-preview">
         <AnimatedPetHero
           inspectionMode
+          interactionCommand={interactionCommand}
           key={selectedKey}
           layout={visual.layout}
           motionCommand={motionCommand}
@@ -277,6 +336,21 @@ export function MotionLabScreen({
               {motionReady ? "READY" : "LOADING"}
             </Text>
           </View>
+          {autoStressInteractions && (
+            <View style={styles.statusRow}>
+              <Text style={styles.statusLabel}>Interaction stress</Text>
+              <Text
+                style={styles.statusValue}
+                testID="motion-interaction-stress-status"
+              >
+                {stressStatus === "stable"
+                  ? "STABLE"
+                  : stressStatus === "running"
+                    ? "RUNNING"
+                    : "IDLE"}
+              </Text>
+            </View>
+          )}
           <View style={styles.statusRow}>
             <Text style={styles.statusLabel}>States</Text>
             <Text style={styles.statusValue}>{availableStates.join(" · ")}</Text>

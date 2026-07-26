@@ -29,10 +29,19 @@ import {
 import { resolvePetBlinkProfile } from "../pet-motion/blink-profile";
 import { requiresAuthoredBlinkAssets } from "../pet-motion/blink-safety";
 import { resolvePetLifeProfile } from "../pet-motion/life-profile";
+import {
+  createPetMotionOverlayReadiness,
+  recordPetMotionOverlayLoad,
+  type PetMotionOverlayState,
+} from "../pet-motion/overlay-readiness";
+
+import {
+  acquirePetInteractionGate,
+  type PetInteractionKind,
+} from "./pet-interaction-gate";
 
 const USE_NATIVE_DRIVER = Platform.OS !== "web";
 const HERO_FLOOR_Y = 535;
-type InteractionKind = "body" | "care" | "head";
 
 function motionSourceIdentity(source: ImageSourcePropType | undefined) {
   if (!source) return "none";
@@ -50,6 +59,7 @@ export function AnimatedPetHero({
   sceneContainsPet,
   layout,
   reactionToken,
+  interactionCommand,
   motionCommand,
   onMotionReadyChange,
   inspectionMode = false,
@@ -62,6 +72,10 @@ export function AnimatedPetHero({
   sceneContainsPet: boolean;
   layout: PetVisualLayout;
   reactionToken: number;
+  interactionCommand?: {
+    id: number;
+    kind: Exclude<PetInteractionKind, "care">;
+  };
   inspectionMode?: boolean;
   onMotionReadyChange?: (ready: boolean) => void;
   motionCommand?: {
@@ -92,20 +106,19 @@ export function AnimatedPetHero({
   const lunaLeftEar = useRef(new Animated.Value(0)).current;
   const lunaRightEar = useRef(new Animated.Value(0)).current;
   const entrance = useRef(new Animated.Value(1)).current;
-  const reaction = useRef(new Animated.Value(0)).current;
   const touchFeedback = useRef(new Animated.Value(0)).current;
-  const lean = useRef(new Animated.Value(0)).current;
   const expressionOpacity = useRef(new Animated.Value(0)).current;
   const blinkHalfOpacity = useRef(new Animated.Value(0)).current;
   const blinkClosedOpacity = useRef(new Animated.Value(0)).current;
   const [readyMotionPackKeys, setReadyMotionPackKeys] = useState<
     ReadonlySet<string>
   >(() => new Set());
-  const motionAssetReadiness = useRef({
-    packKey: "",
-    blinkHalf: true,
-    blink: true,
-  });
+  const motionAssetReadiness = useRef(
+    createPetMotionOverlayReadiness("", { blink: 0, blinkHalf: 0 }),
+  );
+  const [failedMotionPackKeys, setFailedMotionPackKeys] = useState<
+    ReadonlySet<string>
+  >(() => new Set());
   const pendingBlink = useRef<{
     interruptExpression: boolean;
     sequenceScale: number;
@@ -121,6 +134,7 @@ export function AnimatedPetHero({
   const proceduralBlink = useRef(new Animated.Value(0)).current;
   const expressionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastReactionToken = useRef(reactionToken);
+  const lastInteractionCommandId = useRef(interactionCommand?.id ?? 0);
   const interactionLockedUntil = useRef(0);
 
   useEffect(() => {
@@ -147,27 +161,21 @@ export function AnimatedPetHero({
     blinkClosedOpacity.stopAnimation();
     proceduralBlink.stopAnimation();
     presence.stopAnimation();
-    reaction.stopAnimation();
     touchFeedback.stopAnimation();
-    lean.stopAnimation();
     expressionOpacity.setValue(0);
     blinkHalfOpacity.setValue(0);
     blinkClosedOpacity.setValue(0);
     proceduralBlink.setValue(0);
     presence.setValue(0);
-    reaction.setValue(0);
     touchFeedback.setValue(0);
-    lean.setValue(0);
     setMotionState("idle");
   }, [
     appActive,
     blinkClosedOpacity,
     blinkHalfOpacity,
     expressionOpacity,
-    lean,
     presence,
     proceduralBlink,
-    reaction,
     touchFeedback,
   ]);
 
@@ -188,11 +196,20 @@ export function AnimatedPetHero({
     [motionPack],
   );
   if (motionAssetReadiness.current.packKey !== activeMotionPackKey) {
-    motionAssetReadiness.current = {
-      packKey: activeMotionPackKey,
-      blinkHalf: !motionPack?.states.blinkHalf,
-      blink: !motionPack?.states.blink,
+    const expectedOverlayCount = (state: PetMotionOverlayState) => {
+      if (!motionPack?.states[state]) return 0;
+      return Math.max(
+        1,
+        motionPack.rig?.overlays?.[state]?.regions?.length ?? 1,
+      );
     };
+    motionAssetReadiness.current = createPetMotionOverlayReadiness(
+      activeMotionPackKey,
+      {
+        blink: expectedOverlayCount("blink"),
+        blinkHalf: expectedOverlayCount("blinkHalf"),
+      },
+    );
   }
   useEffect(() => {
     pendingBlink.current = null;
@@ -217,14 +234,33 @@ export function AnimatedPetHero({
     );
   }, [motionPack]);
   const handleMotionAssetReady = useCallback(
-    (packKey: string, state: PetMotionState) => {
-      if (state !== "blinkHalf" && state !== "blink") return;
+    (
+      packKey: string,
+      state: PetMotionOverlayState,
+      index: number,
+      succeeded: boolean,
+    ) => {
+      const result = recordPetMotionOverlayLoad(
+        motionAssetReadiness.current,
+        { index, packKey, state, succeeded },
+      );
+      motionAssetReadiness.current = result.readiness;
 
-      const readiness = motionAssetReadiness.current;
-      if (readiness.packKey !== packKey || readiness[state]) return;
-
-      readiness[state] = true;
-      if (readiness.blinkHalf && readiness.blink) {
+      if (result.status === "failed") {
+        pendingBlink.current = null;
+        setFailedMotionPackKeys((current) => {
+          if (current.has(packKey)) return current;
+          const next = new Set(current);
+          next.add(packKey);
+          return next;
+        });
+        setReadyMotionPackKeys((current) => {
+          if (!current.has(packKey)) return current;
+          const next = new Set(current);
+          next.delete(packKey);
+          return next;
+        });
+      } else if (result.status === "ready") {
         setReadyMotionPackKeys((current) => {
           if (current.has(packKey)) return current;
           const next = new Set(current);
@@ -235,10 +271,13 @@ export function AnimatedPetHero({
     },
     [],
   );
+  const motionFailedForPack =
+    failedMotionPackKeys.has(activeMotionPackKey);
   const motionReadyForPack =
     !motionPack ||
     !requiresAuthoredBlinkAssets(motionPack.states) ||
-    readyMotionPackKeys.has(activeMotionPackKey);
+    (!motionFailedForPack &&
+      readyMotionPackKeys.has(activeMotionPackKey));
   useEffect(() => {
     onMotionReadyChange?.(motionReadyForPack);
   }, [motionReadyForPack, onMotionReadyChange]);
@@ -556,6 +595,10 @@ export function AnimatedPetHero({
 
   const runBlink = useCallback((sequenceScale = 1, interruptExpression = true) => {
     if (!appActive || !motionPack?.states.blink) return;
+    if (motionFailedForPack) {
+      pendingBlink.current = null;
+      return;
+    }
     if (!motionReadyForPack) {
       pendingBlink.current = { interruptExpression, sequenceScale };
       return;
@@ -701,6 +744,7 @@ export function AnimatedPetHero({
     blinkHalfOpacity,
     expressionOpacity,
     inspectionMode,
+    motionFailedForPack,
     motionReadyForPack,
     motionPack,
     motionState,
@@ -965,26 +1009,20 @@ export function AnimatedPetHero({
     }).start();
   }, [entrance, inspectionMode, petKey, reduceMotion]);
 
-  const runReaction = useCallback((kind: InteractionKind = "body") => {
+  const runReaction = useCallback((kind: PetInteractionKind = "body") => {
     if (!appActive) return;
-    const now = Date.now();
-    if (kind !== "care") {
-      const lockMs = Math.max(
-        lifeProfileRef.current.touchCooldownMs,
-        kind === "head" ? 900 : 760,
-      );
-
-      if (now < interactionLockedUntil.current) return;
-      interactionLockedUntil.current = now + lockMs;
-    }
-    reaction.stopAnimation();
-    touchFeedback.stopAnimation();
-    lean.stopAnimation();
-    reaction.setValue(0);
-    touchFeedback.setValue(0);
-    lean.setValue(0);
+    const gate = acquirePetInteractionGate({
+      kind,
+      lockedUntil: interactionLockedUntil.current,
+      now: Date.now(),
+      touchCooldownMs: lifeProfileRef.current.touchCooldownMs,
+    });
+    interactionLockedUntil.current = gate.lockedUntil;
+    if (!gate.accepted) return;
 
     if (kind !== "care") {
+      touchFeedback.stopAnimation();
+      touchFeedback.setValue(0);
       const hapticStyle =
         lifeProfileRef.current.touchHaptic === "light"
           ? Haptics.ImpactFeedbackStyle.Light
@@ -992,13 +1030,14 @@ export function AnimatedPetHero({
       void Haptics.impactAsync(hapticStyle).catch(
         () => undefined,
       );
-    }
-    if (kind === "care") {
-      showExpression("happy", motionPack?.behavior?.happyHoldMs ?? 1250);
     } else {
-      // A touch must not tear down an in-flight blink. Stopping native-driven
-      // eye overlays mid-frame can leave one clip visible for a render pass on
-      // iOS, which reads as a one-eyed blink or a facial glitch.
+      showExpression("happy", motionPack?.behavior?.happyHoldMs ?? 1250);
+    }
+
+    if (kind !== "care") {
+      // Touch feedback lives on a separate icon plane. The primary pet artwork
+      // is never stopped or transformed by a tap, so repeated touches cannot
+      // leave the face on a subpixel-rasterized native layer.
       Animated.sequence([
         Animated.timing(touchFeedback, {
           duration: reduceMotion ? 0 : 150,
@@ -1017,51 +1056,9 @@ export function AnimatedPetHero({
         if (finished) touchFeedback.setValue(0);
       });
     }
-
-    const reactionPeak =
-      kind === "care" ? 0.52 : kind === "head" ? 0.18 : 0.22;
-
-    const pulse = Animated.sequence([
-      Animated.timing(reaction, {
-        duration: reduceMotion ? 0 : kind === "care" ? 180 : 150,
-        easing: Easing.out(Easing.cubic),
-        toValue: reactionPeak,
-        useNativeDriver: USE_NATIVE_DRIVER,
-      }),
-      Animated.spring(reaction, {
-        damping: kind === "care" ? 13 : 16,
-        mass: 0.58,
-        stiffness: kind === "care" ? 158 : 176,
-        toValue: 0,
-        useNativeDriver: USE_NATIVE_DRIVER,
-      }),
-    ]);
-    const headTurn = Animated.sequence([
-      Animated.timing(lean, {
-        duration: reduceMotion ? 0 : 180,
-        easing: Easing.out(Easing.cubic),
-        toValue: 0,
-        useNativeDriver: USE_NATIVE_DRIVER,
-      }),
-      Animated.delay(kind === "head" && !reduceMotion ? 130 : 0),
-      Animated.spring(lean, {
-        damping: 15,
-        mass: 0.62,
-        stiffness: 142,
-        toValue: 0,
-        useNativeDriver: USE_NATIVE_DRIVER,
-      }),
-    ]);
-
-    Animated.parallel([
-      kind === "care" ? Animated.sequence([pulse, Animated.delay(90), pulse]) : pulse,
-      headTurn,
-    ]).start();
   }, [
     appActive,
-    lean,
     motionPack,
-    reaction,
     reduceMotion,
     showExpression,
     touchFeedback,
@@ -1076,6 +1073,13 @@ export function AnimatedPetHero({
     lastReactionToken.current = reactionToken;
     runReaction("care");
   }, [appActive, reactionToken, runReaction]);
+
+  useEffect(() => {
+    if (!appActive || !interactionCommand) return;
+    if (interactionCommand.id === lastInteractionCommandId.current) return;
+    lastInteractionCommandId.current = interactionCommand.id;
+    runReaction(interactionCommand.kind);
+  }, [appActive, interactionCommand, runReaction]);
 
   const geometry = useMemo(() => {
     const petReferenceWidth = Math.min(width, 420);
@@ -1112,24 +1116,12 @@ export function AnimatedPetHero({
   }, [hasLayeredPet, layout, motionPack, resolvedPetKey, width]);
 
   const lunaHeadMotion = Animated.add(
-    Animated.add(
-      Animated.multiply(lunaHeadLife, rig25d?.motion.headLife ?? 0.64),
-      Animated.multiply(
-        presence,
-        motionProfile.attentionDirection *
-          (rig25d?.motion.attention ?? 1) *
-          1.42,
-      ),
-    ),
-    Animated.add(
-      Animated.multiply(
-        reaction,
-        motionProfile.attentionDirection * 0.9,
-      ),
-      Animated.multiply(
-        lean,
-        motionProfile.attentionDirection * 0.55,
-      ),
+    Animated.multiply(lunaHeadLife, rig25d?.motion.headLife ?? 0.64),
+    Animated.multiply(
+      presence,
+      motionProfile.attentionDirection *
+        (rig25d?.motion.attention ?? 1) *
+        1.42,
     ),
   );
   const lunaTagMotion = Animated.add(
@@ -1227,10 +1219,22 @@ export function AnimatedPetHero({
           >
             <Image
               onError={() =>
-                handleMotionAssetReady(activeMotionPackKey, state)
+                (state === "blinkHalf" || state === "blink") &&
+                handleMotionAssetReady(
+                  activeMotionPackKey,
+                  state,
+                  index,
+                  false,
+                )
               }
               onLoad={() =>
-                handleMotionAssetReady(activeMotionPackKey, state)
+                (state === "blinkHalf" || state === "blink") &&
+                handleMotionAssetReady(
+                  activeMotionPackKey,
+                  state,
+                  index,
+                  true,
+                )
               }
               resizeMode="contain"
               source={source}
@@ -1276,42 +1280,30 @@ export function AnimatedPetHero({
     transform: [
       {
         translateX: Animated.add(
-          Animated.add(
-            attentiveSway.interpolate({
-              inputRange: [-1, 0, 1],
-              outputRange: [
-                isLunaRig ? -0.08 : -motionProfile.swayDistance,
-                0,
-                isLunaRig ? 0.08 : motionProfile.swayDistance,
-              ],
-            }),
-            presence.interpolate({
-              inputRange: [-0.055, 0, 1],
-              outputRange: [
-                isLunaRig ? 0 : -motionProfile.attentionShift * 0.08,
-                0,
-                isLunaRig ? 0 : motionProfile.attentionShift,
-              ],
-            }),
-          ),
-          lean.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, isLunaRig ? 0.9 : 2.4],
+          attentiveSway.interpolate({
+            inputRange: [-1, 0, 1],
+            outputRange: [
+              isLunaRig ? -0.08 : -motionProfile.swayDistance,
+              0,
+              isLunaRig ? 0.08 : motionProfile.swayDistance,
+            ],
+          }),
+          presence.interpolate({
+            inputRange: [-0.055, 0, 1],
+            outputRange: [
+              isLunaRig ? 0 : -motionProfile.attentionShift * 0.08,
+              0,
+              isLunaRig ? 0 : motionProfile.attentionShift,
+            ],
           }),
         ),
       },
       {
         translateY: Animated.add(
-          Animated.add(
-            attentiveBreath.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0, isLunaRig ? 0 : -0.8],
-            }),
-            reaction.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0, isLunaRig ? -1.15 : -5],
-            }),
-          ),
+          attentiveBreath.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, isLunaRig ? 0 : -0.8],
+          }),
           Animated.add(
             presence.interpolate({
               inputRange: [-0.055, 0, 1],
@@ -1327,16 +1319,10 @@ export function AnimatedPetHero({
       },
       {
         scale: Animated.multiply(
-          Animated.multiply(
-            attentiveBreath.interpolate({
-              inputRange: [0, 1],
-              outputRange: [1, isLunaRig ? 1 : 1.004],
-            }),
-            reaction.interpolate({
-              inputRange: [0, 1],
-              outputRange: [1, 1],
-            }),
-          ),
+          attentiveBreath.interpolate({
+            inputRange: [0, 1],
+            outputRange: [1, isLunaRig ? 1 : 1.004],
+          }),
           Animated.multiply(
             presence.interpolate({
               inputRange: [-0.055, 0, 1],
