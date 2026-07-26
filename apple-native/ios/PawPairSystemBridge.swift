@@ -5,6 +5,8 @@ import React
 final class PawPairSystemBridge: RCTEventEmitter {
   private var observing = false
   private var routeObserver: NSObjectProtocol?
+  private static let motionQAEnvironmentKey = "PAWPAIR_MOTION_QA"
+  private static let motionQAStressEnvironmentKey = "PAWPAIR_MOTION_QA_STRESS"
 
   override init() {
     super.init()
@@ -30,6 +32,16 @@ final class PawPairSystemBridge: RCTEventEmitter {
 
   override static func requiresMainQueueSetup() -> Bool {
     true
+  }
+
+  override func constantsToExport() -> [AnyHashable: Any]! {
+    let environment = ProcessInfo.processInfo.environment
+    return [
+      "PawPairMotionQA":
+        environment[Self.motionQAEnvironmentKey] == "1",
+      "PawPairMotionQAStress":
+        environment[Self.motionQAStressEnvironmentKey] == "1",
+    ]
   }
 
   override func supportedEvents() -> [String]! {

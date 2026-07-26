@@ -85,7 +85,7 @@ type PendingConfirmation = {
 const ACTIVATION_PAYWALL_KEY = "pawpair.premium.activation-paywall.v1";
 const nativeMotionQA = resolveNativeMotionQASettings(
   Platform.OS === "ios"
-    ? (NativeModules.SettingsManager?.settings as
+    ? (NativeModules.PawPairSystemBridge as
         | Readonly<Record<string, unknown>>
         | undefined)
     : undefined,
