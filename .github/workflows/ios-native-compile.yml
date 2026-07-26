@@ -7,6 +7,12 @@ on:
     paths-ignore:
       - "app-store/**"
   workflow_dispatch:
+    inputs:
+      production_local:
+        description: Build the signed App Store IPA on the GitHub macOS runner
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -17,6 +23,7 @@ concurrency:
 
 jobs:
   compile:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.production_local != true }}
     runs-on: macos-26
     timeout-minutes: 45
 
@@ -377,3 +384,100 @@ jobs:
             native-qa/app-store/ipad/*.png
           if-no-files-found: ignore
           retention-days: 7
+
+  production-local:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.production_local == true }}
+    runs-on: macos-26
+    timeout-minutes: 75
+
+    steps:
+      - name: Checkout release source
+        uses: actions/checkout@v5
+        with:
+          lfs: false
+
+      - name: Download runtime pet assets
+        run: git lfs pull --include="assets/pet-motion/**" --exclude="app-store/**"
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          cache: npm
+          node-version: 22
+
+      - name: Install locked dependencies and EAS CLI
+        run: |
+          npm ci
+          npm install --global eas-cli@16.30.0
+
+      - name: Authenticate the ephemeral EAS session
+        env:
+          EXPO_SESSION_SECRET: ${{ secrets.EXPO_SESSION_SECRET }}
+        run: |
+          test -n "$EXPO_SESSION_SECRET"
+          mkdir -p "$HOME/.expo"
+          node -e '
+            const fs = require("fs");
+            const path = require("path");
+            const sessionSecret = process.env.EXPO_SESSION_SECRET;
+            if (!sessionSecret) throw new Error("Missing Expo session secret");
+            fs.writeFileSync(
+              path.join(process.env.HOME, ".expo", "state.json"),
+              JSON.stringify({ auth: { sessionSecret } }),
+              { mode: 0o600 }
+            );
+          '
+          eas whoami
+
+      - name: Build the signed App Store IPA locally
+        env:
+          EAS_LOCAL_BUILD_WORKINGDIR: ${{ runner.temp }}/pawpair-eas-local
+        run: |
+          eas build \
+            --platform ios \
+            --profile production \
+            --local \
+            --non-interactive \
+            --output "$RUNNER_TEMP/PawPair.ipa"
+
+      - name: Inspect the signed archive
+        run: |
+          archive_root="$(mktemp -d)"
+          unzip -q "$RUNNER_TEMP/PawPair.ipa" -d "$archive_root"
+          app_path="$archive_root/Payload/PawPair.app"
+          test -d "$app_path"
+          watch_app="$(
+            find "$app_path/Watch" -maxdepth 1 -name '*.app' -print -quit
+          )"
+          test -n "$watch_app"
+          {
+            echo "gitCommitHash=$GITHUB_SHA"
+            echo "githubRunId=$GITHUB_RUN_ID"
+            echo "sha256=$(shasum -a 256 "$RUNNER_TEMP/PawPair.ipa" | awk '{print $1}')"
+            echo "appVersion=$(
+              /usr/libexec/PlistBuddy \
+                -c 'Print :CFBundleShortVersionString' \
+                "$app_path/Info.plist"
+            )"
+            echo "appBuildVersion=$(
+              /usr/libexec/PlistBuddy \
+                -c 'Print :CFBundleVersion' \
+                "$app_path/Info.plist"
+            )"
+            echo "watchApp=$(basename "$watch_app")"
+          } > "$RUNNER_TEMP/release-summary.txt"
+          cat "$RUNNER_TEMP/release-summary.txt"
+
+      - name: Preserve signed release candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: pawpair-ios-production-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/PawPair.ipa
+            ${{ runner.temp }}/release-summary.txt
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Remove the ephemeral Expo session
+        if: always()
+        run: rm -f "$HOME/.expo/state.json"
