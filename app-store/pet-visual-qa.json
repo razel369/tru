@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-25",
+  "generatedAt": "2026-07-26",
   "status": "pass",
   "motionAssets": {
     "runtimeFileCount": 201,
@@ -14,11 +14,11 @@
   },
   "blinkIntegrity": {
     "packCount": 68,
-    "activePackCount": 56,
-    "passingActivePackCount": 56,
-    "disabledPackCount": 12,
+    "activePackCount": 52,
+    "passingActivePackCount": 52,
+    "disabledPackCount": 16,
     "issueCount": 0,
-    "policy": "Blink is disabled when the authored frames cannot render both eyes without visible seams. Those pets remain stable and use their idle presentation."
+    "policy": "Blink is disabled when authored frames cannot render both eyes without visible seams or color shifts. Those pets remain stable and use their idle presentation."
   },
   "verification": {
     "motionCommand": "npm run audit:motion-assets",

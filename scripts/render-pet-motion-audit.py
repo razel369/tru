@@ -1,21 +1,20 @@
-"""Render exhaustive PawPair breed contact sheets and verify blink registration."""
+"""Render every PawPair pet through the same per-eye blink clips as the app."""
 
 from __future__ import annotations
 
 import argparse
 import json
-import math
 import re
+from dataclasses import dataclass
 from pathlib import Path
 
-import cv2
-import numpy as np
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFont
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MOTION_ROOT = ROOT / "assets" / "pet-motion"
-PACK_SOURCE = ROOT / "src" / "features" / "pet-motion" / "exact-breed-packs.ts"
+EXACT_PACKS = ROOT / "src/features/pet-motion/exact-breed-packs.ts"
+LOCAL_PACKS = ROOT / "src/features/pet-motion/local-packs.ts"
+BLINK_SAFETY = ROOT / "src/features/pet-motion/blink-safety.ts"
 VISIBLE_ALPHA = 8
 TILE_WIDTH = 320
 TILE_HEIGHT = 390
@@ -24,10 +23,23 @@ COLS = 5
 ROWS = 3
 
 
+@dataclass(frozen=True)
+class Pack:
+    key: str
+    idle: Path
+    half: Path
+    closed: Path
+    eyes: tuple[float, float, float, float, float]
+
+
 def font(size: int, bold: bool = False) -> ImageFont.ImageFont:
     candidates = (
-        Path("C:/Windows/Fonts/arialbd.ttf") if bold else Path("C:/Windows/Fonts/arial.ttf"),
-        Path("C:/Windows/Fonts/segoeuib.ttf") if bold else Path("C:/Windows/Fonts/segoeui.ttf"),
+        Path("C:/Windows/Fonts/arialbd.ttf")
+        if bold
+        else Path("C:/Windows/Fonts/arial.ttf"),
+        Path("C:/Windows/Fonts/segoeuib.ttf")
+        if bold
+        else Path("C:/Windows/Fonts/segoeui.ttf"),
     )
     for candidate in candidates:
         if candidate.exists():
@@ -40,8 +52,105 @@ META_FONT = font(12)
 TITLE_FONT = font(24, True)
 
 
-def slug_label(value: str) -> str:
-    return " ".join(part.capitalize() for part in value.removeprefix("breed-").split("-"))
+def asset_path(source_file: Path, value: str) -> Path:
+    return (source_file.parent / value).resolve()
+
+
+def parse_exact_packs() -> list[Pack]:
+    source = EXACT_PACKS.read_text(encoding="utf-8")
+    pattern = re.compile(
+        r'key:\s*"(?P<key>[^"]+)"[\s\S]*?'
+        r'idle:\s*require\("(?P<idle>[^"]+)"\)[\s\S]*?'
+        r'blinkHalf:\s*require\("(?P<half>[^"]+)"\)[\s\S]*?'
+        r'blink:\s*require\("(?P<closed>[^"]+)"\)[\s\S]*?'
+        r'eyes:\s*eyePair\((?P<eyes>[^)]+)\)',
+    )
+    packs: list[Pack] = []
+    for match in pattern.finditer(source):
+        eyes = tuple(float(value.strip()) for value in match.group("eyes").split(","))
+        if len(eyes) != 5:
+            continue
+        packs.append(
+            Pack(
+                key=match.group("key"),
+                idle=asset_path(EXACT_PACKS, match.group("idle")),
+                half=asset_path(EXACT_PACKS, match.group("half")),
+                closed=asset_path(EXACT_PACKS, match.group("closed")),
+                eyes=eyes,
+            )
+        )
+    return packs
+
+
+def resolve_local_asset(token: str, constants: dict[str, str]) -> str | None:
+    token = token.strip()
+    direct = re.fullmatch(r'require\("([^"]+)"\)', token)
+    if direct:
+        return direct.group(1)
+    return constants.get(token)
+
+
+def find_idle_near(frame: Path) -> Path | None:
+    preferred = (
+        frame.parent / "idle-luna-style-v1.png",
+        frame.parent / "idle-v2.png",
+        frame.parent / "idle.png",
+    )
+    for candidate in preferred:
+        if candidate.exists():
+            return candidate
+    candidates = sorted(
+        path
+        for path in frame.parent.glob("idle*.png")
+        if "chroma" not in path.name and "extracted" not in path.name
+    )
+    return candidates[0] if candidates else None
+
+
+def parse_local_packs(existing_keys: set[str]) -> list[Pack]:
+    source = LOCAL_PACKS.read_text(encoding="utf-8")
+    constants = dict(
+        re.findall(r'const\s+([A-Z0-9_]+)\s*=\s*require\("([^"]+)"\);', source)
+    )
+    pattern = re.compile(
+        r'"(?P<key>[^"]+)":\s*blinkSpec\(\s*'
+        r'(?P<half>require\("[^"]+"\)|[A-Z0-9_]+)\s*,\s*'
+        r'(?P<closed>require\("[^"]+"\)|[A-Z0-9_]+)\s*,\s*'
+        r'eyePair\((?P<eyes>[^)]+)\)',
+    )
+    packs: list[Pack] = []
+    for match in pattern.finditer(source):
+        key = match.group("key")
+        if key in existing_keys:
+            continue
+        half_value = resolve_local_asset(match.group("half"), constants)
+        closed_value = resolve_local_asset(match.group("closed"), constants)
+        if not half_value or not closed_value:
+            continue
+        half = asset_path(LOCAL_PACKS, half_value)
+        closed = asset_path(LOCAL_PACKS, closed_value)
+        idle = find_idle_near(closed)
+        if idle is None:
+            continue
+        eyes = tuple(float(value.strip()) for value in match.group("eyes").split(","))
+        if len(eyes) != 5:
+            continue
+        packs.append(Pack(key, idle, half, closed, eyes))
+    return packs
+
+
+def parse_disabled_blink_keys() -> set[str]:
+    source = BLINK_SAFETY.read_text(encoding="utf-8")
+    match = re.search(
+        r"DISABLED_AUTHORED_BLINK_KEYS\s*=\s*\[(?P<keys>[\s\S]*?)\]\s*as const",
+        source,
+    )
+    return set(re.findall(r'"([^"]+)"', match.group("keys"))) if match else set()
+
+
+def label_for(key: str) -> str:
+    slug = key.split(":")[-1]
+    return " ".join(part.capitalize() for part in slug.split("-"))
 
 
 def alpha_bbox(image: Image.Image) -> tuple[int, int, int, int] | None:
@@ -63,100 +172,78 @@ def fit_subject(image: Image.Image) -> Image.Image:
     )
 
 
-def composite_state(idle: Image.Image, overlay: Image.Image | None) -> Image.Image:
-    frame = idle.copy()
-    if overlay is not None:
-        frame.alpha_composite(overlay)
-    return frame
+def contain_to(image: Image.Image, size: tuple[int, int]) -> Image.Image:
+    if image.size == size:
+        return image
+    scale = min(size[0] / image.width, size[1] / image.height)
+    resized = image.resize(
+        (round(image.width * scale), round(image.height * scale)),
+        Image.Resampling.LANCZOS,
+    )
+    result = Image.new("RGBA", size, (0, 0, 0, 0))
+    result.alpha_composite(
+        resized,
+        ((size[0] - resized.width) // 2, (size[1] - resized.height) // 2),
+    )
+    return result
 
 
-def tile_for(label: str, image: Image.Image, issues: list[str]) -> Image.Image:
+def ellipse_mask(width: int, height: int) -> Image.Image:
+    scale = 4
+    mask = Image.new("L", (width * scale, height * scale), 0)
+    ImageDraw.Draw(mask).ellipse(
+        (0, 0, width * scale - 1, height * scale - 1),
+        fill=255,
+    )
+    return mask.resize((width, height), Image.Resampling.LANCZOS)
+
+
+def composite_state(
+    idle: Image.Image,
+    overlay: Image.Image,
+    eyes: tuple[float, float, float, float, float],
+) -> Image.Image:
+    frame = contain_to(overlay, idle.size)
+    result = idle.copy()
+    canvas_width, canvas_height = idle.size
+    left_x, right_x, y, width, height = eyes
+    pixel_width = max(3, round(canvas_width * width))
+    pixel_height = max(3, round(canvas_height * height))
+    top = max(0, round(canvas_height * y))
+    for normalized_x in (left_x, right_x):
+        left = max(0, round(canvas_width * normalized_x))
+        right = min(canvas_width, left + pixel_width)
+        bottom = min(canvas_height, top + pixel_height)
+        patch_width = right - left
+        patch_height = bottom - top
+        if patch_width < 3 or patch_height < 3:
+            continue
+        patch = frame.crop((left, top, right, bottom))
+        clipped = patch.copy()
+        clipped.putalpha(
+            ImageChops.multiply(
+                patch.getchannel("A"),
+                ellipse_mask(patch_width, patch_height),
+            )
+        )
+        result.alpha_composite(clipped, (left, top))
+    return result
+
+
+def tile_for(label: str, image: Image.Image, status: str, issue: bool) -> Image.Image:
     tile = Image.new("RGBA", (TILE_WIDTH, TILE_HEIGHT), "#FFF8EC")
     draw = ImageDraw.Draw(tile)
     draw.rectangle((0, 0, TILE_WIDTH // 2, TILE_HEIGHT), fill="#07163A")
     draw.rectangle((TILE_WIDTH // 2, 0, TILE_WIDTH, TILE_HEIGHT), fill="#FFF8EC")
     fitted = fit_subject(image)
-    x = SUBJECT_AREA[0] + (
-        SUBJECT_AREA[2] - SUBJECT_AREA[0] - fitted.width
-    ) // 2
+    x = SUBJECT_AREA[0] + (SUBJECT_AREA[2] - SUBJECT_AREA[0] - fitted.width) // 2
     y = SUBJECT_AREA[3] - fitted.height
     tile.alpha_composite(fitted, (x, y))
-    footer_color = "#C43D32" if issues else "#243258"
+    footer_color = "#C43D32" if issue else "#243258"
     draw.rectangle((0, 344, TILE_WIDTH, TILE_HEIGHT), fill="#FFFDF8")
     draw.text((14, 350), label, font=LABEL_FONT, fill=footer_color)
-    status = "; ".join(issues[:2]) if issues else "visual checks passed"
     draw.text((14, 372), status, font=META_FONT, fill=footer_color)
     return tile
-
-
-def alpha_components(image: Image.Image) -> list[dict[str, float]]:
-    width, height = image.size
-    alpha = np.asarray(image.getchannel("A"))
-    mask = (alpha > VISIBLE_ALPHA).astype(np.uint8)
-    count, _labels, stats, centroids = cv2.connectedComponentsWithStats(
-        mask,
-        connectivity=8,
-    )
-    components: list[dict[str, float]] = []
-    for index in range(1, count):
-        left, top, component_width, component_height, pixels = stats[index]
-        if pixels < 24:
-            continue
-        center_x, center_y = centroids[index]
-        components.append(
-            {
-                "left": left / width,
-                "right": (left + component_width) / width,
-                "top": top / height,
-                "bottom": (top + component_height) / height,
-                "centerX": center_x / width,
-                "centerY": center_y / height,
-                "pixels": int(pixels),
-            }
-        )
-    return sorted(components, key=lambda item: item["pixels"], reverse=True)
-
-
-def expected_eyes() -> tuple[
-    dict[str, list[dict[str, float]]],
-    dict[str, str],
-]:
-    source = PACK_SOURCE.read_text(encoding="utf-8")
-    block_pattern = re.compile(
-        r'key:\s*"(?P<key>breed:[^"]+)".*?'
-        r'idle:\s*require\("[^"]*pet-motion/(?P<directory>breed-[^/]+)/[^"]+"\).*?'
-        r"eyes:\s*eyePair\((?P<values>[^)]+)\)",
-        re.DOTALL,
-    )
-    result: dict[str, list[dict[str, float]]] = {}
-    keys_by_directory: dict[str, str] = {}
-    for match in block_pattern.finditer(source):
-        values = [float(value.strip()) for value in match.group("values").split(",")]
-        if len(values) != 5:
-            continue
-        left_x, right_x, y, width, height = values
-        result[match.group("key")] = [
-            {"centerX": left_x + width / 2, "centerY": y + height / 2},
-            {"centerX": right_x + width / 2, "centerY": y + height / 2},
-        ]
-        keys_by_directory[match.group("directory")] = match.group("key")
-    return result, keys_by_directory
-
-
-def registration_issues(
-    key: str,
-    overlay: Image.Image,
-    expected: dict[str, list[dict[str, float]]],
-) -> tuple[list[str], list[dict[str, float]]]:
-    issues: list[str] = []
-    components = alpha_components(overlay)
-    alpha = np.asarray(overlay.getchannel("A"))
-    transparent_ratio = float(np.count_nonzero(alpha <= VISIBLE_ALPHA)) / alpha.size
-    if overlay.getchannel("A").getextrema() == (255, 255):
-        issues.append("opaque background")
-    elif transparent_ratio < 0.5:
-        issues.append(f"low alpha {transparent_ratio:.2f}")
-    return issues, components[:2]
 
 
 def render_sheet(
@@ -173,7 +260,7 @@ def render_sheet(
     draw = ImageDraw.Draw(canvas)
     draw.text(
         (18, 10),
-        f"PawPair exhaustive pet audit — {mode} — page {page}",
+        f"PawPair exhaustive pet audit - {mode} - page {page}",
         font=TITLE_FONT,
         fill="#111D47",
     )
@@ -181,7 +268,8 @@ def render_sheet(
         tile = tile_for(
             str(entry["label"]),
             entry[f"{mode}Image"],
-            list(entry[f"{mode}Issues"]),
+            str(entry["status"]),
+            bool(entry["issues"]),
         )
         x = (index % COLS) * TILE_WIDTH
         y = 48 + (index // COLS) * TILE_HEIGHT
@@ -199,41 +287,56 @@ def main() -> None:
     args = parser.parse_args()
     output_dir = ROOT / args.output
     output_dir.mkdir(parents=True, exist_ok=True)
-    expected, keys_by_directory = expected_eyes()
+    exact = parse_exact_packs()
+    packs = exact + parse_local_packs({pack.key for pack in exact})
+    disabled_keys = parse_disabled_blink_keys()
     entries: list[dict[str, object]] = []
 
-    for directory in sorted(MOTION_ROOT.glob("breed-*")):
-        idle_path = directory / "idle-luna-style-v1.png"
-        half_path = directory / "blink-half-v2.png"
-        blink_path = directory / "blink-v2.png"
-        if not idle_path.exists() or not half_path.exists() or not blink_path.exists():
+    for pack in sorted(packs, key=lambda item: item.key):
+        missing = [
+            str(path)
+            for path in (pack.idle, pack.half, pack.closed)
+            if not path.exists()
+        ]
+        issues = ["missing assets"] if missing else []
+        if missing:
             continue
-        key = keys_by_directory.get(
-            directory.name,
-            f"breed:unknown:{directory.name.removeprefix('breed-')}",
+        idle = Image.open(pack.idle).convert("RGBA")
+        disabled = pack.key in disabled_keys
+        half = (
+            idle.copy()
+            if disabled
+            else composite_state(
+                idle,
+                Image.open(pack.half).convert("RGBA"),
+                pack.eyes,
+            )
         )
-        idle = Image.open(idle_path).convert("RGBA")
-        half = Image.open(half_path).convert("RGBA")
-        blink = Image.open(blink_path).convert("RGBA")
-        half_issues, half_components = registration_issues(key, half, expected)
-        blink_issues, blink_components = registration_issues(key, blink, expected)
+        closed = (
+            idle.copy()
+            if disabled
+            else composite_state(
+                idle,
+                Image.open(pack.closed).convert("RGBA"),
+                pack.eyes,
+            )
+        )
         entries.append(
             {
-                "key": key,
-                "label": slug_label(directory.name),
+                "key": pack.key,
+                "label": label_for(pack.key),
+                "disabled": disabled,
+                "eyes": list(pack.eyes),
+                "issues": issues,
+                "missing": missing,
+                "status": "static - blink disabled safely" if disabled else "runtime eye clips rendered",
                 "idleImage": idle,
-                "idleIssues": [],
-                "halfImage": composite_state(idle, half),
-                "halfIssues": half_issues,
-                "blinkImage": composite_state(idle, blink),
-                "blinkIssues": blink_issues,
-                "halfComponents": half_components,
-                "blinkComponents": blink_components,
+                "halfImage": half,
+                "blinkImage": closed,
             }
         )
 
-    modes = ("idle", "half", "blink")
-    for mode in modes:
+    for mode in ("idle", "half", "blink"):
         for offset in range(0, len(entries), COLS * ROWS):
             page = offset // (COLS * ROWS) + 1
             render_sheet(
@@ -247,20 +350,15 @@ def main() -> None:
         {
             key: value
             for key, value in entry.items()
-            if key
-            not in {
-                "idleImage",
-                "halfImage",
-                "blinkImage",
-            }
+            if key not in {"idleImage", "halfImage", "blinkImage"}
         }
         for entry in entries
     ]
-    issue_count = sum(
-        len(row["halfIssues"]) + len(row["blinkIssues"]) for row in report_rows
-    )
+    issue_count = sum(len(row["issues"]) for row in report_rows)
     report = {
         "assetCount": len(entries),
+        "activeBlinkCount": len(entries) - len(disabled_keys),
+        "disabledBlinkCount": len(disabled_keys),
         "issueCount": issue_count,
         "rows": report_rows,
     }
@@ -273,6 +371,8 @@ def main() -> None:
             {
                 "output": str(output_dir),
                 "assetCount": report["assetCount"],
+                "activeBlinkCount": report["activeBlinkCount"],
+                "disabledBlinkCount": report["disabledBlinkCount"],
                 "issueCount": report["issueCount"],
             },
             indent=2,

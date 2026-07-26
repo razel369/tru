@@ -177,6 +177,8 @@ def measure(pack: Pack) -> dict[str, object]:
     half_seam: list[float] = []
     closed_seam: list[float] = []
     half_closed_gap: list[float] = []
+    half_green_cast: list[float] = []
+    closed_green_cast: list[float] = []
     for left, region_top, region_width, region_height in regions:
         right = min(canvas_width, left + region_width)
         bottom = min(canvas_height, region_top + region_height)
@@ -196,11 +198,26 @@ def measure(pack: Pack) -> dict[str, object]:
         half_delta = np.abs(half_patch - idle_patch).mean(axis=2)
         closed_delta = np.abs(closed_patch - idle_patch).mean(axis=2)
         state_delta = np.abs(closed_patch - half_patch).mean(axis=2)
+        idle_green = idle_patch[..., 1] - (
+            idle_patch[..., 0] + idle_patch[..., 2]
+        ) / 2
+        half_green = half_patch[..., 1] - (
+            half_patch[..., 0] + half_patch[..., 2]
+        ) / 2
+        closed_green = closed_patch[..., 1] - (
+            closed_patch[..., 0] + closed_patch[..., 2]
+        ) / 2
         half_eye.append(float(half_delta[eye_mask].mean()))
         closed_eye.append(float(closed_delta[eye_mask].mean()))
         half_seam.append(float(half_delta[seam].mean()))
         closed_seam.append(float(closed_delta[seam].mean()))
         half_closed_gap.append(float(state_delta[inner].mean()))
+        half_green_cast.append(
+            float((half_green - idle_green)[eye_mask].mean())
+        )
+        closed_green_cast.append(
+            float((closed_green - idle_green)[eye_mask].mean())
+        )
 
     if len(half_eye) != 2:
         return {"key": pack.key, "issues": ["invalid-eye-regions"], "regions": regions}
@@ -211,6 +228,8 @@ def measure(pack: Pack) -> dict[str, object]:
         "halfClosedDelta": round(float(np.mean(half_closed_gap)), 3),
         "halfSeamDelta": round(float(np.mean(half_seam)), 3),
         "closedSeamDelta": round(float(np.mean(closed_seam)), 3),
+        "halfGreenCast": round(float(np.mean(half_green_cast)), 3),
+        "closedGreenCast": round(float(np.mean(closed_green_cast)), 3),
     }
     issues: list[str] = []
     if metrics["halfEyeDelta"] < 4.0:
@@ -223,6 +242,8 @@ def measure(pack: Pack) -> dict[str, object]:
         issues.append("half-blink-seam-risk")
     if metrics["closedSeamDelta"] > 38.0:
         issues.append("closed-blink-seam-risk")
+    if max(metrics["halfGreenCast"], metrics["closedGreenCast"]) > 10.0:
+        issues.append("blink-green-cast")
     return {
         "key": pack.key,
         "canvas": list(idle_image.size),

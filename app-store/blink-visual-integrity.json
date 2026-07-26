@@ -1,15 +1,19 @@
 {
   "packCount": 68,
-  "activePackCount": 56,
-  "disabledPackCount": 12,
+  "activePackCount": 52,
+  "disabledPackCount": 16,
   "disabledKeys": [
     "breed:cat:abyssinian",
     "breed:cat:bengal",
+    "breed:cat:birman",
     "breed:cat:devon-rex",
     "breed:cat:maine-coon",
     "breed:cat:munchkin",
+    "breed:cat:norwegian-forest-cat",
     "breed:cat:persian",
+    "breed:dog:australian-shepherd",
     "breed:dog:bulldog",
+    "breed:dog:cavalier-king-charles-spaniel",
     "breed:dog:chihuahua",
     "breed:dog:havanese",
     "breed:dog:pug",
@@ -18,7 +22,7 @@
   ],
   "unknownDisabledKeys": [],
   "issueCount": 0,
-  "passingCount": 56,
+  "passingCount": 52,
   "issues": [],
   "results": [
     {
@@ -46,7 +50,9 @@
         "closedEyeDelta": 23.557,
         "halfClosedDelta": 13.707,
         "halfSeamDelta": 21.379,
-        "closedSeamDelta": 24.896
+        "closedSeamDelta": 24.896,
+        "halfGreenCast": -0.08,
+        "closedGreenCast": -0.132
       },
       "issues": []
     },
@@ -75,7 +81,9 @@
         "closedEyeDelta": 26.902,
         "halfClosedDelta": 17.193,
         "halfSeamDelta": 22.918,
-        "closedSeamDelta": 22.064
+        "closedSeamDelta": 22.064,
+        "halfGreenCast": -0.727,
+        "closedGreenCast": -1.544
       },
       "issues": []
     },
@@ -104,7 +112,9 @@
         "closedEyeDelta": 27.892,
         "halfClosedDelta": 24.0,
         "halfSeamDelta": 15.157,
-        "closedSeamDelta": 27.483
+        "closedSeamDelta": 27.483,
+        "halfGreenCast": 0.005,
+        "closedGreenCast": 0.292
       },
       "issues": []
     },
@@ -133,7 +143,9 @@
         "closedEyeDelta": 23.509,
         "halfClosedDelta": 14.449,
         "halfSeamDelta": 15.978,
-        "closedSeamDelta": 15.355
+        "closedSeamDelta": 15.355,
+        "halfGreenCast": -0.314,
+        "closedGreenCast": -0.051
       },
       "issues": []
     },
@@ -162,94 +174,9 @@
         "closedEyeDelta": 35.991,
         "halfClosedDelta": 39.195,
         "halfSeamDelta": 32.413,
-        "closedSeamDelta": 28.86
-      },
-      "issues": []
-    },
-    {
-      "key": "breed:cat:norwegian-forest-cat",
-      "canvas": [
-        852,
-        1846
-      ],
-      "regions": [
-        [
-          325,
-          505,
-          115,
-          95
-        ],
-        [
-          465,
-          505,
-          115,
-          95
-        ]
-      ],
-      "metrics": {
-        "halfEyeDelta": 50.422,
-        "closedEyeDelta": 52.158,
-        "halfClosedDelta": 42.947,
-        "halfSeamDelta": 31.355,
-        "closedSeamDelta": 35.225
-      },
-      "issues": []
-    },
-    {
-      "key": "breed:dog:australian-shepherd",
-      "canvas": [
-        852,
-        1846
-      ],
-      "regions": [
-        [
-          315,
-          405,
-          95,
-          85
-        ],
-        [
-          445,
-          405,
-          95,
-          85
-        ]
-      ],
-      "metrics": {
-        "halfEyeDelta": 26.699,
-        "closedEyeDelta": 39.077,
-        "halfClosedDelta": 33.863,
-        "halfSeamDelta": 17.684,
-        "closedSeamDelta": 29.371
-      },
-      "issues": []
-    },
-    {
-      "key": "breed:dog:cavalier-king-charles-spaniel",
-      "canvas": [
-        852,
-        1846
-      ],
-      "regions": [
-        [
-          305,
-          515,
-          115,
-          110
-        ],
-        [
-          450,
-          515,
-          115,
-          110
-        ]
-      ],
-      "metrics": {
-        "halfEyeDelta": 37.912,
-        "closedEyeDelta": 36.818,
-        "halfClosedDelta": 27.501,
-        "halfSeamDelta": 30.154,
-        "closedSeamDelta": 31.738
+        "closedSeamDelta": 28.86,
+        "halfGreenCast": -4.138,
+        "closedGreenCast": -7.279
       },
       "issues": []
     },
@@ -278,7 +205,9 @@
         "closedEyeDelta": 44.737,
         "halfClosedDelta": 34.687,
         "halfSeamDelta": 31.292,
-        "closedSeamDelta": 28.687
+        "closedSeamDelta": 28.687,
+        "halfGreenCast": 1.127,
+        "closedGreenCast": 0.389
       },
       "issues": []
     },
@@ -307,36 +236,9 @@
         "closedEyeDelta": 57.274,
         "halfClosedDelta": 51.236,
         "halfSeamDelta": 30.84,
-        "closedSeamDelta": 26.465
-      },
-      "issues": []
-    },
-    {
-      "key": "breed:cat:birman",
-      "canvas": [
-        852,
-        1846
-      ],
-      "regions": [
-        [
-          330,
-          500,
-          100,
-          115
-        ],
-        [
-          455,
-          500,
-          100,
-          115
-        ]
-      ],
-      "metrics": {
-        "halfEyeDelta": 23.512,
-        "closedEyeDelta": 31.841,
-        "halfClosedDelta": 28.238,
-        "halfSeamDelta": 13.802,
-        "closedSeamDelta": 20.634
+        "closedSeamDelta": 26.465,
+        "halfGreenCast": -2.171,
+        "closedGreenCast": -4.528
       },
       "issues": []
     },
@@ -365,7 +267,9 @@
         "closedEyeDelta": 27.071,
         "halfClosedDelta": 18.444,
         "halfSeamDelta": 11.777,
-        "closedSeamDelta": 15.331
+        "closedSeamDelta": 15.331,
+        "halfGreenCast": -3.118,
+        "closedGreenCast": -4.699
       },
       "issues": []
     },
@@ -394,7 +298,9 @@
         "closedEyeDelta": 58.486,
         "halfClosedDelta": 28.901,
         "halfSeamDelta": 13.126,
-        "closedSeamDelta": 15.349
+        "closedSeamDelta": 15.349,
+        "halfGreenCast": 1.72,
+        "closedGreenCast": 1.489
       },
       "issues": []
     },
@@ -423,7 +329,9 @@
         "closedEyeDelta": 37.051,
         "halfClosedDelta": 28.998,
         "halfSeamDelta": 14.554,
-        "closedSeamDelta": 21.549
+        "closedSeamDelta": 21.549,
+        "halfGreenCast": 2.706,
+        "closedGreenCast": 2.158
       },
       "issues": []
     },
@@ -452,7 +360,9 @@
         "closedEyeDelta": 50.951,
         "halfClosedDelta": 51.643,
         "halfSeamDelta": 18.149,
-        "closedSeamDelta": 32.894
+        "closedSeamDelta": 32.894,
+        "halfGreenCast": 0.029,
+        "closedGreenCast": 0.503
       },
       "issues": []
     },
@@ -481,7 +391,9 @@
         "closedEyeDelta": 31.768,
         "halfClosedDelta": 26.187,
         "halfSeamDelta": 10.157,
-        "closedSeamDelta": 23.578
+        "closedSeamDelta": 23.578,
+        "halfGreenCast": 0.23,
+        "closedGreenCast": -0.853
       },
       "issues": []
     },
@@ -510,7 +422,9 @@
         "closedEyeDelta": 46.017,
         "halfClosedDelta": 31.991,
         "halfSeamDelta": 29.711,
-        "closedSeamDelta": 30.889
+        "closedSeamDelta": 30.889,
+        "halfGreenCast": 2.647,
+        "closedGreenCast": -0.095
       },
       "issues": []
     },
@@ -539,7 +453,9 @@
         "closedEyeDelta": 31.604,
         "halfClosedDelta": 21.359,
         "halfSeamDelta": 18.363,
-        "closedSeamDelta": 14.219
+        "closedSeamDelta": 14.219,
+        "halfGreenCast": -1.614,
+        "closedGreenCast": -1.681
       },
       "issues": []
     },
@@ -568,7 +484,9 @@
         "closedEyeDelta": 24.794,
         "halfClosedDelta": 21.416,
         "halfSeamDelta": 8.73,
-        "closedSeamDelta": 11.453
+        "closedSeamDelta": 11.453,
+        "halfGreenCast": 0.648,
+        "closedGreenCast": 1.721
       },
       "issues": []
     },
@@ -597,7 +515,9 @@
         "closedEyeDelta": 60.495,
         "halfClosedDelta": 45.089,
         "halfSeamDelta": 15.562,
-        "closedSeamDelta": 32.991
+        "closedSeamDelta": 32.991,
+        "halfGreenCast": 0.8,
+        "closedGreenCast": 1.207
       },
       "issues": []
     },
@@ -626,7 +546,9 @@
         "closedEyeDelta": 31.581,
         "halfClosedDelta": 22.08,
         "halfSeamDelta": 12.522,
-        "closedSeamDelta": 13.653
+        "closedSeamDelta": 13.653,
+        "halfGreenCast": 1.384,
+        "closedGreenCast": 2.732
       },
       "issues": []
     },
@@ -655,7 +577,9 @@
         "closedEyeDelta": 28.621,
         "halfClosedDelta": 22.127,
         "halfSeamDelta": 7.193,
-        "closedSeamDelta": 8.505
+        "closedSeamDelta": 8.505,
+        "halfGreenCast": 0.816,
+        "closedGreenCast": 1.311
       },
       "issues": []
     },
@@ -684,7 +608,9 @@
         "closedEyeDelta": 27.621,
         "halfClosedDelta": 21.595,
         "halfSeamDelta": 9.711,
-        "closedSeamDelta": 13.51
+        "closedSeamDelta": 13.51,
+        "halfGreenCast": 0.405,
+        "closedGreenCast": 1.54
       },
       "issues": []
     },
@@ -713,7 +639,9 @@
         "closedEyeDelta": 31.442,
         "halfClosedDelta": 23.207,
         "halfSeamDelta": 11.991,
-        "closedSeamDelta": 13.549
+        "closedSeamDelta": 13.549,
+        "halfGreenCast": 0.665,
+        "closedGreenCast": 0.477
       },
       "issues": []
     },
@@ -742,7 +670,9 @@
         "closedEyeDelta": 38.909,
         "halfClosedDelta": 32.602,
         "halfSeamDelta": 17.687,
-        "closedSeamDelta": 17.673
+        "closedSeamDelta": 17.673,
+        "halfGreenCast": -0.571,
+        "closedGreenCast": -1.866
       },
       "issues": []
     },
@@ -771,7 +701,9 @@
         "closedEyeDelta": 42.47,
         "halfClosedDelta": 28.653,
         "halfSeamDelta": 10.337,
-        "closedSeamDelta": 12.577
+        "closedSeamDelta": 12.577,
+        "halfGreenCast": 0.924,
+        "closedGreenCast": 1.801
       },
       "issues": []
     },
@@ -800,7 +732,9 @@
         "closedEyeDelta": 24.533,
         "halfClosedDelta": 16.233,
         "halfSeamDelta": 17.367,
-        "closedSeamDelta": 16.712
+        "closedSeamDelta": 16.712,
+        "halfGreenCast": -1.036,
+        "closedGreenCast": 0.749
       },
       "issues": []
     },
@@ -829,7 +763,9 @@
         "closedEyeDelta": 26.327,
         "halfClosedDelta": 16.901,
         "halfSeamDelta": 11.845,
-        "closedSeamDelta": 12.949
+        "closedSeamDelta": 12.949,
+        "halfGreenCast": 0.386,
+        "closedGreenCast": 3.123
       },
       "issues": []
     },
@@ -858,7 +794,9 @@
         "closedEyeDelta": 45.203,
         "halfClosedDelta": 39.672,
         "halfSeamDelta": 16.635,
-        "closedSeamDelta": 25.545
+        "closedSeamDelta": 25.545,
+        "halfGreenCast": -0.553,
+        "closedGreenCast": -2.203
       },
       "issues": []
     },
@@ -887,7 +825,9 @@
         "closedEyeDelta": 35.687,
         "halfClosedDelta": 24.37,
         "halfSeamDelta": 9.946,
-        "closedSeamDelta": 10.822
+        "closedSeamDelta": 10.822,
+        "halfGreenCast": 0.391,
+        "closedGreenCast": 0.434
       },
       "issues": []
     },
@@ -916,7 +856,9 @@
         "closedEyeDelta": 22.71,
         "halfClosedDelta": 18.729,
         "halfSeamDelta": 13.672,
-        "closedSeamDelta": 14.99
+        "closedSeamDelta": 14.99,
+        "halfGreenCast": 0.093,
+        "closedGreenCast": -0.211
       },
       "issues": []
     },
@@ -945,7 +887,9 @@
         "closedEyeDelta": 37.602,
         "halfClosedDelta": 25.196,
         "halfSeamDelta": 10.074,
-        "closedSeamDelta": 9.849
+        "closedSeamDelta": 9.849,
+        "halfGreenCast": 2.066,
+        "closedGreenCast": 2.429
       },
       "issues": []
     },
@@ -974,7 +918,9 @@
         "closedEyeDelta": 55.102,
         "halfClosedDelta": 36.786,
         "halfSeamDelta": 14.043,
-        "closedSeamDelta": 15.517
+        "closedSeamDelta": 15.517,
+        "halfGreenCast": 0.261,
+        "closedGreenCast": 0.696
       },
       "issues": []
     },
@@ -1003,7 +949,9 @@
         "closedEyeDelta": 24.715,
         "halfClosedDelta": 15.248,
         "halfSeamDelta": 10.013,
-        "closedSeamDelta": 11.336
+        "closedSeamDelta": 11.336,
+        "halfGreenCast": 1.308,
+        "closedGreenCast": 1.723
       },
       "issues": []
     },
@@ -1032,7 +980,9 @@
         "closedEyeDelta": 39.663,
         "halfClosedDelta": 23.124,
         "halfSeamDelta": 5.486,
-        "closedSeamDelta": 7.026
+        "closedSeamDelta": 7.026,
+        "halfGreenCast": 0.639,
+        "closedGreenCast": 1.063
       },
       "issues": []
     },
@@ -1061,7 +1011,9 @@
         "closedEyeDelta": 38.924,
         "halfClosedDelta": 29.448,
         "halfSeamDelta": 14.464,
-        "closedSeamDelta": 19.406
+        "closedSeamDelta": 19.406,
+        "halfGreenCast": -0.869,
+        "closedGreenCast": -2.393
       },
       "issues": []
     },
@@ -1090,7 +1042,9 @@
         "closedEyeDelta": 48.053,
         "halfClosedDelta": 36.663,
         "halfSeamDelta": 14.626,
-        "closedSeamDelta": 16.205
+        "closedSeamDelta": 16.205,
+        "halfGreenCast": -1.554,
+        "closedGreenCast": -4.572
       },
       "issues": []
     },
@@ -1119,7 +1073,9 @@
         "closedEyeDelta": 53.091,
         "halfClosedDelta": 39.568,
         "halfSeamDelta": 11.791,
-        "closedSeamDelta": 25.73
+        "closedSeamDelta": 25.73,
+        "halfGreenCast": -0.021,
+        "closedGreenCast": 1.545
       },
       "issues": []
     },
@@ -1148,7 +1104,9 @@
         "closedEyeDelta": 53.091,
         "halfClosedDelta": 39.568,
         "halfSeamDelta": 11.791,
-        "closedSeamDelta": 25.73
+        "closedSeamDelta": 25.73,
+        "halfGreenCast": -0.021,
+        "closedGreenCast": 1.545
       },
       "issues": []
     },
@@ -1177,7 +1135,9 @@
         "closedEyeDelta": 31.423,
         "halfClosedDelta": 24.921,
         "halfSeamDelta": 17.225,
-        "closedSeamDelta": 22.738
+        "closedSeamDelta": 22.738,
+        "halfGreenCast": -1.5,
+        "closedGreenCast": -1.773
       },
       "issues": []
     },
@@ -1206,7 +1166,9 @@
         "closedEyeDelta": 62.696,
         "halfClosedDelta": 45.755,
         "halfSeamDelta": 24.198,
-        "closedSeamDelta": 33.147
+        "closedSeamDelta": 33.147,
+        "halfGreenCast": -2.342,
+        "closedGreenCast": -8.415
       },
       "issues": []
     },
@@ -1235,7 +1197,9 @@
         "closedEyeDelta": 56.11,
         "halfClosedDelta": 47.467,
         "halfSeamDelta": 14.797,
-        "closedSeamDelta": 35.557
+        "closedSeamDelta": 35.557,
+        "halfGreenCast": -0.048,
+        "closedGreenCast": -0.736
       },
       "issues": []
     },
@@ -1264,7 +1228,9 @@
         "closedEyeDelta": 20.54,
         "halfClosedDelta": 14.832,
         "halfSeamDelta": 6.532,
-        "closedSeamDelta": 9.947
+        "closedSeamDelta": 9.947,
+        "halfGreenCast": 0.488,
+        "closedGreenCast": 2.412
       },
       "issues": []
     },
@@ -1293,7 +1259,9 @@
         "closedEyeDelta": 43.593,
         "halfClosedDelta": 38.049,
         "halfSeamDelta": 16.808,
-        "closedSeamDelta": 29.121
+        "closedSeamDelta": 29.121,
+        "halfGreenCast": 0.443,
+        "closedGreenCast": -0.283
       },
       "issues": []
     },
@@ -1322,7 +1290,9 @@
         "closedEyeDelta": 58.098,
         "halfClosedDelta": 37.294,
         "halfSeamDelta": 18.405,
-        "closedSeamDelta": 30.811
+        "closedSeamDelta": 30.811,
+        "halfGreenCast": -1.073,
+        "closedGreenCast": -0.353
       },
       "issues": []
     },
@@ -1351,7 +1321,9 @@
         "closedEyeDelta": 37.677,
         "halfClosedDelta": 27.007,
         "halfSeamDelta": 8.466,
-        "closedSeamDelta": 17.337
+        "closedSeamDelta": 17.337,
+        "halfGreenCast": -1.123,
+        "closedGreenCast": -1.905
       },
       "issues": []
     },
@@ -1380,7 +1352,9 @@
         "closedEyeDelta": 57.624,
         "halfClosedDelta": 44.769,
         "halfSeamDelta": 11.375,
-        "closedSeamDelta": 26.835
+        "closedSeamDelta": 26.835,
+        "halfGreenCast": 0.673,
+        "closedGreenCast": 1.978
       },
       "issues": []
     },
@@ -1409,7 +1383,9 @@
         "closedEyeDelta": 35.84,
         "halfClosedDelta": 21.978,
         "halfSeamDelta": 26.966,
-        "closedSeamDelta": 27.895
+        "closedSeamDelta": 27.895,
+        "halfGreenCast": 0.259,
+        "closedGreenCast": 0.113
       },
       "issues": []
     },
@@ -1438,7 +1414,9 @@
         "closedEyeDelta": 48.104,
         "halfClosedDelta": 41.495,
         "halfSeamDelta": 9.524,
-        "closedSeamDelta": 13.072
+        "closedSeamDelta": 13.072,
+        "halfGreenCast": -0.211,
+        "closedGreenCast": -0.965
       },
       "issues": []
     },
@@ -1467,7 +1445,9 @@
         "closedEyeDelta": 47.126,
         "halfClosedDelta": 35.563,
         "halfSeamDelta": 13.609,
-        "closedSeamDelta": 26.934
+        "closedSeamDelta": 26.934,
+        "halfGreenCast": -1.377,
+        "closedGreenCast": -1.086
       },
       "issues": []
     },
@@ -1496,7 +1476,9 @@
         "closedEyeDelta": 47.82,
         "halfClosedDelta": 38.291,
         "halfSeamDelta": 13.432,
-        "closedSeamDelta": 18.012
+        "closedSeamDelta": 18.012,
+        "halfGreenCast": -0.431,
+        "closedGreenCast": 1.281
       },
       "issues": []
     },
@@ -1525,7 +1507,9 @@
         "closedEyeDelta": 64.253,
         "halfClosedDelta": 43.056,
         "halfSeamDelta": 25.155,
-        "closedSeamDelta": 37.783
+        "closedSeamDelta": 37.783,
+        "halfGreenCast": 0.765,
+        "closedGreenCast": 1.755
       },
       "issues": []
     },
@@ -1554,7 +1538,9 @@
         "closedEyeDelta": 55.49,
         "halfClosedDelta": 43.844,
         "halfSeamDelta": 18.222,
-        "closedSeamDelta": 26.643
+        "closedSeamDelta": 26.643,
+        "halfGreenCast": -0.428,
+        "closedGreenCast": -0.155
       },
       "issues": []
     },
@@ -1583,7 +1569,9 @@
         "closedEyeDelta": 54.781,
         "halfClosedDelta": 39.324,
         "halfSeamDelta": 9.271,
-        "closedSeamDelta": 8.556
+        "closedSeamDelta": 8.556,
+        "halfGreenCast": 0.257,
+        "closedGreenCast": 0.284
       },
       "issues": []
     },
@@ -1612,7 +1600,9 @@
         "closedEyeDelta": 49.363,
         "halfClosedDelta": 33.87,
         "halfSeamDelta": 25.511,
-        "closedSeamDelta": 32.817
+        "closedSeamDelta": 32.817,
+        "halfGreenCast": -1.23,
+        "closedGreenCast": -2.548
       },
       "issues": []
     },
@@ -1641,7 +1631,9 @@
         "closedEyeDelta": 35.128,
         "halfClosedDelta": 25.463,
         "halfSeamDelta": 19.998,
-        "closedSeamDelta": 21.836
+        "closedSeamDelta": 21.836,
+        "halfGreenCast": 0.335,
+        "closedGreenCast": -0.333
       },
       "issues": []
     }
