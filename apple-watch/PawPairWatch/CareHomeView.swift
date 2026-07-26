@@ -222,7 +222,7 @@ struct CareHomeView: View {
   private var summaryDetail: String {
     actionableItems.isEmpty
       ? "Care complete for today"
-      : "Turn the Crown for details"
+      : "Crown for details"
   }
 
   private func complete(_ item: WatchCareItem) {
