@@ -42,6 +42,14 @@ function pngInfo(relativePath) {
 
 const app = readJson("app.json").expo;
 const metadata = readJson("app-store/metadata.en-US.json");
+const buildCandidatePath = path.join(
+  root,
+  "app-store",
+  "eas-production-build.json",
+);
+const buildCandidate = fs.existsSync(buildCandidatePath)
+  ? readJson("app-store/eas-production-build.json")
+  : null;
 const privacy = read("pawpair-site/privacy/index.html");
 const terms = read("pawpair-site/terms/index.html");
 const support = read("pawpair-site/support/index.html");
@@ -64,9 +72,19 @@ add("iPad orientations", [
   "UIInterfaceOrientationLandscapeRight",
 ].every((orientation) => ipadOrientations.includes(orientation)), ipadOrientations.join(", "));
 add("Bundle identifier", app.ios?.bundleIdentifier === "app.pawpair.medtracker", app.ios?.bundleIdentifier);
-add("Build number", Number(app.ios?.buildNumber) >= 8, `build=${app.ios?.buildNumber}`);
+add(
+  "EAS production build candidate",
+  buildCandidate?.status === "FINISHED" &&
+    buildCandidate?.platform === "IOS" &&
+    buildCandidate?.appVersion === metadata.version &&
+    Number(buildCandidate?.appBuildVersion) >= 18 &&
+    typeof buildCandidate?.id === "string" &&
+    typeof buildCandidate?.gitCommitHash === "string",
+  buildCandidate
+    ? `build=${buildCandidate.appBuildVersion}, commit=${buildCandidate.gitCommitHash}, id=${buildCandidate.id}`
+    : "missing until the exact final EAS build is audited",
+);
 add("Export compliance", app.ios?.infoPlist?.ITSAppUsesNonExemptEncryption === false, "ITSAppUsesNonExemptEncryption must be false");
-add("Metadata build matches", String(metadata.build) === String(app.ios?.buildNumber), `metadata=${metadata.build}, app=${app.ios?.buildNumber}`);
 add("Terms URL in metadata", metadata.description.includes(metadata.termsOfUseUrl), metadata.termsOfUseUrl);
 add("Privacy URL in metadata", metadata.description.includes(metadata.privacyPolicyUrl), metadata.privacyPolicyUrl);
 add("Public privacy describes RevenueCat", privacy.includes("RevenueCat") && privacy.includes("purchase"), "RevenueCat and purchase processing disclosed");
@@ -117,14 +135,21 @@ const finalCaptures = [
   "04-pets.png",
   "05-settings.png",
 ];
+const acceptedIphoneCaptureSizes = new Set([
+  "1260x2736",
+  "1290x2796",
+  "1320x2868",
+]);
 
 for (const file of finalCaptures) {
   const relativePath = `app-store/screenshots/iphone-6.9-final/${file}`;
   const info = pngInfo(relativePath);
   add(
     `Final iPhone capture ${file}`,
-    info?.width === 1320 &&
-      info?.height === 2868 &&
+    Boolean(
+      info &&
+        acceptedIphoneCaptureSizes.has(`${info.width}x${info.height}`),
+    ) &&
       info?.colorType !== 4 &&
       info?.colorType !== 6,
     info

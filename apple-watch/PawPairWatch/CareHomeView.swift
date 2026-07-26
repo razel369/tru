@@ -171,7 +171,7 @@ struct CareHomeView: View {
   }
 
   private var emptyState: some View {
-    VStack(spacing: 9) {
+    VStack(spacing: 7) {
       HStack(spacing: 6) {
         Image(systemName: "pawprint.fill")
           .foregroundStyle(PawPairWatchPalette.coral)
@@ -181,39 +181,37 @@ struct CareHomeView: View {
       .font(.system(size: 12, weight: .bold, design: .rounded))
       .foregroundStyle(PawPairWatchPalette.cream)
 
-      Spacer(minLength: 5)
-
       ZStack {
         Circle()
           .fill(PawPairWatchPalette.coral.opacity(0.16))
-          .frame(width: 58, height: 58)
+          .frame(width: 50, height: 50)
         Circle()
           .stroke(PawPairWatchPalette.coral.opacity(0.28), lineWidth: 1)
-          .frame(width: 58, height: 58)
+          .frame(width: 50, height: 50)
         Image(systemName: "pawprint.fill")
-          .font(.system(size: 24, weight: .bold))
+          .font(.system(size: 21, weight: .bold))
           .foregroundStyle(PawPairWatchPalette.coral)
       }
 
-      Text("Your care plan,\non your wrist")
-        .font(.system(size: 18, weight: .bold, design: .rounded))
+      Text("Care on your wrist")
+        .font(.system(size: 17, weight: .bold, design: .rounded))
         .foregroundStyle(PawPairWatchPalette.cream)
-        .multilineTextAlignment(.center)
-        .lineLimit(2)
+        .lineLimit(1)
+        .minimumScaleFactor(0.78)
 
       Text(
         store.snapshot.generatedAt.isEmpty
-          ? "Open PawPair on iPhone to sync."
+          ? "Open PawPair on iPhone\nto sync today’s plan."
           : "You’re all caught up."
       )
-      .font(.caption2)
+      .font(.system(size: 10, weight: .medium, design: .rounded))
       .foregroundStyle(PawPairWatchPalette.cream.opacity(0.68))
       .multilineTextAlignment(.center)
-
-      Spacer(minLength: 7)
+      .lineLimit(2)
+      .fixedSize(horizontal: false, vertical: true)
     }
     .padding(.horizontal, 12)
-    .padding(.vertical, 7)
+    .padding(.vertical, 6)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
   }
 

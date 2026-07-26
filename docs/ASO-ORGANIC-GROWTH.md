@@ -1,6 +1,6 @@
 # PawPair ASO: organic search growth plan
 
-Research date: 2026-07-21
+Research date: 2026-07-21; live US storefront refresh: 2026-07-26
 
 ## Executive decision
 
@@ -24,6 +24,17 @@ ASO cannot guarantee hundreds of thousands of users. Apple says ranking also dep
 ## What the live market check found
 
 The checks used Apple's public US and Israel storefront search results. Rating counts are storefront-specific snapshots, not estimates of search volume.
+
+### July 26 refresh
+
+The launch wedge still holds after refreshing the US storefront for `pet medication reminder`, `pet care tracker`, `dog health tracker`, and `cat health tracker`:
+
+- Exact-match medication reminder results remain fragmented and generally show little rating authority.
+- `Pet Care Tracker Dog Cat Log` remains the strongest keyword-led direct comparison, at roughly 933 US ratings in the refresh, so PawPair should not copy its generic utility positioning.
+- PetDesk remains a broad, high-authority incumbent at roughly 490K US ratings. Competing for `pet care` alone at launch would be inefficient.
+- Dog and cat health-tracker searches still surface several recent, low-authority products. PawPair can credibly combine daily care, medication, health history, and a polished Apple Watch flow in one focused promise.
+
+No metadata change is justified by this refresh. The title, subtitle, and 96-byte keyword field below keep indexed words nonduplicative and preserve the strongest high-intent portfolio. The first three screenshots should prove the emotional pet-centered experience, the daily care plan, and the health timeline; Apple Watch should appear as supporting product proof rather than displacing one of those three primary search-conversion frames.
 
 ### United States
 

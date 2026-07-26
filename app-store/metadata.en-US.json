@@ -17,6 +17,5 @@
   "releaseMethod": "Manual",
   "sku": "PAWPAIR-IOS-001",
   "bundleId": "app.pawpair.medtracker",
-  "version": "1.0.0",
-  "build": "11"
+  "version": "1.0.0"
 }
