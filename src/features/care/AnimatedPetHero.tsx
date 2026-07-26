@@ -642,8 +642,11 @@ export function AnimatedPetHero({
       !slowBlink &&
       Math.random() < blinkProfile.doubleBlinkChance;
     const hasHalfFrame = Boolean(motionPack.states.blinkHalf);
+    // A blink changes only the two eyelid opacity layers. Keep this subtle
+    // state change visible under Reduce Motion; larger body, parallax, and
+    // attention animations remain disabled by their own guards.
     const scaled = (duration: number) =>
-      reduceMotion ? 0 : Math.round(duration * sequenceScale);
+      Math.round(duration * sequenceScale);
     const sampleRange = (range: readonly [number, number]) =>
       range[0] + Math.round(Math.random() * (range[1] - range[0]));
     const blinkScale = slowBlink ? blinkProfile.slowBlinkScale : 1;
@@ -761,7 +764,6 @@ export function AnimatedPetHero({
     motionPack,
     motionState,
     proceduralBlink,
-    reduceMotion,
   ]);
 
   useEffect(() => {
@@ -965,7 +967,6 @@ export function AnimatedPetHero({
   useEffect(() => {
     if (
       !appActive ||
-      reduceMotion ||
       inspectionMode ||
       !motionPack?.states.blink
     ) return;
@@ -986,7 +987,7 @@ export function AnimatedPetHero({
       active = false;
       if (blinkTimer) clearTimeout(blinkTimer);
     };
-  }, [appActive, inspectionMode, motionPack, reduceMotion, rig25d, runBlink]);
+  }, [appActive, inspectionMode, motionPack, rig25d, runBlink]);
 
   useEffect(() => {
     if (!appActive || reduceMotion || inspectionMode) return;
