@@ -31,10 +31,15 @@ final class WatchCareStore: NSObject, ObservableObject {
 
   private let cacheKey = "pawpair.watch.snapshot.v1"
   private let pendingIdsKey = "pawpair.watch.pending-ids.v1"
+  private let pendingPayloadsKey = "pawpair.watch.pending-payloads.v1"
+  private var pendingPayloads: [[String: String]] = []
 
   override init() {
     super.init()
     restore()
+    pendingPayloads =
+      UserDefaults.standard.array(forKey: pendingPayloadsKey)
+        as? [[String: String]] ?? []
     guard WCSession.isSupported() else { return }
     let session = WCSession.default
     session.delegate = self
@@ -45,24 +50,57 @@ final class WatchCareStore: NSObject, ObservableObject {
     pendingIds.insert(item.id)
     persistPendingIds()
     applyLocalStatus(item.id, status: status)
-    let payload: [String: Any] = [
+    let payload = [
       "type": "careAction",
       "occurrenceId": item.id,
       "status": status,
       "sentAt": ISO8601DateFormatter().string(from: Date()),
     ]
+    send(payload)
+  }
+
+  private func send(_ payload: [String: String]) {
     let session = WCSession.default
+    guard session.activationState == .activated else {
+      queue(payload)
+      return
+    }
+
     if session.isReachable {
       session.sendMessage(
         payload,
         replyHandler: { _ in },
-        errorHandler: { _ in
-          session.transferUserInfo(payload)
+        errorHandler: { [weak self] _ in
+          Task { @MainActor in
+            guard session.activationState == .activated else {
+              self?.queue(payload)
+              return
+            }
+            session.transferUserInfo(payload)
+          }
         }
       )
     } else {
       session.transferUserInfo(payload)
     }
+  }
+
+  private func queue(_ payload: [String: String]) {
+    pendingPayloads.append(payload)
+    if pendingPayloads.count > 50 {
+      pendingPayloads.removeFirst(pendingPayloads.count - 50)
+    }
+    persistPendingPayloads()
+  }
+
+  private func flushPendingPayloads(using session: WCSession) {
+    guard session.activationState == .activated, !pendingPayloads.isEmpty else {
+      return
+    }
+    let payloads = pendingPayloads
+    pendingPayloads.removeAll()
+    persistPendingPayloads()
+    payloads.forEach { session.transferUserInfo($0) }
   }
 
   private func applyLocalStatus(_ itemId: String, status: String) {
@@ -156,6 +194,10 @@ final class WatchCareStore: NSObject, ObservableObject {
   private func persistPendingIds() {
     UserDefaults.standard.set(Array(pendingIds).sorted(), forKey: pendingIdsKey)
   }
+
+  private func persistPendingPayloads() {
+    UserDefaults.standard.set(pendingPayloads, forKey: pendingPayloadsKey)
+  }
 }
 
 extension WatchCareStore: WCSessionDelegate {
@@ -165,7 +207,10 @@ extension WatchCareStore: WCSessionDelegate {
     error: Error?
   ) {
     let context = session.receivedApplicationContext
-    Task { @MainActor [weak self] in self?.accept(context) }
+    Task { @MainActor [weak self] in
+      self?.accept(context)
+      self?.flushPendingPayloads(using: session)
+    }
   }
 
   nonisolated func session(
