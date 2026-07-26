@@ -1,0 +1,14 @@
+{
+  "id": "github-actions:30206667936",
+  "status": "FINISHED",
+  "platform": "IOS",
+  "appVersion": "1.0.0",
+  "appBuildVersion": "25",
+  "gitCommitHash": "eecd34791fc1ae1d248cd419f52e041aa699d265",
+  "artifactName": "pawpair-ios-production-eecd34791fc1ae1d248cd419f52e041aa699d265",
+  "sha256": "d0de873d6b36cb3f1dadd3213f1efd15f6d18215c5f0b52ccaef31531d6a113b",
+  "watchApp": "PawPairWatch.app",
+  "watchIconAsset": "Assets.car",
+  "buildMethod": "eas-build-local",
+  "githubRunId": "30206667936"
+}

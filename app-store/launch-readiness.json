@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-07-24T10:05:55.097Z",
-  "status": "BLOCKED",
-  "passed": 23,
+  "generatedAt": "2026-07-26T14:56:00.583Z",
+  "status": "PASS",
+  "passed": 43,
   "total": 43,
-  "blockerCount": 20,
+  "blockerCount": 0,
   "checks": [
     {
       "name": "Universal iPhone and iPad target",
@@ -30,22 +30,16 @@
       "detail": "app.pawpair.medtracker"
     },
     {
-      "name": "Build number",
+      "name": "EAS production build candidate",
       "pass": true,
       "blocking": true,
-      "detail": "build=11"
+      "detail": "build=25, commit=eecd34791fc1ae1d248cd419f52e041aa699d265, id=github-actions:30206667936"
     },
     {
       "name": "Export compliance",
       "pass": true,
       "blocking": true,
       "detail": "ITSAppUsesNonExemptEncryption must be false"
-    },
-    {
-      "name": "Metadata build matches",
-      "pass": true,
-      "blocking": true,
-      "detail": "metadata=11, app=11"
     },
     {
       "name": "Terms URL in metadata",
@@ -139,123 +133,129 @@
     },
     {
       "name": "Final iPhone capture 01-home.png",
-      "pass": false,
+      "pass": true,
       "blocking": true,
-      "detail": "missing"
+      "detail": "1320x2868, colorType=2"
     },
     {
       "name": "Final iPhone capture 02-plan.png",
-      "pass": false,
+      "pass": true,
       "blocking": true,
-      "detail": "missing"
+      "detail": "1320x2868, colorType=2"
     },
     {
       "name": "Final iPhone capture 03-health.png",
-      "pass": false,
+      "pass": true,
       "blocking": true,
-      "detail": "missing"
+      "detail": "1320x2868, colorType=2"
     },
     {
       "name": "Final iPhone capture 04-pets.png",
-      "pass": false,
+      "pass": true,
       "blocking": true,
-      "detail": "missing"
+      "detail": "1320x2868, colorType=2"
     },
     {
       "name": "Final iPhone capture 05-settings.png",
-      "pass": false,
+      "pass": true,
       "blocking": true,
-      "detail": "missing"
+      "detail": "1320x2868, colorType=2"
     },
     {
       "name": "Screenshot 01-pet-care-ai.png",
-      "pass": false,
+      "pass": true,
       "blocking": true,
-      "detail": "stale until exact final capture exists and compositor reruns"
+      "detail": "1320x2868, colorType=2, fresh=true"
     },
     {
       "name": "Screenshot 02-daily-care-ai.png",
-      "pass": false,
+      "pass": true,
       "blocking": true,
-      "detail": "stale until exact final capture exists and compositor reruns"
+      "detail": "1320x2868, colorType=2, fresh=true"
     },
     {
       "name": "Screenshot 03-pet-health-ai.png",
-      "pass": false,
+      "pass": true,
       "blocking": true,
-      "detail": "stale until exact final capture exists and compositor reruns"
+      "detail": "1320x2868, colorType=2, fresh=true"
     },
     {
       "name": "Screenshot 04-every-pet-ai.png",
-      "pass": false,
+      "pass": true,
       "blocking": true,
-      "detail": "stale until exact final capture exists and compositor reruns"
+      "detail": "1320x2868, colorType=2, fresh=true"
     },
     {
       "name": "Screenshot 05-private-ai.png",
-      "pass": false,
+      "pass": true,
       "blocking": true,
-      "detail": "stale until exact final capture exists and compositor reruns"
+      "detail": "1320x2868, colorType=2, fresh=true"
     },
     {
       "name": "Final iPad capture 01-home.png",
-      "pass": false,
+      "pass": true,
       "blocking": true,
-      "detail": "missing"
+      "detail": "2064x2752, colorType=2"
     },
     {
       "name": "Final iPad capture 02-plan.png",
-      "pass": false,
+      "pass": true,
       "blocking": true,
-      "detail": "missing"
+      "detail": "2064x2752, colorType=2"
     },
     {
       "name": "Final iPad capture 03-health.png",
-      "pass": false,
+      "pass": true,
       "blocking": true,
-      "detail": "missing"
+      "detail": "2064x2752, colorType=2"
     },
     {
       "name": "Final iPad capture 04-pets.png",
-      "pass": false,
+      "pass": true,
       "blocking": true,
-      "detail": "missing"
+      "detail": "2064x2752, colorType=2"
     },
     {
       "name": "Final iPad capture 05-settings.png",
-      "pass": false,
+      "pass": true,
       "blocking": true,
-      "detail": "missing"
+      "detail": "2064x2752, colorType=2"
     },
     {
       "name": "iPad screenshot 01-pet-care-ai.png",
-      "pass": false,
+      "pass": true,
       "blocking": true,
-      "detail": "stale until exact final capture exists and compositor reruns"
+      "detail": "2064x2752, colorType=2, fresh=true"
     },
     {
       "name": "iPad screenshot 02-daily-care-ai.png",
-      "pass": false,
+      "pass": true,
       "blocking": true,
-      "detail": "stale until exact final capture exists and compositor reruns"
+      "detail": "2064x2752, colorType=2, fresh=true"
     },
     {
       "name": "iPad screenshot 03-pet-health-ai.png",
-      "pass": false,
+      "pass": true,
       "blocking": true,
-      "detail": "stale until exact final capture exists and compositor reruns"
+      "detail": "2064x2752, colorType=2, fresh=true"
     },
     {
       "name": "iPad screenshot 04-every-pet-ai.png",
-      "pass": false,
+      "pass": true,
       "blocking": true,
-      "detail": "stale until exact final capture exists and compositor reruns"
+      "detail": "2064x2752, colorType=2, fresh=true"
     },
     {
       "name": "iPad screenshot 05-private-ai.png",
-      "pass": false,
+      "pass": true,
       "blocking": true,
-      "detail": "stale until exact final capture exists and compositor reruns"
+      "detail": "2064x2752, colorType=2, fresh=true"
+    },
+    {
+      "name": "Final Apple Watch screenshot",
+      "pass": true,
+      "blocking": true,
+      "detail": "422x514, colorType=2"
     },
     {
       "name": "App icon",
