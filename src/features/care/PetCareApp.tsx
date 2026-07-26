@@ -63,6 +63,7 @@ import { HealthHubScreen } from "./HealthHubScreen";
 import { HomeCareScreen } from "./HomeCareScreen";
 import { MotionLabScreen } from "./MotionLabScreen";
 import { resolveNativeMotionQASettings } from "./native-motion-qa";
+import { resolveNativeScreenshotQASettings } from "./native-screenshot-qa";
 import { buildMedicationSupplyStatuses } from "./medication-supply";
 import { scheduledCareFromNotificationAction } from "./notification-occurrence";
 import { PetProfileForm } from "./PetProfileForm";
@@ -90,6 +91,13 @@ const nativeMotionQA = resolveNativeMotionQASettings(
         | undefined)
     : undefined,
 );
+const nativeScreenshotQA = resolveNativeScreenshotQASettings(
+  Platform.OS === "ios"
+    ? (NativeModules.PawPairSystemBridge as
+        | Readonly<Record<string, unknown>>
+        | undefined)
+    : undefined,
+);
 
 function isSameLocalDate(first: Date, second: Date) {
   return (
@@ -106,19 +114,24 @@ export function PetCareApp() {
   const notificationTasks = store.state.tasks;
   const activatePetFromNotification = store.setActivePetId;
   const logNotificationOccurrence = store.logOccurrence;
-  const careNow = useCareClock();
-  const [tab, setTab] = useState<CareTab>("home");
+  const liveCareNow = useCareClock();
+  const careNow = nativeScreenshotQA.now ?? liveCareNow;
+  const [tab, setTab] = useState<CareTab>(nativeScreenshotQA.initialTab);
   const [homeScrollRequest, setHomeScrollRequest] = useState(0);
   const [addReturnTab, setAddReturnTab] =
     useState<Exclude<CareTab, "add">>("home");
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(
+    () => new Date(nativeScreenshotQA.now ?? Date.now()),
+  );
   const selectedDateTracksToday = useRef(true);
   const [toast, setToast] = useState<string | null>(null);
   const [petEditor, setPetEditor] = useState<PetEditor | null>(null);
   const [addCategory, setAddCategory] = useState<CareCategory>("feeding");
   const [editingTask, setEditingTask] = useState<CareTask | null>(null);
   const [motionLabOpen, setMotionLabOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(
+    nativeScreenshotQA.openSettings,
+  );
   const [legalDocument, setLegalDocument] = useState<LegalDocument | null>(null);
   const [remindersEnabled, setRemindersEnabled] = useState(false);
   const [reminderPrivacy, setReminderPrivacy] =

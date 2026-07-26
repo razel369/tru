@@ -204,6 +204,20 @@ for (const file of screenshots) {
   );
 }
 
+const watchScreenshotPath =
+  "app-store/screenshots/watch-ultra-3-final/01-today.png";
+const watchScreenshot = pngInfo(watchScreenshotPath);
+add(
+  "Final Apple Watch screenshot",
+  watchScreenshot?.width === 422 &&
+    watchScreenshot?.height === 514 &&
+    watchScreenshot?.colorType !== 4 &&
+    watchScreenshot?.colorType !== 6,
+  watchScreenshot
+    ? `${watchScreenshot.width}x${watchScreenshot.height}, colorType=${watchScreenshot.colorType}`
+    : "missing",
+);
+
 const iconPath = app.icon?.replace(/^\.\//, "");
 const icon = iconPath ? pngInfo(iconPath) : null;
 add("App icon", icon?.width === 1024 && icon?.height === 1024 && icon?.colorType !== 4 && icon?.colorType !== 6, icon ? `${icon.width}x${icon.height}, colorType=${icon.colorType}` : "missing");

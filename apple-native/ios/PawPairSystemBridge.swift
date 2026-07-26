@@ -7,6 +7,8 @@ final class PawPairSystemBridge: RCTEventEmitter {
   private var routeObserver: NSObjectProtocol?
   private static let motionQAEnvironmentKey = "PAWPAIR_MOTION_QA"
   private static let motionQAStressEnvironmentKey = "PAWPAIR_MOTION_QA_STRESS"
+  private static let screenshotQAEnvironmentKey = "PAWPAIR_SCREENSHOT_QA"
+  private static let screenshotQANowEnvironmentKey = "PAWPAIR_SCREENSHOT_QA_NOW"
 
   override init() {
     super.init()
@@ -41,6 +43,10 @@ final class PawPairSystemBridge: RCTEventEmitter {
         environment[Self.motionQAEnvironmentKey] == "1",
       "PawPairMotionQAStress":
         environment[Self.motionQAStressEnvironmentKey] == "1",
+      "PawPairScreenshotQA":
+        environment[Self.screenshotQAEnvironmentKey] ?? "",
+      "PawPairScreenshotQANow":
+        environment[Self.screenshotQANowEnvironmentKey] ?? "",
     ]
   }
 
