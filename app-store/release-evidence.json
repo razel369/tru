@@ -2,71 +2,56 @@
   "release": {
     "name": "PawPair",
     "version": "1.0.0",
-    "submissionCandidateBuild": null,
+    "submissionCandidateBuild": "27",
     "bundleId": "app.pawpair.medtracker",
     "platform": "IOS",
     "distribution": "STORE",
-    "status": "NATIVE_SIMULATOR_PASS_SIGNED_AND_PHYSICAL_DEVICE_GATES"
+    "status": "BUILD_27_UPLOADED_PROCESSING_AT_APPLE"
   },
   "currentSourceReadiness": {
-    "asOf": "2026-07-25",
-    "launchCheckpointCommit": "2e9b7eb7db41573e0275bb044deb38327623039e",
+    "asOf": "2026-07-27",
+    "launchCheckpointCommit": "25d28cc9ed3452ad394a73bd9ff7139f02ea31bb",
     "typescript": "PASS",
     "eslint": "PASS_ZERO_WARNINGS",
-    "testSuite": "PASS_39_FILES_194_TESTS",
+    "testSuite": "PASS_47_FILES_231_TESTS",
     "expoDoctor": "PASS_20_OF_20",
     "expoSdk": "57.0.0",
-    "qualityCi": {
-      "status": "PASS",
-      "pushRunId": 30170424446,
-      "pullRequestRunId": 30170425835
-    },
-    "motionRuntimePacks": 67,
+    "motionRuntimePacks": 68,
     "motionPngAssets": 201,
     "motionAuditIssues": 0,
     "petChromaFiles": 202,
     "petChromaIssues": 0,
     "blinkVisualIntegrity": {
       "packCount": 68,
-      "activePackCount": 56,
-      "passingActivePackCount": 56,
-      "safelyDisabledPackCount": 12,
+      "activePackCount": 68,
+      "passingActivePackCount": 68,
+      "safelyDisabledPackCount": 0,
       "issueCount": 0
     },
-    "nativeReleaseCompile": {
+    "nativeReleaseQa": {
       "status": "PASS_IPHONE_IPAD_AND_APPLE_WATCH",
-      "githubRunId": 30170424442,
-      "githubRunAttempt": 1,
-      "url": "https://github.com/razel369/tru/actions/runs/30170424442",
+      "githubRunId": 30214054163,
+      "gitCommitHash": "25d28cc9ed3452ad394a73bd9ff7139f02ea31bb",
       "iphoneLaunchScreenshot": "PASS_RELEASE_SIMULATOR",
       "ipadLaunchScreenshot": "PASS_RELEASE_SIMULATOR_RESPONSIVE_LAYOUT",
-      "watchEmptyStateScreenshot": "PASS_RELEASE_SIMULATOR_NO_MOCK_DATA"
+      "watchLaunchScreenshot": "PASS_RELEASE_SIMULATOR",
+      "motionStress": "PASS_STABLE_10_OF_10",
+      "blink": {
+        "status": "PASS_VISIBLE",
+        "changedPixels": 23864,
+        "localizedToEyeBand": true
+      }
     },
-    "launchReadiness": "BLOCKED_23_OF_43",
-    "launchReadinessBlockers": [
-      "FINAL_IPHONE_CAPTURE_01",
-      "FINAL_IPHONE_CAPTURE_02",
-      "FINAL_IPHONE_CAPTURE_03",
-      "FINAL_IPHONE_CAPTURE_04",
-      "FINAL_IPHONE_CAPTURE_05",
-      "FINAL_IPHONE_ASO_SCREENSHOT_01",
-      "FINAL_IPHONE_ASO_SCREENSHOT_02",
-      "FINAL_IPHONE_ASO_SCREENSHOT_03",
-      "FINAL_IPHONE_ASO_SCREENSHOT_04",
-      "FINAL_IPHONE_ASO_SCREENSHOT_05",
-      "FINAL_IPAD_CAPTURE_01",
-      "FINAL_IPAD_CAPTURE_02",
-      "FINAL_IPAD_CAPTURE_03",
-      "FINAL_IPAD_CAPTURE_04",
-      "FINAL_IPAD_CAPTURE_05",
-      "FINAL_IPAD_ASO_SCREENSHOT_01",
-      "FINAL_IPAD_ASO_SCREENSHOT_02",
-      "FINAL_IPAD_ASO_SCREENSHOT_03",
-      "FINAL_IPAD_ASO_SCREENSHOT_04",
-      "FINAL_IPAD_ASO_SCREENSHOT_05"
-    ],
-    "signedProductionBuild": "BLOCKED_EAS_FREE_IOS_QUOTA_RESET_2026_08_01",
-    "revenueCat": "PRODUCTION_KEY_AND_DEFAULT_OFFERING_PRODUCTS_VERIFIED_ENTITLEMENT_AND_STOREKIT_PENDING"
+    "signedProductionBuild": {
+      "status": "PASS_UPLOADED_TO_APPLE",
+      "build": "27",
+      "githubRunId": 30214394302,
+      "gitCommitHash": "25d28cc9ed3452ad394a73bd9ff7139f02ea31bb",
+      "sha256": "db44339569f23ff825dbcff2384760304ee47ad1eb7b181689098ba228046a68",
+      "watchApp": "PawPairWatch.app",
+      "codesign": "PASS_DEEP_STRICT"
+    },
+    "revenueCat": "PRODUCTION_KEY_AND_PRODUCT_IDENTIFIERS_VERIFIED_IN_SIGNED_IPA"
   },
   "externalServices": {
     "supabase": {
@@ -82,7 +67,7 @@
       "smokeDataCleanup": "PASS_ZERO_REMAINING_ROWS"
     },
     "revenueCat": {
-      "easProductionPublicKey": "PRESENT",
+      "easProductionPublicKey": "PRESENT_IN_SIGNED_BUILD_27",
       "currentOffering": "default",
       "annualPackage": "app.pawpair.medtracker.premium.annual",
       "monthlyPackage": "app.pawpair.medtracker.premium.monthly",
@@ -99,6 +84,8 @@
     "appStoreConnect": {
       "ascAppId": "6789938403",
       "integration": "EAS_UPLOAD_CONNECTED",
+      "submissionId": "8cb1f7ae-c226-4c57-847b-5088a9b9ec6f",
+      "binaryUpload": "PASS_BUILD_27_PROCESSING",
       "interactiveAudit": "BLOCKED_APPLE_SIGN_IN_REQUIRED",
       "paidAgreement": "PENDING_VERIFICATION",
       "bankingAndTax": "PENDING_VERIFICATION",
@@ -107,26 +94,17 @@
       "reviewContact": "PENDING_VERIFICATION"
     }
   },
-  "latestHistoricalSignedArtifact": {
-    "version": "1.0.0",
-    "build": "15",
-    "scope": "HISTORICAL_SIGNED_ARTIFACT_SUPERSEDED_BY_CURRENT_SOURCE",
-    "easBuildId": "87d6fa94-46c9-484f-b2e3-60b989d64c40",
-    "gitCommitHash": "86a238f01542f3893359f984c64e951e8c025e4e",
-    "currentSourceIncluded": false,
-    "appleWatchIncluded": false,
-    "eligibleForReview": false
-  },
   "submissionGates": {
+    "appStoreConnectBuildProcessing": "PENDING_APPLE",
     "appStoreConnectConfiguration": "PENDING_INTERACTIVE_SIGN_IN",
-    "revenueCatEntitlementAndStoreKit": "PENDING",
-    "finalProductionBuild": "BLOCKED_EAS_FREE_IOS_QUOTA_RESET_2026_08_01",
-    "finalNativeIphoneQa": "PARTIAL_RELEASE_SIMULATOR_LAUNCH_PASS_PHYSICAL_TOUCH_AND_GPU_PENDING",
-    "finalNativeIpadQa": "PARTIAL_RELEASE_SIMULATOR_LAUNCH_PASS_FULL_FLOW_AND_PHYSICAL_DEVICE_PENDING",
-    "finalNativeWatchQa": "PARTIAL_RELEASE_SIMULATOR_EMPTY_STATE_PASS_PHYSICAL_SYNC_AND_ACTIONS_PENDING",
-    "finalSignedIpaAudit": "PENDING",
-    "finalIphoneScreenshots": "PENDING_FIVE_EXACT_BINARY_CAPTURES_AND_COMPOSITES",
-    "finalIpadScreenshots": "PENDING_FIVE_EXACT_BINARY_CAPTURES_AND_COMPOSITES",
-    "appStoreReviewSubmission": "FROZEN_UNTIL_FINAL_QA_AND_EXPLICIT_APPROVAL"
+    "revenueCatEntitlementAndStoreKit": "PENDING_PHYSICAL_DEVICE",
+    "finalProductionBuild": "PASS_BUILD_27",
+    "finalNativeIphoneQa": "PASS_SIMULATOR_LAUNCH_BLINK_AND_TOUCH_STRESS",
+    "finalNativeIpadQa": "PASS_SIMULATOR_LAUNCH_AND_APP_STORE_FLOW",
+    "finalNativeWatchQa": "PASS_SIMULATOR_LAUNCH",
+    "finalSignedIpaAudit": "PASS",
+    "finalIphoneScreenshots": "PASS_FIVE_BRANDED_1320X2868",
+    "finalIpadScreenshots": "PASS_FIVE_BRANDED_2064X2752",
+    "appStoreReviewSubmission": "FROZEN_UNTIL_APPLE_PROCESSING_AND_ACCOUNT_GATES_PASS"
   }
 }

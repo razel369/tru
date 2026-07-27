@@ -50,6 +50,10 @@ const buildCandidatePath = path.join(
 const buildCandidate = fs.existsSync(buildCandidatePath)
   ? readJson("app-store/eas-production-build.json")
   : null;
+const ipaAuditPath = path.join(root, "app-store", "ipa-audit-build27.json");
+const ipaAudit = fs.existsSync(ipaAuditPath)
+  ? readJson("app-store/ipa-audit-build27.json")
+  : null;
 const privacy = read("pawpair-site/privacy/index.html");
 const terms = read("pawpair-site/terms/index.html");
 const support = read("pawpair-site/support/index.html");
@@ -119,7 +123,31 @@ add(
 );
 
 const apiKey = process.env.EXPO_PUBLIC_REVENUECAT_IOS_API_KEY ?? envFileValue("EXPO_PUBLIC_REVENUECAT_IOS_API_KEY");
-add("RevenueCat production key", /^appl_[A-Za-z0-9_-]{8,}$/.test(apiKey ?? "") && !apiKey?.includes("your_public"), apiKey ? "configured" : "missing; EAS production environment may still provide it");
+const revenueCatKeyConfigured =
+  (/^appl_[A-Za-z0-9_-]{8,}$/.test(apiKey ?? "") &&
+    !apiKey?.includes("your_public")) ||
+  ipaAudit?.archiveChecks?.revenueCatPublicKeyEmbedded === true;
+add(
+  "RevenueCat production key",
+  revenueCatKeyConfigured,
+  apiKey
+    ? "configured locally"
+    : ipaAudit?.archiveChecks?.revenueCatPublicKeyEmbedded
+      ? `verified inside signed build ${ipaAudit.release?.buildNumber}`
+      : "missing locally and not verified in the signed IPA",
+);
+add(
+  "Signed IPA audit matches build candidate",
+  ipaAudit?.release?.buildNumber === buildCandidate?.appBuildVersion &&
+    ipaAudit?.release?.gitCommitHash === buildCandidate?.gitCommitHash &&
+    ipaAudit?.release?.sha256 === buildCandidate?.sha256 &&
+    ipaAudit?.archiveChecks?.macosCodesignDeepStrict === true &&
+    ipaAudit?.archiveChecks?.appPrivacyManifest === true &&
+    ipaAudit?.archiveChecks?.watchPrivacyManifest === true,
+  ipaAudit
+    ? `build=${ipaAudit.release?.buildNumber}, commit=${ipaAudit.release?.gitCommitHash}, sha256=${ipaAudit.release?.sha256}`
+    : "missing signed IPA audit",
+);
 
 const screenshots = [
   "01-pet-care-ai.png",

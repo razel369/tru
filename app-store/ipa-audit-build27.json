@@ -1,0 +1,45 @@
+{
+  "auditedAt": "2026-07-27",
+  "release": {
+    "appVersion": "1.0.0",
+    "buildNumber": "27",
+    "bundleIdentifier": "app.pawpair.medtracker",
+    "gitCommitHash": "25d28cc9ed3452ad394a73bd9ff7139f02ea31bb",
+    "githubRunId": "30214394302",
+    "artifactName": "pawpair-ios-production-25d28cc9ed3452ad394a73bd9ff7139f02ea31bb",
+    "sha256": "db44339569f23ff825dbcff2384760304ee47ad1eb7b181689098ba228046a68"
+  },
+  "archiveChecks": {
+    "macosCodesignDeepStrict": true,
+    "appCodeSignature": true,
+    "watchCodeSignature": true,
+    "appProvisioningProfile": true,
+    "watchProvisioningProfile": true,
+    "appPrivacyManifest": true,
+    "watchPrivacyManifest": true,
+    "watchApp": "PawPairWatch.app",
+    "watchIconAsset": "Assets.car",
+    "revenueCatPublicKeyEmbedded": true,
+    "annualProductIdentifierEmbedded": true,
+    "monthlyProductIdentifierEmbedded": true
+  },
+  "nativeQa": {
+    "githubRunId": "30214054163",
+    "gitCommitHash": "25d28cc9ed3452ad394a73bd9ff7139f02ea31bb",
+    "iphoneLaunch": "PASS",
+    "ipadLaunch": "PASS",
+    "watchLaunch": "PASS",
+    "interactionStress": "PASS_STABLE_10_OF_10",
+    "blink": {
+      "status": "VISIBLE",
+      "changedPixels": 23864,
+      "changedPixelRatio": 0.006303621993998563,
+      "localizedToEyeBand": true
+    }
+  },
+  "appleSubmission": {
+    "id": "8cb1f7ae-c226-4c57-847b-5088a9b9ec6f",
+    "status": "UPLOADED_PROCESSING",
+    "testFlightUrl": "https://appstoreconnect.apple.com/apps/6789938403/testflight/ios"
+  }
+}

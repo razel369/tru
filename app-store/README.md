@@ -9,13 +9,14 @@ This directory contains the release copy, App Store Connect answers and signed-a
 - Bundle ID: app.pawpair.medtracker
 - EAS project: @razellll/pawpair-pet-med-tracker
 - Distribution: App Store
-- Submission candidate: none while final native QA and Apple-side configuration continue
-- Historical builds: all builds through build 11 predate the current launch checkpoint and are not eligible for review
-- Historical signed IPA audits: retained as evidence only
-- Native iPhone and iPad QA: pending on the final build
-- Current ASO artwork: iPhone Model B prepared at 1320x2868; five branded iPad screenshots remain the automated launch-verifier blockers
+- Submission candidate: Build 27 from commit `25d28cc9ed3452ad394a73bd9ff7139f02ea31bb`
+- Apple upload: accepted and processing under submission `8cb1f7ae-c226-4c57-847b-5088a9b9ec6f`
+- Historical builds: all builds through Build 25 are superseded and must not be selected for App Review
+- Signed IPA audit: Build 27 passes archive, signature, privacy, RevenueCat and Apple Watch checks
+- Native QA: iPhone, iPad and Apple Watch pass from the same source commit; deterministic blink and repeated-touch stability pass
+- Current ASO artwork: five branded iPhone screenshots at 1320x2868 and five branded iPad screenshots at 2064x2752 pass the automated verifier
 
-Builds through 11 do not contain commit `6a2cb27` plus the subsequent Auth hardening and must not be selected for App Review. Keep submission frozen. Create one replacement production build only after Apple and RevenueCat configuration are verified, then audit and test that exact binary before screenshots or review submission.
+Build 27 is the only current submission candidate. Keep review submission frozen until Apple finishes processing the binary and App Store Connect account, privacy, age-rating, subscription and review-contact gates are verified.
 
 ## Files
 
@@ -24,18 +25,18 @@ Builds through 11 do not contain commit `6a2cb27` plus the subsequent Auth harde
 - privacy-label.md: App Privacy, age-rating and privacy-manifest answers
 - screenshot-plan.md: required sizes, shot list and capture gates
 - release-evidence.json: current source readiness and submission-gate state
-- ipa-audit-build7.json: signed IPA contents, privacy, provisioning and native-module evidence
+- ipa-audit-build27.json: current signed IPA, native QA, RevenueCat, Watch and Apple-upload evidence
+- eas-production-build.json: exact current build, commit, artifact and checksum
+- ipa-audit-build7.json: historical signed IPA contents, privacy, provisioning and native-module evidence
 - ipa-backup-evidence-build7.json: encrypted backup and restore evidence from the signed bundle
 - ipa-audit-build6.json: historical comparison evidence only
 
 ## Last verified source evidence
 
-The following results predate the current universal-layout, analytics-consent and branding changes. They must be rerun before the final build and are not current release evidence.
-
 - TypeScript: PASS
-- Tests: 33 files and 172 tests PASS
+- Tests: 47 files and 231 tests PASS
 - Expo Doctor: 20 of 20 checks PASS
-- Motion assets: 67 runtime packs, 201 PNG assets, zero audit issues
+- Motion assets: 68 active runtime packs, 201 PNG assets, zero audit issues
 - Expo dependency compatibility: PASS
 - Production dependency audit: zero high or critical findings; 12 moderate Expo build-toolchain findings have no safe nonbreaking upgrade path
 
@@ -54,9 +55,8 @@ The following results predate the current universal-layout, analytics-consent an
 
 ## Remaining submission sequence
 
-1. Finish source, functional and visual QA while submission remains frozen.
-2. Create one final replacement production build after QA passes.
-3. Audit and complete native iPhone and iPad QA on that exact binary.
-4. Capture fresh native iPhone and 13-inch iPad screenshots from the validated final binary.
-5. Confirm the App Store Connect record, numeric Apple ID and review contact phone number.
-6. Upload the final build and audited screenshots, complete privacy and age-rating answers, then submit only after explicit approval.
+1. Wait for Apple to finish processing Build 27 and verify it appears in TestFlight.
+2. Confirm agreements, banking, tax, App Privacy, age rating, regulated-medical-device answers, subscriptions and review contact in App Store Connect.
+3. Upload the five audited iPhone and five audited iPad screenshots.
+4. Select Build 27 for version 1.0.0.
+5. Run the final gate again and submit for review only when every blocking check passes.

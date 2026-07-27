@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-07-26T14:56:00.583Z",
+  "generatedAt": "2026-07-27T03:23:04.157Z",
   "status": "PASS",
-  "passed": 43,
-  "total": 43,
+  "passed": 44,
+  "total": 44,
   "blockerCount": 0,
   "checks": [
     {
@@ -33,7 +33,7 @@
       "name": "EAS production build candidate",
       "pass": true,
       "blocking": true,
-      "detail": "build=25, commit=eecd34791fc1ae1d248cd419f52e041aa699d265, id=github-actions:30206667936"
+      "detail": "build=27, commit=25d28cc9ed3452ad394a73bd9ff7139f02ea31bb, id=github-actions:30214394302"
     },
     {
       "name": "Export compliance",
@@ -129,7 +129,13 @@
       "name": "RevenueCat production key",
       "pass": true,
       "blocking": true,
-      "detail": "configured"
+      "detail": "verified inside signed build 27"
+    },
+    {
+      "name": "Signed IPA audit matches build candidate",
+      "pass": true,
+      "blocking": true,
+      "detail": "build=27, commit=25d28cc9ed3452ad394a73bd9ff7139f02ea31bb, sha256=db44339569f23ff825dbcff2384760304ee47ad1eb7b181689098ba228046a68"
     },
     {
       "name": "Final iPhone capture 01-home.png",
