@@ -54,16 +54,7 @@
       "unrestrictedWebAccess": false,
       "violenceCartoonOrFantasy": "NONE",
       "violenceRealistic": "NONE",
-      "violenceRealisticProlongedGraphicOrSadistic": "NONE",
-      "advertising": false,
-      "ageAssurance": false,
-      "ageRatingOverrideV2": "NONE",
-      "developerAgeRatingInfoUrl": null,
-      "gunsOrOtherWeapons": "NONE",
-      "healthOrWellnessTopics": true,
-      "messagingAndChat": false,
-      "parentalControls": false,
-      "userGeneratedContent": false
+      "violenceRealisticProlongedGraphicOrSadistic": "NONE"
     }
   }
 }
