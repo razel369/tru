@@ -21,15 +21,20 @@ let minX = baseline.width;
 let minY = baseline.height;
 let maxX = -1;
 let maxY = -1;
+const appContentStartY = Math.ceil(baseline.height * 0.06);
 for (let index = 0; index < baseline.data.length; index += 4) {
+  const pixel = index / 4;
+  const x = pixel % baseline.width;
+  const y = Math.floor(pixel / baseline.width);
+  // Simulator screenshots include the live iOS clock and radio indicators.
+  // Ignore that system-owned band so a minute rollover cannot invalidate an
+  // otherwise deterministic in-app blink comparison.
+  if (y < appContentStartY) continue;
   const delta =
     Math.abs(baseline.data[index] - blink.data[index]) +
     Math.abs(baseline.data[index + 1] - blink.data[index + 1]) +
     Math.abs(baseline.data[index + 2] - blink.data[index + 2]);
   if (delta < 24) continue;
-  const pixel = index / 4;
-  const x = pixel % baseline.width;
-  const y = Math.floor(pixel / baseline.width);
   changedPixels += 1;
   minX = Math.min(minX, x);
   minY = Math.min(minY, y);
@@ -48,7 +53,7 @@ const localizedToEyeBand =
   changedHeight <= baseline.height * 0.25 &&
   changedCenterX >= baseline.width * 0.2 &&
   changedCenterX <= baseline.width * 0.8 &&
-  minY >= baseline.height * 0.04 &&
+  minY >= baseline.height * 0.06 &&
   maxY <= baseline.height * 0.6;
 const result = {
   status:

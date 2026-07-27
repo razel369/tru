@@ -116,8 +116,7 @@ jobs:
 
       - name: Capture a clean native iPhone launch
         run: |
-          xcrun simctl boot "$IOS_SIMULATOR_UDID" || true
-          xcrun simctl bootstatus "$IOS_SIMULATOR_UDID" -b
+          node scripts/boot-ios-simulator.mjs "$IOS_SIMULATOR_UDID"
           xcrun simctl install \
             "$IOS_SIMULATOR_UDID" \
             ios/build-simulator/Build/Products/Release-iphonesimulator/PawPair.app
@@ -307,8 +306,7 @@ jobs:
 
       - name: Capture a clean native iPad launch
         run: |
-          xcrun simctl boot "$IPAD_SIMULATOR_UDID" || true
-          xcrun simctl bootstatus "$IPAD_SIMULATOR_UDID" -b
+          node scripts/boot-ios-simulator.mjs "$IPAD_SIMULATOR_UDID"
           xcrun simctl install \
             "$IPAD_SIMULATOR_UDID" \
             ios/build-simulator/Build/Products/Release-iphonesimulator/PawPair.app
@@ -383,8 +381,7 @@ jobs:
 
       - name: Capture the native Apple Watch launch
         run: |
-          xcrun simctl boot "$WATCH_SIMULATOR_UDID" || true
-          xcrun simctl bootstatus "$WATCH_SIMULATOR_UDID" -b
+          node scripts/boot-ios-simulator.mjs "$WATCH_SIMULATOR_UDID"
           xcrun simctl install \
             "$WATCH_SIMULATOR_UDID" \
             ios/build-simulator/Build/Products/Release-watchsimulator/PawPairWatch.app
