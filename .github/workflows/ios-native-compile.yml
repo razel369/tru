@@ -269,6 +269,14 @@ jobs:
               screenshot "native-qa/app-store/iphone/$screen.png"
           done
 
+      - name: Preserve Premium review screenshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: pawpair-ios-premium-review
+          path: native-qa/app-store/iphone/premium.png
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Select an available 13-inch iPad simulator
         run: |
           ipad_simulator_udid="$(

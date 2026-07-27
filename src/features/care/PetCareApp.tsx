@@ -494,7 +494,7 @@ export function PetCareApp() {
     setTab(speciesChanged ? "plan" : isFirstPet ? "home" : "pets");
   };
 
-  if (store.state.pets.length === 0) {
+  if (store.state.pets.length === 0 && !nativeScreenshotQA.openPremium) {
     return (
       <PersonalizedCareOnboarding
         bottomInset={insets.bottom}
