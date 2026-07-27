@@ -6,6 +6,10 @@ const outputDirectory = path.resolve(
 );
 const screenshotDate = "2026-07-26";
 const generatedAt = "2026-07-26T12:15:00.000Z";
+// The workflow launches the empty app once before replacing the SQLite
+// snapshot. Keep the injected snapshot newer than that emergency copy so the
+// deterministic fixture remains authoritative on the next simulator launch.
+const snapshotUpdatedAt = "2099-12-31T23:59:59.000Z";
 
 const pets = [
   {
@@ -241,7 +245,7 @@ INSERT INTO care_state_snapshots (
   1,
   ${sqlString(payload)},
   ${sqlString(checksum)},
-  ${sqlString(generatedAt)}
+  ${sqlString(snapshotUpdatedAt)}
 );
 COMMIT;
 `;
