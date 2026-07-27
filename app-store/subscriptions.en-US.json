@@ -20,7 +20,7 @@
         "duration": "ONE_WEEK"
       },
       "familySharing": false,
-      "reviewScreenshot": "app-store/review/premium-paywall-ipad.png"
+      "reviewScreenshot": "app-store/review/premium-paywall-iphone.png"
     },
     {
       "productId": "app.pawpair.medtracker.premium.monthly",
@@ -32,7 +32,7 @@
       "initialPriceHypothesisUsd": 6.99,
       "introductoryOffer": null,
       "familySharing": false,
-      "reviewScreenshot": "app-store/review/premium-paywall-ipad.png"
+      "reviewScreenshot": "app-store/review/premium-paywall-iphone.png"
     }
   ],
   "launchRules": {
