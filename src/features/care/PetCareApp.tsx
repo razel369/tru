@@ -46,6 +46,7 @@ import {
 import type { PawPairSystemRoute } from "../system/routes";
 import { canAddPet, defaultFreeEntitlement, isPlus } from "../subscriptions/entitlements";
 import { PremiumPaywallScreen } from "../subscriptions/PremiumPaywallScreen";
+import { appStoreReviewPremiumPackages } from "../subscriptions/revenuecat";
 import { refreshEntitlement } from "../subscriptions/storekit";
 import type { PremiumEntryPoint } from "../subscriptions/types";
 import {
@@ -98,6 +99,9 @@ const nativeScreenshotQA = resolveNativeScreenshotQASettings(
         | undefined)
     : undefined,
 );
+const appStoreReviewPackages = nativeScreenshotQA.openPremium
+  ? appStoreReviewPremiumPackages()
+  : undefined;
 
 function isSameLocalDate(first: Date, second: Date) {
   return (
@@ -147,7 +151,9 @@ export function PetCareApp() {
   const [logEditor, setLogEditor] = useState<ScheduledCare | null>(null);
   const [entitlement, setEntitlement] = useState(defaultFreeEntitlement);
   const [paywallSource, setPaywallSource] =
-    useState<PremiumEntryPoint | null>(null);
+    useState<PremiumEntryPoint | null>(
+      nativeScreenshotQA.openPremium ? "pets" : null,
+    );
   const [activationPromptReady, setActivationPromptReady] = useState(false);
   const activationPromptSeen = useRef(true);
 
@@ -552,6 +558,7 @@ export function PetCareApp() {
         onOpenTerms={() =>
           setLegalDocument({ body: TERMS_OF_SERVICE, title: "Terms of Service" })
         }
+        packagesOverride={appStoreReviewPackages}
         pet={activePet}
       />
     );

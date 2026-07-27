@@ -8,6 +8,7 @@ describe("native App Store screenshot QA settings", () => {
       enabled: false,
       initialTab: "home",
       now: null,
+      openPremium: false,
       openSettings: false,
     });
   });
@@ -30,7 +31,21 @@ describe("native App Store screenshot QA settings", () => {
     ).toMatchObject({
       enabled: true,
       initialTab: "pets",
+      openPremium: false,
       openSettings: true,
+    });
+  });
+
+  it("opens the App Store review paywall from the Pets host tab", () => {
+    expect(
+      resolveNativeScreenshotQASettings({
+        PawPairScreenshotQA: "premium",
+      }),
+    ).toMatchObject({
+      enabled: true,
+      initialTab: "pets",
+      openPremium: true,
+      openSettings: false,
     });
   });
 
@@ -44,6 +59,7 @@ describe("native App Store screenshot QA settings", () => {
       enabled: false,
       initialTab: "home",
       now: null,
+      openPremium: false,
       openSettings: false,
     });
   });

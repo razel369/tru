@@ -11,6 +11,7 @@ export type NativeScreenshotQASettings = {
   enabled: boolean;
   initialTab: CareTab;
   now: Date | null;
+  openPremium: boolean;
   openSettings: boolean;
 };
 
@@ -28,16 +29,21 @@ export function resolveNativeScreenshotQASettings(
       ? settings.PawPairScreenshotQA.trim().toLowerCase()
       : "";
   const openSettings = requestedScreen === "settings";
+  const openPremium = requestedScreen === "premium";
   const initialTab = SCREENSHOT_TABS.has(requestedScreen as CareTab)
     ? (requestedScreen as CareTab)
-    : openSettings
+    : openSettings || openPremium
       ? "pets"
       : "home";
 
   return {
-    enabled: SCREENSHOT_TABS.has(requestedScreen as CareTab) || openSettings,
+    enabled:
+      SCREENSHOT_TABS.has(requestedScreen as CareTab) ||
+      openSettings ||
+      openPremium,
     initialTab,
     now: validNow(settings?.PawPairScreenshotQANow),
+    openPremium,
     openSettings,
   };
 }

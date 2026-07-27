@@ -209,6 +209,38 @@ export function previewPremiumPackages() {
   return FALLBACK_PACKAGES.map((pkg) => ({ ...pkg }));
 }
 
+/**
+ * Deterministic packages for native App Store review screenshots only.
+ * These values mirror the current U.S. App Store Connect configuration and
+ * are reachable exclusively through the simulator-only screenshot bridge.
+ */
+export function appStoreReviewPremiumPackages(): PremiumPackage[] {
+  return [
+    {
+      available: true,
+      equivalentMonthly: "$3.33 / month",
+      id: "app-store-review-annual",
+      period: "annual",
+      price: 39.99,
+      priceString: "$39.99",
+      productId: PREMIUM_ANNUAL_PRODUCT_ID,
+      savingsPercent: 52,
+      trialDays: 7,
+    },
+    {
+      available: true,
+      equivalentMonthly: null,
+      id: "app-store-review-monthly",
+      period: "monthly",
+      price: 6.99,
+      priceString: "$6.99",
+      productId: PREMIUM_MONTHLY_PRODUCT_ID,
+      savingsPercent: null,
+      trialDays: 0,
+    },
+  ];
+}
+
 export async function loadPremiumPackages(): Promise<PremiumPackage[]> {
   try {
     const nativePackages = await availablePackages();

@@ -35,6 +35,7 @@ type PremiumPaywallScreenProps = {
   onClose: () => void;
   onOpenPrivacy: () => void;
   onOpenTerms: () => void;
+  packagesOverride?: readonly PremiumPackage[];
   pet?: Pet;
 };
 
@@ -181,14 +182,15 @@ export function PremiumPaywallScreen({
   onClose,
   onOpenPrivacy,
   onOpenTerms,
+  packagesOverride,
   pet,
 }: PremiumPaywallScreenProps) {
   const insets = useSafeAreaInsets();
   const [plans, setPlans] = useState<PremiumPackage[]>(() =>
-    INITIAL_PREMIUM_PACKAGES.map((plan) => ({ ...plan })),
+    (packagesOverride ?? INITIAL_PREMIUM_PACKAGES).map((plan) => ({ ...plan })),
   );
   const [selectedId, setSelectedId] = useState(
-    INITIAL_PREMIUM_PACKAGES[0]?.id ?? "",
+    (packagesOverride ?? INITIAL_PREMIUM_PACKAGES)[0]?.id ?? "",
   );
   const [busy, setBusy] = useState<"purchase" | "restore" | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -199,13 +201,15 @@ export function PremiumPaywallScreen({
 
   useEffect(() => {
     let active = true;
-    void loadPremiumPackages().then((next) => {
-      if (!active) return;
-      setPlans(next);
-      const preferred =
-        next.find((plan) => plan.period === "annual") ?? next[0];
-      setSelectedId(preferred?.id ?? "");
-    });
+    if (!packagesOverride) {
+      void loadPremiumPackages().then((next) => {
+        if (!active) return;
+        setPlans(next);
+        const preferred =
+          next.find((plan) => plan.period === "annual") ?? next[0];
+        setSelectedId(preferred?.id ?? "");
+      });
+    }
     Animated.spring(heroMotion, {
       damping: 18,
       mass: 0.8,
@@ -216,7 +220,7 @@ export function PremiumPaywallScreen({
     return () => {
       active = false;
     };
-  }, [heroMotion]);
+  }, [heroMotion, packagesOverride]);
 
   useEffect(() => {
     void trackAnalyticsEvent("paywall_viewed", {

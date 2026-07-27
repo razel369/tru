@@ -254,7 +254,7 @@ jobs:
           fi
           sqlite3 "$database" < native-qa/app-store-fixture/care-state.sql
           mkdir -p native-qa/app-store/iphone
-          for screen in home plan health pets settings; do
+          for screen in home plan health pets settings premium; do
             xcrun simctl terminate \
               "$IOS_SIMULATOR_UDID" \
               app.pawpair.medtracker || true
@@ -330,7 +330,7 @@ jobs:
           fi
           sqlite3 "$database" < native-qa/app-store-fixture/care-state.sql
           mkdir -p native-qa/app-store/ipad
-          for screen in home plan health pets settings; do
+          for screen in home plan health pets settings premium; do
             xcrun simctl terminate \
               "$IPAD_SIMULATOR_UDID" \
               app.pawpair.medtracker || true
