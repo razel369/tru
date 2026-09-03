@@ -1,0 +1,141 @@
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+import { PNG } from "pngjs";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const motionRoot = path.join(root, "assets", "pet-motion");
+const motionRegistryRoot = path.join(root, "src", "features", "pet-motion");
+
+function collectSourceFiles(directory) {
+  const sourceFiles = [];
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    const candidate = path.join(directory, entry.name);
+    if (entry.isDirectory()) {
+      sourceFiles.push(...collectSourceFiles(candidate));
+    } else if (
+      entry.isFile() &&
+      [".ts", ".tsx"].includes(path.extname(entry.name))
+    ) {
+      sourceFiles.push(candidate);
+    }
+  }
+  return sourceFiles;
+}
+
+const files = Array.from(
+  new Set(
+    collectSourceFiles(motionRegistryRoot).flatMap((sourcePath) => {
+      const source = fs.readFileSync(sourcePath, "utf8");
+      const pattern =
+        /require\(\s*["']([^"']*assets[\\/]pet-motion[\\/][^"']+\.png)["']\s*\)/g;
+      return Array.from(source.matchAll(pattern), (match) =>
+        path.resolve(path.dirname(sourcePath), match[1]),
+      );
+    }),
+  ),
+)
+  .filter((filePath) => filePath.startsWith(`${motionRoot}${path.sep}`))
+  .sort();
+
+if (files.length === 0) {
+  throw new Error("No registered runtime pet-motion PNG assets were found.");
+}
+
+const results = files.map((filePath) => {
+  const png = PNG.sync.read(fs.readFileSync(filePath));
+  let coloredTransparent = 0;
+  let semiTransparent = 0;
+  let chromaEdge = 0;
+  let visibleBoundary = 0;
+  let visibleBoundaryChroma = 0;
+
+  const isTransparent = (x, y) => {
+    if (x < 0 || y < 0 || x >= png.width || y >= png.height) return true;
+    return png.data[(y * png.width + x) * 4 + 3] === 0;
+  };
+
+  for (let index = 0; index < png.data.length; index += 4) {
+    const red = png.data[index];
+    const green = png.data[index + 1];
+    const blue = png.data[index + 2];
+    const alpha = png.data[index + 3];
+
+    if (alpha === 0 && (red !== 0 || green !== 0 || blue !== 0)) {
+      coloredTransparent += 1;
+    }
+    if (alpha > 0) {
+      const pixel = index / 4;
+      const x = pixel % png.width;
+      const y = Math.floor(pixel / png.width);
+      const boundary =
+        isTransparent(x - 1, y - 1) ||
+        isTransparent(x, y - 1) ||
+        isTransparent(x + 1, y - 1) ||
+        isTransparent(x - 1, y) ||
+        isTransparent(x + 1, y) ||
+        isTransparent(x - 1, y + 1) ||
+        isTransparent(x, y + 1) ||
+        isTransparent(x + 1, y + 1);
+      if (boundary) {
+        visibleBoundary += 1;
+        const greenDominant =
+          green > 90 && green > red + 12 && green > blue + 10;
+        if (greenDominant) visibleBoundaryChroma += 1;
+      }
+    }
+    if (alpha <= 0 || alpha >= 252) continue;
+
+    semiTransparent += 1;
+    const magenta =
+      red > 145 && red > green + 20 && blue > green + 8;
+    const greenScreen =
+      green > 90 && green > red + 20 && green > blue + 15;
+    if (magenta || greenScreen) chromaEdge += 1;
+  }
+
+  const chromaEdgePercent =
+    (chromaEdge / Math.max(1, semiTransparent)) * 100;
+  const visibleBoundaryChromaPercent =
+    (visibleBoundaryChroma / Math.max(1, visibleBoundary)) * 100;
+  const issues = [];
+  if (coloredTransparent > 0) issues.push("colored-transparent-pixels");
+  if (chromaEdge > 10 && chromaEdgePercent > 0.25) {
+    issues.push("chroma-edge-spill");
+  }
+  if (
+    visibleBoundaryChroma > 10 &&
+    visibleBoundaryChromaPercent > 5
+  ) {
+    issues.push("visible-boundary-chroma-spill");
+  }
+
+  return {
+    file: path.relative(root, filePath),
+    coloredTransparent,
+    chromaEdge,
+    chromaEdgePercent: Number(chromaEdgePercent.toFixed(3)),
+    visibleBoundary,
+    visibleBoundaryChroma,
+    visibleBoundaryChromaPercent: Number(
+      visibleBoundaryChromaPercent.toFixed(3),
+    ),
+    issues,
+  };
+});
+
+const failures = results.filter((result) => result.issues.length > 0);
+console.log(
+  JSON.stringify(
+    {
+      fileCount: results.length,
+      issueCount: failures.length,
+      issues: failures,
+    },
+    null,
+    2,
+  ),
+);
+
+if (failures.length > 0) process.exitCode = 1;

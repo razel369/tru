@@ -1,0 +1,2 @@
+assets/pet-motion/**/*.png filter=lfs diff=lfs merge=lfs -text
+app-store/**/*.png filter=lfs diff=lfs merge=lfs -text

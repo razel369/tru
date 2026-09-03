@@ -1,0 +1,110 @@
+{
+  "release": {
+    "name": "PawPair",
+    "version": "1.0.0",
+    "submissionCandidateBuild": "27",
+    "bundleId": "app.pawpair.medtracker",
+    "platform": "IOS",
+    "distribution": "STORE",
+    "status": "BUILD_27_UPLOADED_PROCESSING_AT_APPLE"
+  },
+  "currentSourceReadiness": {
+    "asOf": "2026-07-27",
+    "launchCheckpointCommit": "25d28cc9ed3452ad394a73bd9ff7139f02ea31bb",
+    "typescript": "PASS",
+    "eslint": "PASS_ZERO_WARNINGS",
+    "testSuite": "PASS_47_FILES_231_TESTS",
+    "expoDoctor": "PASS_20_OF_20",
+    "expoSdk": "57.0.0",
+    "motionRuntimePacks": 68,
+    "motionPngAssets": 201,
+    "motionAuditIssues": 0,
+    "petChromaFiles": 202,
+    "petChromaIssues": 0,
+    "blinkVisualIntegrity": {
+      "packCount": 68,
+      "activePackCount": 68,
+      "passingActivePackCount": 68,
+      "safelyDisabledPackCount": 0,
+      "issueCount": 0
+    },
+    "nativeReleaseQa": {
+      "status": "PASS_IPHONE_IPAD_AND_APPLE_WATCH",
+      "githubRunId": 30214054163,
+      "gitCommitHash": "25d28cc9ed3452ad394a73bd9ff7139f02ea31bb",
+      "iphoneLaunchScreenshot": "PASS_RELEASE_SIMULATOR",
+      "ipadLaunchScreenshot": "PASS_RELEASE_SIMULATOR_RESPONSIVE_LAYOUT",
+      "watchLaunchScreenshot": "PASS_RELEASE_SIMULATOR",
+      "motionStress": "PASS_STABLE_10_OF_10",
+      "blink": {
+        "status": "PASS_VISIBLE",
+        "changedPixels": 23864,
+        "localizedToEyeBand": true
+      }
+    },
+    "signedProductionBuild": {
+      "status": "PASS_UPLOADED_TO_APPLE",
+      "build": "27",
+      "githubRunId": 30214394302,
+      "gitCommitHash": "25d28cc9ed3452ad394a73bd9ff7139f02ea31bb",
+      "sha256": "db44339569f23ff825dbcff2384760304ee47ad1eb7b181689098ba228046a68",
+      "watchApp": "PawPairWatch.app",
+      "codesign": "PASS_DEEP_STRICT"
+    },
+    "revenueCat": "PRODUCTION_KEY_AND_PRODUCT_IDENTIFIERS_VERIFIED_IN_SIGNED_IPA"
+  },
+  "externalServices": {
+    "supabase": {
+      "projectId": "bmtemofvyrnqrhiefvqp",
+      "status": "ACTIVE_HEALTHY",
+      "anonymousSignIn": "PASS_PRODUCTION_SMOKE",
+      "analyticsInsert": "PASS_PRODUCTION_SMOKE",
+      "clientEventAccess": "INSERT_ONLY_PASS",
+      "accountDeletion": "PASS_PRODUCTION_SMOKE",
+      "anonymousRateLimit": "30_PER_HOUR_PER_IP",
+      "abandonedUserCleanup": "ACTIVE_DAILY_30_DAYS",
+      "anonymousCloudSyncRestriction": "PASS_FOUR_RESTRICTIVE_RLS_POLICIES",
+      "smokeDataCleanup": "PASS_ZERO_REMAINING_ROWS"
+    },
+    "revenueCat": {
+      "easProductionPublicKey": "PRESENT_IN_SIGNED_BUILD_27",
+      "currentOffering": "default",
+      "annualPackage": "app.pawpair.medtracker.premium.annual",
+      "monthlyPackage": "app.pawpair.medtracker.premium.monthly",
+      "entitlementAttachment": "PENDING_DASHBOARD_OR_PURCHASE_VERIFICATION",
+      "storeKitPricesAndTrial": "PENDING_PHYSICAL_DEVICE"
+    },
+    "publicSite": {
+      "project": "pawpair-site",
+      "deploymentId": "dpl_9cYySkAZMs9ZDjxJvTpDP2pYv2De",
+      "url": "https://pawpair-site.vercel.app/",
+      "privacyTermsEffectiveDate": "PASS_2026_07_23",
+      "securityHeaders": "PASS"
+    },
+    "appStoreConnect": {
+      "ascAppId": "6789938403",
+      "integration": "EAS_UPLOAD_CONNECTED",
+      "submissionId": "8cb1f7ae-c226-4c57-847b-5088a9b9ec6f",
+      "binaryUpload": "PASS_BUILD_27_PROCESSING",
+      "interactiveAudit": "BLOCKED_APPLE_SIGN_IN_REQUIRED",
+      "paidAgreement": "PENDING_VERIFICATION",
+      "bankingAndTax": "PENDING_VERIFICATION",
+      "appPrivacy": "PENDING_VERIFICATION",
+      "ageRating": "PENDING_VERIFICATION",
+      "reviewContact": "PENDING_VERIFICATION"
+    }
+  },
+  "submissionGates": {
+    "appStoreConnectBuildProcessing": "PENDING_APPLE",
+    "appStoreConnectConfiguration": "PENDING_INTERACTIVE_SIGN_IN",
+    "revenueCatEntitlementAndStoreKit": "PENDING_PHYSICAL_DEVICE",
+    "finalProductionBuild": "PASS_BUILD_27",
+    "finalNativeIphoneQa": "PASS_SIMULATOR_LAUNCH_BLINK_AND_TOUCH_STRESS",
+    "finalNativeIpadQa": "PASS_SIMULATOR_LAUNCH_AND_APP_STORE_FLOW",
+    "finalNativeWatchQa": "PASS_SIMULATOR_LAUNCH",
+    "finalSignedIpaAudit": "PASS",
+    "finalIphoneScreenshots": "PASS_FIVE_BRANDED_1320X2868",
+    "finalIpadScreenshots": "PASS_FIVE_BRANDED_2064X2752",
+    "appStoreReviewSubmission": "FROZEN_UNTIL_APPLE_PROCESSING_AND_ACCOUNT_GATES_PASS"
+  }
+}

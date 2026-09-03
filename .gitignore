@@ -1,0 +1,44 @@
+node_modules/
+.expo/
+dist/
+web-build/
+coverage/
+.codex/
+artifacts/
+work/
+.vercel/
+__pycache__/
+*.pyc
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+.mcp.json
+*.ipa
+*.xcarchive
+
+# Local visual QA captures. Keep the two App Store source captures below.
+/*.png
+!/living-pet-home.png
+!/design-pets-after.png
+
+# Pet-motion generation intermediates. Runtime v2 and final idle frames are tracked.
+assets/pet-motion/**/*-chroma.png
+assets/pet-motion/**/*-extracted.png
+assets/pet-motion/**/blink-half-v1.png
+assets/pet-motion/**/blink-v1.png
+assets/pet-motion/**/idle-v1.png
+assets/pet-motion/**/idle-clean-v2.png
+assets/pet-motion/**/idle.png
+assets/pet-motion/**/idle-stage-report.json
+
+# Superseded scene drafts retained locally for visual reference.
+assets/pawpair-breed-dachshund-scene-v1.png
+assets/pawpair-breed-golden-retriever-scene-v1.png
+assets/pawpair-breed-maine-coon-scene-v1.png
+assets/pawpair-breed-sphynx-scene-v1.png
+assets/pawpair-luna-integrated-room-mobile.png
+assets/pawpair-pet-first-room-mobile.png
+assets/pawpair-pet-first-room.png
+/design-qa.md

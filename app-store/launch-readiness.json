@@ -1,0 +1,273 @@
+{
+  "generatedAt": "2026-07-27T03:23:04.157Z",
+  "status": "PASS",
+  "passed": 44,
+  "total": 44,
+  "blockerCount": 0,
+  "checks": [
+    {
+      "name": "Universal iPhone and iPad target",
+      "pass": true,
+      "blocking": true,
+      "detail": "supportsTablet=true"
+    },
+    {
+      "name": "iPad multitasking",
+      "pass": true,
+      "blocking": true,
+      "detail": "requireFullScreen=false"
+    },
+    {
+      "name": "iPad orientations",
+      "pass": true,
+      "blocking": true,
+      "detail": "UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight"
+    },
+    {
+      "name": "Bundle identifier",
+      "pass": true,
+      "blocking": true,
+      "detail": "app.pawpair.medtracker"
+    },
+    {
+      "name": "EAS production build candidate",
+      "pass": true,
+      "blocking": true,
+      "detail": "build=27, commit=25d28cc9ed3452ad394a73bd9ff7139f02ea31bb, id=github-actions:30214394302"
+    },
+    {
+      "name": "Export compliance",
+      "pass": true,
+      "blocking": true,
+      "detail": "ITSAppUsesNonExemptEncryption must be false"
+    },
+    {
+      "name": "Terms URL in metadata",
+      "pass": true,
+      "blocking": true,
+      "detail": "https://pawpair-site.vercel.app/terms/"
+    },
+    {
+      "name": "Privacy URL in metadata",
+      "pass": true,
+      "blocking": true,
+      "detail": "https://pawpair-site.vercel.app/privacy/"
+    },
+    {
+      "name": "Public privacy describes RevenueCat",
+      "pass": true,
+      "blocking": true,
+      "detail": "RevenueCat and purchase processing disclosed"
+    },
+    {
+      "name": "Public privacy describes optional analytics",
+      "pass": true,
+      "blocking": true,
+      "detail": "Consent, scope and deletion disclosed"
+    },
+    {
+      "name": "Public terms describe renewal",
+      "pass": true,
+      "blocking": true,
+      "detail": "Renewal and restore terms disclosed"
+    },
+    {
+      "name": "Support identity is consistent",
+      "pass": true,
+      "blocking": true,
+      "detail": "raz@rmalk.co.il"
+    },
+    {
+      "name": "App Privacy answer includes purchases",
+      "pass": true,
+      "blocking": true,
+      "detail": "RevenueCat minimum disclosure"
+    },
+    {
+      "name": "App Privacy answer includes product analytics",
+      "pass": true,
+      "blocking": true,
+      "detail": "Anonymous identifiers and usage declared"
+    },
+    {
+      "name": "Privacy manifest NSPrivacyCollectedDataTypeUserID",
+      "pass": true,
+      "blocking": true,
+      "detail": "NSPrivacyCollectedDataTypeUserID"
+    },
+    {
+      "name": "Privacy manifest NSPrivacyCollectedDataTypeDeviceID",
+      "pass": true,
+      "blocking": true,
+      "detail": "NSPrivacyCollectedDataTypeDeviceID"
+    },
+    {
+      "name": "Privacy manifest NSPrivacyCollectedDataTypeProductInteraction",
+      "pass": true,
+      "blocking": true,
+      "detail": "NSPrivacyCollectedDataTypeProductInteraction"
+    },
+    {
+      "name": "Privacy manifest NSPrivacyCollectedDataTypePurchaseHistory",
+      "pass": true,
+      "blocking": true,
+      "detail": "NSPrivacyCollectedDataTypePurchaseHistory"
+    },
+    {
+      "name": "Review notes include Premium",
+      "pass": true,
+      "blocking": true,
+      "detail": "Products and restore path documented"
+    },
+    {
+      "name": "RevenueCat product IDs",
+      "pass": true,
+      "blocking": true,
+      "detail": "Product identifiers are stable"
+    },
+    {
+      "name": "RevenueCat production key",
+      "pass": true,
+      "blocking": true,
+      "detail": "verified inside signed build 27"
+    },
+    {
+      "name": "Signed IPA audit matches build candidate",
+      "pass": true,
+      "blocking": true,
+      "detail": "build=27, commit=25d28cc9ed3452ad394a73bd9ff7139f02ea31bb, sha256=db44339569f23ff825dbcff2384760304ee47ad1eb7b181689098ba228046a68"
+    },
+    {
+      "name": "Final iPhone capture 01-home.png",
+      "pass": true,
+      "blocking": true,
+      "detail": "1320x2868, colorType=2"
+    },
+    {
+      "name": "Final iPhone capture 02-plan.png",
+      "pass": true,
+      "blocking": true,
+      "detail": "1320x2868, colorType=2"
+    },
+    {
+      "name": "Final iPhone capture 03-health.png",
+      "pass": true,
+      "blocking": true,
+      "detail": "1320x2868, colorType=2"
+    },
+    {
+      "name": "Final iPhone capture 04-pets.png",
+      "pass": true,
+      "blocking": true,
+      "detail": "1320x2868, colorType=2"
+    },
+    {
+      "name": "Final iPhone capture 05-settings.png",
+      "pass": true,
+      "blocking": true,
+      "detail": "1320x2868, colorType=2"
+    },
+    {
+      "name": "Screenshot 01-pet-care-ai.png",
+      "pass": true,
+      "blocking": true,
+      "detail": "1320x2868, colorType=2, fresh=true"
+    },
+    {
+      "name": "Screenshot 02-daily-care-ai.png",
+      "pass": true,
+      "blocking": true,
+      "detail": "1320x2868, colorType=2, fresh=true"
+    },
+    {
+      "name": "Screenshot 03-pet-health-ai.png",
+      "pass": true,
+      "blocking": true,
+      "detail": "1320x2868, colorType=2, fresh=true"
+    },
+    {
+      "name": "Screenshot 04-every-pet-ai.png",
+      "pass": true,
+      "blocking": true,
+      "detail": "1320x2868, colorType=2, fresh=true"
+    },
+    {
+      "name": "Screenshot 05-private-ai.png",
+      "pass": true,
+      "blocking": true,
+      "detail": "1320x2868, colorType=2, fresh=true"
+    },
+    {
+      "name": "Final iPad capture 01-home.png",
+      "pass": true,
+      "blocking": true,
+      "detail": "2064x2752, colorType=2"
+    },
+    {
+      "name": "Final iPad capture 02-plan.png",
+      "pass": true,
+      "blocking": true,
+      "detail": "2064x2752, colorType=2"
+    },
+    {
+      "name": "Final iPad capture 03-health.png",
+      "pass": true,
+      "blocking": true,
+      "detail": "2064x2752, colorType=2"
+    },
+    {
+      "name": "Final iPad capture 04-pets.png",
+      "pass": true,
+      "blocking": true,
+      "detail": "2064x2752, colorType=2"
+    },
+    {
+      "name": "Final iPad capture 05-settings.png",
+      "pass": true,
+      "blocking": true,
+      "detail": "2064x2752, colorType=2"
+    },
+    {
+      "name": "iPad screenshot 01-pet-care-ai.png",
+      "pass": true,
+      "blocking": true,
+      "detail": "2064x2752, colorType=2, fresh=true"
+    },
+    {
+      "name": "iPad screenshot 02-daily-care-ai.png",
+      "pass": true,
+      "blocking": true,
+      "detail": "2064x2752, colorType=2, fresh=true"
+    },
+    {
+      "name": "iPad screenshot 03-pet-health-ai.png",
+      "pass": true,
+      "blocking": true,
+      "detail": "2064x2752, colorType=2, fresh=true"
+    },
+    {
+      "name": "iPad screenshot 04-every-pet-ai.png",
+      "pass": true,
+      "blocking": true,
+      "detail": "2064x2752, colorType=2, fresh=true"
+    },
+    {
+      "name": "iPad screenshot 05-private-ai.png",
+      "pass": true,
+      "blocking": true,
+      "detail": "2064x2752, colorType=2, fresh=true"
+    },
+    {
+      "name": "Final Apple Watch screenshot",
+      "pass": true,
+      "blocking": true,
+      "detail": "422x514, colorType=2"
+    },
+    {
+      "name": "App icon",
+      "pass": true,
+      "blocking": true,
+      "detail": "1024x1024, colorType=2"
+    }
+  ]
+}

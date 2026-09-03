@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-07-26",
+  "status": "pass",
+  "motionAssets": {
+    "runtimeFileCount": 201,
+    "assetSetCount": 67,
+    "issueCount": 0
+  },
+  "chroma": {
+    "registeredFileCount": 202,
+    "issueCount": 0,
+    "hiddenRgbPixelsSanitized": 34540575,
+    "changedFileCount": 75
+  },
+  "blinkIntegrity": {
+    "packCount": 68,
+    "activePackCount": 52,
+    "passingActivePackCount": 52,
+    "disabledPackCount": 16,
+    "issueCount": 0,
+    "policy": "Blink is disabled when authored frames cannot render both eyes without visible seams or color shifts. Those pets remain stable and use their idle presentation."
+  },
+  "verification": {
+    "motionCommand": "npm run audit:motion-assets",
+    "chromaCommand": "npm run audit:pet-chroma",
+    "blinkCommand": "python scripts/audit-blink-visual-integrity.py",
+    "result": "All automated pet visual gates passed."
+  }
+}

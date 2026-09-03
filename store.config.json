@@ -1,0 +1,91 @@
+{
+  "configVersion": 0,
+  "apple": {
+    "version": "1.2.0",
+    "copyright": "2026 Raz Malka",
+    "release": {
+      "automaticRelease": true
+    },
+    "info": {
+      "en-US": {
+        "title": "PawPair: Pet Care Tracker",
+        "subtitle": "Dog & Cat Health Reminders",
+        "promoText": "Keep every dog & cat healthy with 186 custom breed companions, smart daily routines, vet-ready health passports, and 100% private local care tracking.",
+        "description": "PawPair is a calm, private home for the everyday care, medication reminders, and health history of every dog and cat you love.\n\nYOUR PET AT THE CENTER \u2014 186 SUPPORTED BREEDS\nCreate personal companion profiles with custom artwork tailored to your exact dog or cat. From Golden Retrievers and French Bulldogs to Siamese cats and Maine Coons, PawPair celebrates your pet's individuality and keeps them at the heart of your day.\n\nA CALM, EFFORTLESS DAILY RHYTHM\nPlan meals, walks, water, medication, grooming, and appointments in an intuitive chronological timeline. See what is next at a glance and mark care moments complete with a single tap.\n\nVET-READY HEALTH PASSPORT\nKeep comprehensive, organized medical history right in your pocket. Track weight trends with visual charts, maintain vaccine and preventive care logs, monitor ongoing or resolved symptoms, and log vet notes. Prepare a focused, vet-ready health brief in seconds.\n\nAPPLE WATCH CARE ON YOUR WRIST\nGlance at today's care progress, see upcoming tasks, and mark doses or walks done or skipped directly from Apple Watch. Offline changes queue safely and synchronize seamlessly when connected.\n\nRELIABLE LOCAL REMINDERS\nNever miss an important medication, meal, or vet appointment. Notifications are scheduled locally on your device with comfortable snooze controls and action buttons.\n\nPORTABLE ENCRYPTED BACKUPS\nCreate password-protected backups that stay entirely in your control. Export, save, or restore through the native system file picker without needing third-party servers.\n\nPAWPAIR PREMIUM\nUnlock unlimited companion profiles and seamless caregiver handoff tools. Monthly and annual auto-renewable plans are available. Localized App Store pricing is displayed clearly with zero hidden fees.\n\n100% PRIVATE BY DESIGN\nYour care data belongs to you. Pet profiles, medical records, and photos stay secure on your device. There are no advertisements, data brokers, or cross-app tracking.\n\nBUILT WITH LOVE FOR IPHONE & APPLE WATCH\nEnjoy smooth animations, dark/light adaptive aesthetics, comfortable touch targets, and full accessibility support.\n\nPawPair is designed to assist in daily pet care organization and is not veterinary advice or an emergency service.\n\nTerms of Use: https://pawpair-site.vercel.app/terms/\nPrivacy Policy: https://pawpair-site.vercel.app/privacy/",
+        "keywords": [
+          "medication",
+          "pill",
+          "dose",
+          "vaccine",
+          "vet",
+          "records",
+          "planner",
+          "diary",
+          "puppy",
+          "kitten",
+          "weight",
+          "feeding",
+          "walk",
+          "routine"
+        ],
+        "releaseNotes": "What's New in PawPair 1.1.2:\n\u2022 186 Supported Breeds: Handcrafted companion art and profiles tailored to your exact dog or cat.\n\u2022 Vet-Ready Health Passport: Easy weight tracking, vaccine records, and medical notes at your fingertips.\n\u2022 One Calm Daily Rhythm: Plan meals, walks, medications, and care with one-tap completion.\n\u2022 Apple Watch Care: Review today's schedule and log routines straight from your wrist.\n\u2022 Performance & Reliability: Faster app startup, enhanced notification precision, and bug fixes.",
+        "marketingUrl": "https://pawpair-site.vercel.app/",
+        "supportUrl": "https://pawpair-site.vercel.app/support/",
+        "privacyPolicyUrl": "https://pawpair-site.vercel.app/privacy/",
+        "screenshots": {
+          "APP_IPHONE_67": [
+            "store/apple/screenshot/en-US/APP_IPHONE_67/01-golden-milo-daily-care.png",
+            "store/apple/screenshot/en-US/APP_IPHONE_67/02-frenchie-smart-routine.png",
+            "store/apple/screenshot/en-US/APP_IPHONE_67/03-siamese-health-passport.png",
+            "store/apple/screenshot/en-US/APP_IPHONE_67/04-dachshund-186-breeds.png",
+            "store/apple/screenshot/en-US/APP_IPHONE_67/05-pomeranian-privacy-watch.png"
+          ],
+          "APP_WATCH_ULTRA": [
+            "store/apple/screenshot/en-US/APP_WATCH_ULTRA/01-today.png"
+          ]
+        }
+      }
+    },
+    "categories": [
+      "LIFESTYLE",
+      "HEALTH_AND_FITNESS"
+    ],
+    "advisory": {
+      "ageRatingOverride": "NONE",
+      "alcoholTobaccoOrDrugUseOrReferences": "NONE",
+      "contests": "NONE",
+      "gambling": false,
+      "gamblingSimulated": "NONE",
+      "horrorOrFearThemes": "NONE",
+      "kidsAgeBand": null,
+      "koreaAgeRatingOverride": "NONE",
+      "lootBox": false,
+      "matureOrSuggestiveThemes": "NONE",
+      "medicalOrTreatmentInformation": "INFREQUENT_OR_MILD",
+      "profanityOrCrudeHumor": "NONE",
+      "sexualContentGraphicAndNudity": "NONE",
+      "sexualContentOrNudity": "NONE",
+      "unrestrictedWebAccess": false,
+      "violenceCartoonOrFantasy": "NONE",
+      "violenceRealistic": "NONE",
+      "violenceRealisticProlongedGraphicOrSadistic": "NONE",
+      "advertising": false,
+      "ageAssurance": false,
+      "ageRatingOverrideV2": "NONE",
+      "developerAgeRatingInfoUrl": null,
+      "gunsOrOtherWeapons": "NONE",
+      "healthOrWellnessTopics": false,
+      "messagingAndChat": false,
+      "parentalControls": false,
+      "userGeneratedContent": false
+    },
+    "review": {
+      "firstName": "raz",
+      "lastName": "malka",
+      "email": "rmalka05@gmail.com",
+      "phone": "+972546406061",
+      "demoRequired": false,
+      "notes": "PawPair is a local-first pet care and health-history organizer for iPhone. No account or sign-in is required for core care, and the core app remains usable without a purchase. Optional Sign in with Apple enables private cloud synchronization.\n\nSuggested free path\n\n1. Create a dog named Atlas, breed Great Dane, date of birth 2022-05-14.\n2. On Home, review the daily plan and complete a care moment.\n3. Open Plan to add or edit a meal, walk, water, medication or custom routine.\n4. Open Health to add weight, vaccine, symptom or appointment information.\n5. Open Pets to switch companions or edit the active profile.\n6. Open Settings to enable optional local reminders, create an encrypted portable backup, restore a selected backup, or choose Sign in with Apple for cloud sync.\n7. After signing in, use Sync now in Settings. Pet profiles, routines, health records and private attachments are synchronized through PawPair's Supabase project. Settings > Delete account and data deletes the account, owned cloud snapshots and cloud attachments before clearing the device.\n\nPawPair Premium\n\n- Entitlement: premium\n- Annual product: app.pawpair.medtracker.premium.annual\n- Monthly product: app.pawpair.medtracker.premium.monthly\n- Premium unlocks unlimited companion profiles and caregiver handoff tools.\n- Open the Premium screen from the sparkle button in Pets, by attempting to add a second pet, or by opening Care handoff while on the free tier.\n- Localized duration, renewal price and verified trial eligibility are loaded from the App Store through RevenueCat. If no verified offering loads, purchasing is disabled rather than showing a fallback price.\n- Restore purchases, Terms and Privacy remain visible on the paywall.\n\nPrivacy and permissions\n\n- Core care remains in the app sandbox. If the reviewer chooses Sign in with Apple, pet profiles, routines, health records and attachments also sync to PawPair's private Supabase project under account- and household-scoped access rules.\n- Product analytics is optional, off by default and controlled from onboarding and Settings. It includes only allowlisted interaction events and installation identifiers; it never includes pet-care or health data.\n- RevenueCat processes anonymous purchase history for subscription functionality, fraud prevention and subscription analytics. It does not receive pet-care data.\n- There is no advertising or cross-app tracking.\n- Notifications are local and optional. File selection, backup and sharing are user-initiated system actions.\n- PawPair is not a veterinary or emergency service.\n\nThe internal Motion Lab is development-only and excluded from the production interface. Reduce Motion is respected for nonessential companion animation.\n"
+    }
+  }
+}

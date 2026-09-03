@@ -1,0 +1,70 @@
+[
+  {
+    "key": "iphone-6.9",
+    "width": 440,
+    "height": 956,
+    "dpr": 3,
+    "expected": [
+      1320,
+      2868
+    ],
+    "errors": [],
+    "files": [
+      {
+        "name": "welcome",
+        "file": "C:\\Users\\rmalk\\Documents\\Codex\\2026-07-12\\new-chat\\work\\pawpair-b768a3e-audit\\app-store\\screenshots\\iphone-6.9\\01-welcome.png"
+      },
+      {
+        "name": "home",
+        "file": "C:\\Users\\rmalk\\Documents\\Codex\\2026-07-12\\new-chat\\work\\pawpair-b768a3e-audit\\app-store\\screenshots\\iphone-6.9\\02-home.png"
+      },
+      {
+        "name": "plan",
+        "file": "C:\\Users\\rmalk\\Documents\\Codex\\2026-07-12\\new-chat\\work\\pawpair-b768a3e-audit\\app-store\\screenshots\\iphone-6.9\\03-plan.png"
+      },
+      {
+        "name": "health",
+        "file": "C:\\Users\\rmalk\\Documents\\Codex\\2026-07-12\\new-chat\\work\\pawpair-b768a3e-audit\\app-store\\screenshots\\iphone-6.9\\04-health.png"
+      },
+      {
+        "name": "settings",
+        "file": "C:\\Users\\rmalk\\Documents\\Codex\\2026-07-12\\new-chat\\work\\pawpair-b768a3e-audit\\app-store\\screenshots\\iphone-6.9\\05-settings.png"
+      }
+    ],
+    "contactSheet": "C:\\Users\\rmalk\\Documents\\Codex\\2026-07-12\\new-chat\\work\\pawpair-b768a3e-audit\\app-store\\screenshots\\iphone-6.9-contact.png"
+  },
+  {
+    "key": "ipad-13",
+    "width": 1032,
+    "height": 1376,
+    "dpr": 2,
+    "expected": [
+      2064,
+      2752
+    ],
+    "errors": [],
+    "files": [
+      {
+        "name": "welcome",
+        "file": "C:\\Users\\rmalk\\Documents\\Codex\\2026-07-12\\new-chat\\work\\pawpair-b768a3e-audit\\app-store\\screenshots\\ipad-13\\01-welcome.png"
+      },
+      {
+        "name": "home",
+        "file": "C:\\Users\\rmalk\\Documents\\Codex\\2026-07-12\\new-chat\\work\\pawpair-b768a3e-audit\\app-store\\screenshots\\ipad-13\\02-home.png"
+      },
+      {
+        "name": "plan",
+        "file": "C:\\Users\\rmalk\\Documents\\Codex\\2026-07-12\\new-chat\\work\\pawpair-b768a3e-audit\\app-store\\screenshots\\ipad-13\\03-plan.png"
+      },
+      {
+        "name": "health",
+        "file": "C:\\Users\\rmalk\\Documents\\Codex\\2026-07-12\\new-chat\\work\\pawpair-b768a3e-audit\\app-store\\screenshots\\ipad-13\\04-health.png"
+      },
+      {
+        "name": "settings",
+        "file": "C:\\Users\\rmalk\\Documents\\Codex\\2026-07-12\\new-chat\\work\\pawpair-b768a3e-audit\\app-store\\screenshots\\ipad-13\\05-settings.png"
+      }
+    ],
+    "contactSheet": "C:\\Users\\rmalk\\Documents\\Codex\\2026-07-12\\new-chat\\work\\pawpair-b768a3e-audit\\app-store\\screenshots\\ipad-13-contact.png"
+  }
+]

@@ -1,0 +1,123 @@
+{
+  "repairedCount": 9,
+  "missingKeys": [],
+  "frames": [
+    {
+      "key": "breed:dog:yorkshire-terrier",
+      "method": "authored-v2-color-corrected-feather",
+      "half": "assets\\pet-motion\\breed-yorkshire-terrier\\blink-half-v3.png",
+      "closed": "assets\\pet-motion\\breed-yorkshire-terrier\\blink-v3.png",
+      "eyes": [
+        0.3627,
+        0.5364,
+        0.2784,
+        0.1221,
+        0.0558
+      ]
+    },
+    {
+      "key": "breed:cat:birman",
+      "method": "authored-v2-color-corrected-feather",
+      "half": "assets\\pet-motion\\breed-birman\\blink-half-v3.png",
+      "closed": "assets\\pet-motion\\breed-birman\\blink-v3.png",
+      "eyes": [
+        0.3873,
+        0.534,
+        0.2709,
+        0.1174,
+        0.0623
+      ]
+    },
+    {
+      "key": "breed:dog:pug",
+      "method": "authored-v2-color-corrected-feather",
+      "half": "assets\\pet-motion\\breed-pug\\blink-half-v3.png",
+      "closed": "assets\\pet-motion\\breed-pug\\blink-v3.png",
+      "eyes": [
+        0.3169,
+        0.534,
+        0.3521,
+        0.1643,
+        0.0704
+      ]
+    },
+    {
+      "key": "breed:dog:shih-tzu",
+      "method": "authored-v2-color-corrected-feather",
+      "half": "assets\\pet-motion\\breed-shih-tzu\\blink-half-v3.png",
+      "closed": "assets\\pet-motion\\breed-shih-tzu\\blink-v3.png",
+      "eyes": [
+        0.3345,
+        0.5282,
+        0.3738,
+        0.1467,
+        0.065
+      ]
+    },
+    {
+      "key": "breed:dog:havanese",
+      "method": "authored-v2-color-corrected-feather",
+      "half": "assets\\pet-motion\\breed-havanese\\blink-half-v3.png",
+      "closed": "assets\\pet-motion\\breed-havanese\\blink-v3.png",
+      "eyes": [
+        0.3815,
+        0.5258,
+        0.4605,
+        0.0939,
+        0.0488
+      ]
+    },
+    {
+      "key": "breed:cat:maine-coon",
+      "method": "authored-v2-color-corrected-feather",
+      "half": "assets\\pet-motion\\breed-maine-coon\\blink-half-v3.png",
+      "closed": "assets\\pet-motion\\breed-maine-coon\\blink-v3.png",
+      "eyes": [
+        0.402,
+        0.566,
+        0.278,
+        0.086,
+        0.046
+      ]
+    },
+    {
+      "key": "breed:dog:chihuahua",
+      "method": "authored-v2-color-corrected-feather",
+      "half": "assets\\pet-motion\\breed-chihuahua\\blink-half-v3.png",
+      "closed": "assets\\pet-motion\\breed-chihuahua\\blink-v3.png",
+      "eyes": [
+        0.306,
+        0.52,
+        0.28,
+        0.106,
+        0.056
+      ]
+    },
+    {
+      "key": "breed:cat:persian",
+      "method": "authored-v2-color-corrected-feather",
+      "half": "assets\\pet-motion\\breed-persian\\blink-half-v3.png",
+      "closed": "assets\\pet-motion\\breed-persian\\blink-v3.png",
+      "eyes": [
+        0.387,
+        0.555,
+        0.286,
+        0.09,
+        0.046
+      ]
+    },
+    {
+      "key": "breed:cat:bengal",
+      "method": "authored-v2-color-corrected-feather",
+      "half": "assets\\pet-motion\\breed-bengal\\blink-half-v3.png",
+      "closed": "assets\\pet-motion\\breed-bengal\\blink-v3.png",
+      "eyes": [
+        0.371,
+        0.525,
+        0.238,
+        0.086,
+        0.046
+      ]
+    }
+  ]
+}

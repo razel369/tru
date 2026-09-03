@@ -1,0 +1,588 @@
+name: PawPair iOS native compile
+
+on:
+  push:
+    branches:
+      - cursor/raintank-planner-7a02
+    paths-ignore:
+      - "app-store/**"
+  workflow_dispatch:
+    inputs:
+      production_local:
+        description: Build the signed App Store IPA on the GitHub macOS runner
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  cancel-in-progress: true
+  group: ios-native-${{ github.ref }}-${{ inputs.production_local == true && 'production' || 'qa' }}
+
+jobs:
+  compile:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.production_local != true }}
+    runs-on: macos-26
+    timeout-minutes: 75
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          lfs: true
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          cache: npm
+          node-version: 22
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Generate the iOS and Watch projects
+        run: npx expo prebuild --no-install --platform ios
+
+      - name: Install CocoaPods
+        run: npx pod-install ios
+
+      - name: Compile iPhone and Apple Watch targets
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -workspace ios/PawPair.xcworkspace \
+            -scheme PawPair \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath ios/build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build | tee xcodebuild.log
+          watch_product="ios/build/Build/Products/Release-watchos/PawPairWatch.app"
+          test -d "$watch_product"
+          watch_icon_asset="$(
+            find "$watch_product" \
+              -maxdepth 1 \
+              \( -name 'Assets.car' -o -name 'AppIcon*.png' \) \
+              -print \
+              -quit
+          )"
+          test -n "$watch_icon_asset"
+
+      - name: Select an available iPhone simulator
+        run: |
+          simulator_udid="$(
+            xcrun simctl list devices available -j |
+              node -e '
+                let input = "";
+                process.stdin.on("data", chunk => input += chunk);
+                process.stdin.on("end", () => {
+                  const devices = Object.values(JSON.parse(input).devices).flat();
+                  const preferredNames = [
+                    "iPhone 17 Pro Max",
+                    "iPhone 16 Pro Max",
+                    "iPhone 17 Pro"
+                  ];
+                  const preferred = preferredNames
+                    .map(name => devices.find(device => device.isAvailable && device.name === name))
+                    .find(Boolean);
+                  const fallback = devices.find(
+                    device => device.isAvailable && device.name.startsWith("iPhone")
+                  );
+                  const selected = preferred ?? fallback;
+                  if (!selected) process.exit(1);
+                  process.stdout.write(selected.udid);
+                });
+              '
+          )"
+          echo "IOS_SIMULATOR_UDID=$simulator_udid" >> "$GITHUB_ENV"
+
+      - name: Build the launch candidate for iPhone Simulator
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -workspace ios/PawPair.xcworkspace \
+            -scheme PawPair \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -destination "id=$IOS_SIMULATOR_UDID" \
+            -derivedDataPath ios/build-simulator \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build | tee xcodebuild-simulator.log
+
+      - name: Capture a clean native iPhone launch
+        run: |
+          node scripts/boot-ios-simulator.mjs "$IOS_SIMULATOR_UDID"
+          xcrun simctl install \
+            "$IOS_SIMULATOR_UDID" \
+            ios/build-simulator/Build/Products/Release-iphonesimulator/PawPair.app
+          xcrun simctl launch "$IOS_SIMULATOR_UDID" app.pawpair.medtracker
+          sleep 12
+          mkdir -p native-qa
+          xcrun simctl io \
+            "$IOS_SIMULATOR_UDID" \
+            screenshot native-qa/iphone-launch.png
+
+      - name: Generate isolated App Store screenshot fixtures
+        run: |
+          node scripts/generate-app-store-fixture.mjs \
+            native-qa/app-store-fixture
+
+      - name: Capture native pet interaction stress
+        run: |
+          xcrun simctl terminate \
+            "$IOS_SIMULATOR_UDID" \
+            app.pawpair.medtracker || true
+          SIMCTL_CHILD_PAWPAIR_MOTION_QA=1 xcrun simctl launch \
+            "$IOS_SIMULATOR_UDID" \
+            app.pawpair.medtracker
+          sleep 6
+          xcrun simctl io \
+            "$IOS_SIMULATOR_UDID" \
+            screenshot native-qa/iphone-motion-baseline.png
+
+          xcrun simctl terminate \
+            "$IOS_SIMULATOR_UDID" \
+            app.pawpair.medtracker
+          app_container="$(
+            xcrun simctl get_app_container \
+              "$IOS_SIMULATOR_UDID" \
+              app.pawpair.medtracker \
+              data
+          )"
+          blink_marker="$app_container/Documents/pawpair-motion-blink.json"
+          rm -f "$blink_marker"
+          SIMCTL_CHILD_PAWPAIR_MOTION_QA=1 \
+          SIMCTL_CHILD_PAWPAIR_MOTION_QA_BLINK=1 \
+          xcrun simctl launch \
+            "$IOS_SIMULATOR_UDID" \
+            app.pawpair.medtracker
+          blink_started=0
+          for attempt in {1..30}; do
+            if test -f "$blink_marker" && node -e '
+              const fs = require("fs");
+              const result = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+              process.exit(result.status === "running" ? 0 : 1);
+            ' "$blink_marker"; then
+              blink_started=1
+              break
+            fi
+            sleep 1
+          done
+          if test "$blink_started" -ne 1; then
+            echo "Deterministic native blink did not start within 30 seconds."
+            exit 1
+          fi
+          sleep 1
+          xcrun simctl io \
+            "$IOS_SIMULATOR_UDID" \
+            screenshot native-qa/iphone-motion-blink.png
+          node scripts/verify-native-blink-screenshots.mjs \
+            native-qa/iphone-motion-baseline.png \
+            native-qa/iphone-motion-blink.png \
+            native-qa/motion-blink-comparison.json
+
+          xcrun simctl terminate \
+            "$IOS_SIMULATOR_UDID" \
+            app.pawpair.medtracker
+          stress_marker="$app_container/Documents/pawpair-motion-stress.json"
+          rm -f "$stress_marker"
+          SIMCTL_CHILD_PAWPAIR_MOTION_QA=1 \
+          SIMCTL_CHILD_PAWPAIR_MOTION_QA_STRESS=1 \
+          xcrun simctl launch \
+            "$IOS_SIMULATOR_UDID" \
+            app.pawpair.medtracker
+          stress_completed=0
+          for attempt in {1..45}; do
+            if test -f "$stress_marker" && node -e '
+              const fs = require("fs");
+              const result = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+              process.exit(
+                result.status === "stable" && result.attempts === 10 ? 0 : 1
+              );
+            ' "$stress_marker"; then
+              stress_completed=1
+              break
+            fi
+            sleep 1
+          done
+          if test "$stress_completed" -ne 1; then
+            echo "Native pet interaction stress did not finish within 45 seconds."
+            exit 1
+          fi
+          xcrun simctl io \
+            "$IOS_SIMULATOR_UDID" \
+            screenshot native-qa/iphone-motion-after-stress.png
+          cp "$stress_marker" native-qa/motion-stress-runtime.json
+          node -e '
+            const fs = require("fs");
+            const result = JSON.parse(
+              fs.readFileSync("native-qa/motion-stress-runtime.json", "utf8")
+            );
+            if (result.status !== "stable" || result.attempts !== 10) {
+              console.error("Native pet interaction stress did not complete.", result);
+              process.exit(1);
+            }
+          '
+          node scripts/compare-motion-stress-screenshots.mjs \
+            native-qa/iphone-motion-baseline.png \
+            native-qa/iphone-motion-after-stress.png \
+            native-qa/motion-stress-comparison.json
+
+      - name: Capture final iPhone App Store screens
+        run: |
+          xcrun simctl terminate \
+            "$IOS_SIMULATOR_UDID" \
+            app.pawpair.medtracker || true
+          app_container="$(
+            xcrun simctl get_app_container \
+              "$IOS_SIMULATOR_UDID" \
+              app.pawpair.medtracker \
+              data
+          )"
+          database="$(
+            find "$app_container" -name pawpair.v1.db -print -quit
+          )"
+          if test -z "$database"; then
+            echo "PawPair SQLite database was not created on iPhone."
+            exit 1
+          fi
+          sqlite3 "$database" < native-qa/app-store-fixture/care-state.sql
+          mkdir -p native-qa/app-store/iphone
+          for screen in home plan health pets settings premium; do
+            xcrun simctl terminate \
+              "$IOS_SIMULATOR_UDID" \
+              app.pawpair.medtracker || true
+            SIMCTL_CHILD_PAWPAIR_SCREENSHOT_QA="$screen" \
+            SIMCTL_CHILD_PAWPAIR_SCREENSHOT_QA_NOW="2026-07-26T12:15:00.000Z" \
+            xcrun simctl launch \
+              "$IOS_SIMULATOR_UDID" \
+              app.pawpair.medtracker
+            sleep 10
+            xcrun simctl io \
+              "$IOS_SIMULATOR_UDID" \
+              screenshot "native-qa/app-store/iphone/$screen.png"
+          done
+
+      - name: Preserve Premium review screenshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: pawpair-ios-premium-review
+          path: native-qa/app-store/iphone/premium.png
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Select an available 13-inch iPad simulator
+        run: |
+          ipad_simulator_udid="$(
+            xcrun simctl list devices available -j |
+              node -e '
+                let input = "";
+                process.stdin.on("data", chunk => input += chunk);
+                process.stdin.on("end", () => {
+                  const devices = Object.values(JSON.parse(input).devices).flat();
+                  const preferredNames = [
+                    "iPad Pro 13-inch (M5)",
+                    "iPad Pro 13-inch (M4)",
+                    "iPad Air 13-inch (M3)"
+                  ];
+                  const preferred = preferredNames
+                    .map(name => devices.find(device => device.isAvailable && device.name === name))
+                    .find(Boolean);
+                  const fallback = devices.find(
+                    device => device.isAvailable && device.name.startsWith("iPad")
+                  );
+                  const selected = preferred ?? fallback;
+                  if (!selected) process.exit(1);
+                  process.stdout.write(selected.udid);
+                });
+              '
+          )"
+          echo "IPAD_SIMULATOR_UDID=$ipad_simulator_udid" >> "$GITHUB_ENV"
+
+      - name: Capture a clean native iPad launch
+        run: |
+          node scripts/boot-ios-simulator.mjs "$IPAD_SIMULATOR_UDID"
+          xcrun simctl install \
+            "$IPAD_SIMULATOR_UDID" \
+            ios/build-simulator/Build/Products/Release-iphonesimulator/PawPair.app
+          xcrun simctl launch "$IPAD_SIMULATOR_UDID" app.pawpair.medtracker
+          sleep 12
+          xcrun simctl io \
+            "$IPAD_SIMULATOR_UDID" \
+            screenshot native-qa/ipad-launch.png
+
+      - name: Capture final iPad App Store screens
+        run: |
+          xcrun simctl terminate \
+            "$IPAD_SIMULATOR_UDID" \
+            app.pawpair.medtracker || true
+          app_container="$(
+            xcrun simctl get_app_container \
+              "$IPAD_SIMULATOR_UDID" \
+              app.pawpair.medtracker \
+              data
+          )"
+          database="$(
+            find "$app_container" -name pawpair.v1.db -print -quit
+          )"
+          if test -z "$database"; then
+            echo "PawPair SQLite database was not created on iPad."
+            exit 1
+          fi
+          sqlite3 "$database" < native-qa/app-store-fixture/care-state.sql
+          mkdir -p native-qa/app-store/ipad
+          for screen in home plan health pets settings premium; do
+            xcrun simctl terminate \
+              "$IPAD_SIMULATOR_UDID" \
+              app.pawpair.medtracker || true
+            SIMCTL_CHILD_PAWPAIR_SCREENSHOT_QA="$screen" \
+            SIMCTL_CHILD_PAWPAIR_SCREENSHOT_QA_NOW="2026-07-26T12:15:00.000Z" \
+            xcrun simctl launch \
+              "$IPAD_SIMULATOR_UDID" \
+              app.pawpair.medtracker
+            sleep 10
+            xcrun simctl io \
+              "$IPAD_SIMULATOR_UDID" \
+              screenshot "native-qa/app-store/ipad/$screen.png"
+          done
+
+      - name: Select an available Apple Watch simulator
+        run: |
+          watch_simulator_udid="$(
+            xcrun simctl list devices available -j |
+              node -e '
+                let input = "";
+                process.stdin.on("data", chunk => input += chunk);
+                process.stdin.on("end", () => {
+                  const devices = Object.values(JSON.parse(input).devices).flat();
+                  const preferredNames = [
+                    "Apple Watch Ultra 3 (49mm)",
+                    "Apple Watch Series 11 (46mm)",
+                    "Apple Watch Ultra 2 (49mm)"
+                  ];
+                  const preferred = preferredNames
+                    .map(name => devices.find(device => device.isAvailable && device.name === name))
+                    .find(Boolean);
+                  const fallback = devices.find(
+                    device => device.isAvailable && device.name.startsWith("Apple Watch")
+                  );
+                  const selected = preferred ?? fallback;
+                  if (!selected) process.exit(1);
+                  process.stdout.write(selected.udid);
+                });
+              '
+          )"
+          echo "WATCH_SIMULATOR_UDID=$watch_simulator_udid" >> "$GITHUB_ENV"
+
+      - name: Capture the native Apple Watch launch
+        run: |
+          node scripts/boot-ios-simulator.mjs "$WATCH_SIMULATOR_UDID"
+          xcrun simctl install \
+            "$WATCH_SIMULATOR_UDID" \
+            ios/build-simulator/Build/Products/Release-watchsimulator/PawPairWatch.app
+          xcrun simctl launch \
+            "$WATCH_SIMULATOR_UDID" \
+            app.pawpair.medtracker.watchkitapp
+          sleep 10
+          xcrun simctl io \
+            "$WATCH_SIMULATOR_UDID" \
+            screenshot native-qa/watch-empty.png
+          xcrun simctl terminate \
+            "$WATCH_SIMULATOR_UDID" \
+            app.pawpair.medtracker.watchkitapp
+          watch_snapshot_hex="$(
+            cat native-qa/app-store-fixture/watch-snapshot.hex
+          )"
+          xcrun simctl spawn \
+            "$WATCH_SIMULATOR_UDID" \
+            defaults write \
+            app.pawpair.medtracker.watchkitapp \
+            pawpair.watch.snapshot.v1 \
+            -data "$watch_snapshot_hex"
+          xcrun simctl launch \
+            "$WATCH_SIMULATOR_UDID" \
+            app.pawpair.medtracker.watchkitapp
+          sleep 10
+          xcrun simctl io \
+            "$WATCH_SIMULATOR_UDID" \
+            screenshot native-qa/watch-launch.png
+
+      - name: Preserve native QA artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pawpair-ios-native-qa
+          path: |
+            xcodebuild.log
+            xcodebuild-simulator.log
+            native-qa/iphone-launch.png
+            native-qa/iphone-motion-baseline.png
+            native-qa/iphone-motion-blink.png
+            native-qa/iphone-motion-after-stress.png
+            native-qa/motion-blink-comparison.json
+            native-qa/motion-stress-comparison.json
+            native-qa/motion-stress-runtime.json
+            native-qa/ipad-launch.png
+            native-qa/watch-empty.png
+            native-qa/watch-launch.png
+            native-qa/app-store-fixture/care-state.json
+            native-qa/app-store-fixture/watch-snapshot.json
+            native-qa/app-store/iphone/*.png
+            native-qa/app-store/ipad/*.png
+          if-no-files-found: ignore
+          retention-days: 7
+
+  production-local:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.production_local == true }}
+    runs-on: macos-26
+    timeout-minutes: 75
+
+    steps:
+      - name: Checkout release source
+        uses: actions/checkout@v5
+        with:
+          lfs: false
+
+      - name: Download runtime pet assets
+        run: git lfs pull --include="assets/pet-motion/**" --exclude="app-store/**"
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          cache: npm
+          node-version: 22
+
+      - name: Install locked dependencies and EAS CLI
+        run: |
+          npm ci
+          npm install --global eas-cli@21.2.0
+
+      - name: Authenticate the ephemeral EAS session
+        env:
+          EXPO_SESSION_SECRET: ${{ secrets.EXPO_SESSION_SECRET }}
+        run: |
+          test -n "$EXPO_SESSION_SECRET"
+          mkdir -p "$HOME/.expo"
+          node -e '
+            const fs = require("fs");
+            const path = require("path");
+            const sessionSecret = process.env.EXPO_SESSION_SECRET;
+            if (!sessionSecret) throw new Error("Missing Expo session secret");
+            fs.writeFileSync(
+              path.join(process.env.HOME, ".expo", "state.json"),
+              JSON.stringify({ auth: { sessionSecret } }),
+              { mode: 0o600 }
+            );
+          '
+          eas whoami
+
+      - name: Build the signed App Store IPA locally
+        env:
+          EAS_LOCAL_BUILD_WORKINGDIR: ${{ runner.temp }}/pawpair-eas-local
+        run: |
+          build_log="$RUNNER_TEMP/pawpair-eas-local-build.log"
+          trap 'rm -f "$build_log"' EXIT
+          set +e
+          eas build \
+            --platform ios \
+            --profile production \
+            --local \
+            --non-interactive \
+            --output "$RUNNER_TEMP/PawPair.ipa" \
+            > "$build_log" 2>&1
+          build_status=$?
+          set -e
+          if test "$build_status" -ne 0; then
+            node - "$build_log" <<'NODE'
+          const fs = require("node:fs");
+          const logPath = process.argv[2];
+          const safePattern =
+            /Signing for|requires a development team|requires a provisioning profile|No profiles for|doesn't include|credentials|provisioning|distribution certificate|Apple Team|app extension|bundle identifier|unable to|failed to|CommandError|GraphQL|build request|non-interactive|error:|Error:|build command failed|Run fastlane|Build failed/i;
+          const safeLines = fs
+            .readFileSync(logPath, "utf8")
+            .split(/\r?\n/)
+            .filter((line) => line.length > 0 && line.length < 500)
+            .filter((line) => safePattern.test(line))
+            .filter(
+              (line) =>
+                !/password|certificateP12|provisioningProfileData|sessionSecret|base64/i.test(
+                  line,
+                ),
+            )
+            .slice(-80);
+          console.error(
+            safeLines.length > 0
+              ? safeLines.join("\n")
+              : "Local EAS build failed; unsafe raw output was suppressed.",
+          );
+          NODE
+            exit "$build_status"
+          fi
+
+      - name: Inspect the signed archive
+        run: |
+          archive_root="$(mktemp -d)"
+          unzip -q "$RUNNER_TEMP/PawPair.ipa" -d "$archive_root"
+          app_path="$archive_root/Payload/PawPair.app"
+          test -d "$app_path"
+          watch_app="$(
+            find "$app_path/Watch" -maxdepth 1 -name '*.app' -print -quit
+          )"
+          test -n "$watch_app"
+          test -f "$app_path/_CodeSignature/CodeResources"
+          test -f "$watch_app/_CodeSignature/CodeResources"
+          test -f "$app_path/PrivacyInfo.xcprivacy"
+          test -f "$watch_app/PrivacyInfo.xcprivacy"
+          test -f "$app_path/embedded.mobileprovision"
+          test -f "$watch_app/embedded.mobileprovision"
+          watch_icon_asset="$(
+            find "$watch_app" \
+              -maxdepth 1 \
+              \( -name 'Assets.car' -o -name 'AppIcon*.png' \) \
+              -print \
+              -quit
+          )"
+          test -n "$watch_icon_asset"
+          /usr/bin/codesign \
+            --verify \
+            --deep \
+            --strict \
+            --verbose=2 \
+            "$app_path"
+          {
+            echo "gitCommitHash=$GITHUB_SHA"
+            echo "githubRunId=$GITHUB_RUN_ID"
+            echo "sha256=$(shasum -a 256 "$RUNNER_TEMP/PawPair.ipa" | awk '{print $1}')"
+            echo "appVersion=$(
+              /usr/libexec/PlistBuddy \
+                -c 'Print :CFBundleShortVersionString' \
+                "$app_path/Info.plist"
+            )"
+            echo "appBuildVersion=$(
+              /usr/libexec/PlistBuddy \
+                -c 'Print :CFBundleVersion' \
+                "$app_path/Info.plist"
+            )"
+            echo "watchApp=$(basename "$watch_app")"
+            echo "watchIconAsset=$(basename "$watch_icon_asset")"
+          } > "$RUNNER_TEMP/release-summary.txt"
+          cat "$RUNNER_TEMP/release-summary.txt"
+
+      - name: Preserve signed release candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: pawpair-ios-production-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/PawPair.ipa
+            ${{ runner.temp }}/release-summary.txt
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Remove the ephemeral Expo session
+        if: always()
+        run: rm -f "$HOME/.expo/state.json"

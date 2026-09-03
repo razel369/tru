@@ -1,0 +1,45 @@
+name: PawPair quality
+
+on:
+  pull_request:
+  push:
+    paths-ignore:
+      - "app-store/**"
+  workflow_dispatch:
+
+concurrency:
+  cancel-in-progress: true
+  group: quality-${{ github.ref }}
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          lfs: true
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          cache: npm
+          node-version: 24
+
+      - name: Use Python
+        uses: actions/setup-python@v5
+        with:
+          cache: pip
+          cache-dependency-path: scripts/requirements-image-audit.txt
+          python-version: "3.12"
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Install image-audit dependencies
+        run: python -m pip install --requirement scripts/requirements-image-audit.txt
+
+      - name: Verify PawPair
+        run: npm run verify:ci

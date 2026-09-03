@@ -1,0 +1,45 @@
+{
+  "subscriptionGroup": {
+    "referenceName": "PawPair Premium",
+    "displayName": "PawPair Premium",
+    "appNameDisplayOption": "Use app name"
+  },
+  "entitlementId": "premium",
+  "offeringId": "default",
+  "products": [
+    {
+      "productId": "app.pawpair.medtracker.premium.annual",
+      "referenceName": "PawPair Premium Annual",
+      "package": "$rc_annual",
+      "duration": "ONE_YEAR",
+      "displayName": "PawPair Premium Annual",
+      "description": "Unlimited pets and caregiver handoffs.",
+      "initialPriceHypothesisUsd": 39.99,
+      "introductoryOffer": {
+        "type": "FREE_TRIAL",
+        "duration": "ONE_WEEK"
+      },
+      "familySharing": false,
+      "reviewScreenshot": "app-store/review/premium-paywall-iphone.png"
+    },
+    {
+      "productId": "app.pawpair.medtracker.premium.monthly",
+      "referenceName": "PawPair Premium Monthly",
+      "package": "$rc_monthly",
+      "duration": "ONE_MONTH",
+      "displayName": "PawPair Premium Monthly",
+      "description": "Unlimited pets and caregiver handoffs.",
+      "initialPriceHypothesisUsd": 6.99,
+      "introductoryOffer": null,
+      "familySharing": false,
+      "reviewScreenshot": "app-store/review/premium-paywall-iphone.png"
+    }
+  ],
+  "launchRules": {
+    "annualSelectedByDefault": true,
+    "localizedStorePriceOnly": true,
+    "showTrialOnlyWhenEligible": true,
+    "restorePurchasesVisible": true,
+    "termsAndPrivacyVisible": true
+  }
+}

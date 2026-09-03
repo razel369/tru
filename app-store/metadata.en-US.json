@@ -1,0 +1,22 @@
+{
+  "locale": "en-US",
+  "name": "PawPair: Pet Care Tracker",
+  "subtitle": "Dog & Cat Health Reminders",
+  "promotionalText": "Keep every dog & cat healthy with 186 custom breed companions, smart daily routines, vet-ready health passports, and 100% private local care tracking.",
+  "description": "PawPair is a calm, private home for the everyday care, medication reminders, and health history of every dog and cat you love.\n\nYOUR PET AT THE CENTER \u2014 186 SUPPORTED BREEDS\nCreate personal companion profiles with custom artwork tailored to your exact dog or cat. From Golden Retrievers and French Bulldogs to Siamese cats and Maine Coons, PawPair celebrates your pet's individuality and keeps them at the heart of your day.\n\nA CALM, EFFORTLESS DAILY RHYTHM\nPlan meals, walks, water, medication, grooming, and appointments in an intuitive chronological timeline. See what is next at a glance and mark care moments complete with a single tap.\n\nVET-READY HEALTH PASSPORT\nKeep comprehensive, organized medical history right in your pocket. Track weight trends with visual charts, maintain vaccine and preventive care logs, monitor ongoing or resolved symptoms, and log vet notes. Prepare a focused, vet-ready health brief in seconds.\n\nAPPLE WATCH CARE ON YOUR WRIST\nGlance at today's care progress, see upcoming tasks, and mark doses or walks done or skipped directly from Apple Watch. Offline changes queue safely and synchronize seamlessly when connected.\n\nRELIABLE LOCAL REMINDERS\nNever miss an important medication, meal, or vet appointment. Notifications are scheduled locally on your device with comfortable snooze controls and action buttons.\n\nPORTABLE ENCRYPTED BACKUPS\nCreate password-protected backups that stay entirely in your control. Export, save, or restore through the native system file picker without needing third-party servers.\n\nPAWPAIR PREMIUM\nUnlock unlimited companion profiles and seamless caregiver handoff tools. Monthly and annual auto-renewable plans are available. Localized App Store pricing is displayed clearly with zero hidden fees.\n\n100% PRIVATE BY DESIGN\nYour care data belongs to you. Pet profiles, medical records, and photos stay secure on your device. There are no advertisements, data brokers, or cross-app tracking.\n\nBUILT WITH LOVE FOR IPHONE & APPLE WATCH\nEnjoy smooth animations, dark/light adaptive aesthetics, comfortable touch targets, and full accessibility support.\n\nPawPair is designed to assist in daily pet care organization and is not veterinary advice or an emergency service.\n\nTerms of Use: https://pawpair-site.vercel.app/terms/\nPrivacy Policy: https://pawpair-site.vercel.app/privacy/",
+  "releaseNotes": "What's New in PawPair 1.1.2:\n\u2022 186 Supported Breeds: Handcrafted companion art and profiles tailored to your exact dog or cat.\n\u2022 Vet-Ready Health Passport: Easy weight tracking, vaccine records, and medical notes at your fingertips.\n\u2022 One Calm Daily Rhythm: Plan meals, walks, medications, and care with one-tap completion.\n\u2022 Apple Watch Care: Review today's schedule and log routines straight from your wrist.\n\u2022 Performance & Reliability: Faster app startup, enhanced notification precision, and bug fixes.",
+  "keywords": "medication,pill,dose,vaccine,vet,records,planner,diary,puppy,kitten,weight,feeding,walk,routine",
+  "supportUrl": "https://pawpair-site.vercel.app/support/",
+  "marketingUrl": "https://pawpair-site.vercel.app/",
+  "privacyPolicyUrl": "https://pawpair-site.vercel.app/privacy/",
+  "termsOfUseUrl": "https://pawpair-site.vercel.app/terms/",
+  "primaryCategory": "LIFESTYLE",
+  "secondaryCategory": "HEALTH_AND_FITNESS",
+  "copyright": "2026 Raz Malka",
+  "price": "Free",
+  "primaryLanguage": "English (U.S.)",
+  "releaseMethod": "Automatic after App Review approval",
+  "sku": "PAWPAIR-IOS-001",
+  "bundleId": "app.pawpair.medtracker",
+  "version": "1.2.0"
+}
