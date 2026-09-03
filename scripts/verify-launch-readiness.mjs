@@ -1,8 +1,20 @@
 import fs from "node:fs";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+
+function readGitOutput(args) {
+  try {
+    return execFileSync("git", ["-C", root, ...args], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+  } catch {
+    return null;
+  }
+}
 const checks = [];
 
 function read(relativePath) {
@@ -67,14 +79,16 @@ const collectedDataTypes = new Set(
   ),
 );
 
-add("Universal iPhone and iPad target", app.ios?.supportsTablet === true, `supportsTablet=${app.ios?.supportsTablet}`);
-add("iPad multitasking", app.ios?.requireFullScreen === false, `requireFullScreen=${app.ios?.requireFullScreen}`);
-add("iPad orientations", [
-  "UIInterfaceOrientationPortrait",
-  "UIInterfaceOrientationPortraitUpsideDown",
-  "UIInterfaceOrientationLandscapeLeft",
-  "UIInterfaceOrientationLandscapeRight",
-].every((orientation) => ipadOrientations.includes(orientation)), ipadOrientations.join(", "));
+add("iPhone target platform", app.ios?.supportsTablet === false, `supportsTablet=${app.ios?.supportsTablet}`);
+if (app.ios?.supportsTablet) {
+  add("iPad multitasking", app.ios?.requireFullScreen === false, `requireFullScreen=${app.ios?.requireFullScreen}`);
+  add("iPad orientations", [
+    "UIInterfaceOrientationPortrait",
+    "UIInterfaceOrientationPortraitUpsideDown",
+    "UIInterfaceOrientationLandscapeLeft",
+    "UIInterfaceOrientationLandscapeRight",
+  ].every((orientation) => ipadOrientations.includes(orientation)), ipadOrientations.join(", "));
+}
 add("Bundle identifier", app.ios?.bundleIdentifier === "app.pawpair.medtracker", app.ios?.bundleIdentifier);
 add(
   "EAS production build candidate",
@@ -87,6 +101,22 @@ add(
   buildCandidate
     ? `build=${buildCandidate.appBuildVersion}, commit=${buildCandidate.gitCommitHash}, id=${buildCandidate.id}`
     : "missing until the exact final EAS build is audited",
+);
+const currentGitCommit = readGitOutput(["rev-parse", "HEAD"]);
+const currentCheckoutStatus = readGitOutput([
+  "status",
+  "--porcelain=v1",
+  "--untracked-files=all",
+]);
+const dirtyEntryCount = currentCheckoutStatus
+  ? currentCheckoutStatus.split(/\r?\n/).filter(Boolean).length
+  : 0;
+add(
+  "Current checkout matches signed build",
+  currentGitCommit !== null &&
+    currentGitCommit === buildCandidate?.gitCommitHash &&
+    currentCheckoutStatus === "",
+  `HEAD=${currentGitCommit ?? "unavailable"}, build=${buildCandidate?.gitCommitHash ?? "missing"}, dirtyEntries=${dirtyEntryCount}`,
 );
 add("Export compliance", app.ios?.infoPlist?.ITSAppUsesNonExemptEncryption === false, "ITSAppUsesNonExemptEncryption must be false");
 add("Terms URL in metadata", metadata.description.includes(metadata.termsOfUseUrl), metadata.termsOfUseUrl);
@@ -150,11 +180,11 @@ add(
 );
 
 const screenshots = [
-  "01-pet-care-ai.png",
-  "02-daily-care-ai.png",
-  "03-pet-health-ai.png",
-  "04-every-pet-ai.png",
-  "05-private-ai.png",
+  "01-never-miss-care.png",
+  "02-calm-daily-plan.png",
+  "03-health-history-ready.png",
+  "04-supported-breeds.png",
+  "05-private-by-choice.png",
 ];
 const finalCaptures = [
   "01-home.png",
@@ -192,7 +222,7 @@ for (const file of screenshots) {
     root,
     `app-store/screenshots/iphone-6.9-final/${sourceFile}`,
   );
-  const relativePath = `app-store/aso/iphone-6.9/model-b/${file}`;
+  const relativePath = `app-store/aso-v2/iphone-6.9/${file}`;
   const absolutePath = path.join(root, relativePath);
   const info = pngInfo(relativePath);
   const fresh =
@@ -214,47 +244,49 @@ for (const file of screenshots) {
   );
 }
 
-for (const file of finalCaptures) {
-  const relativePath = `app-store/screenshots/ipad-13-final/${file}`;
-  const info = pngInfo(relativePath);
-  add(
-    `Final iPad capture ${file}`,
-    info?.width === 2064 &&
-      info?.height === 2752 &&
-      info?.colorType !== 4 &&
-      info?.colorType !== 6,
-    info
-      ? `${info.width}x${info.height}, colorType=${info.colorType}`
-      : "missing",
-  );
-}
-
-for (const file of screenshots) {
-  const sourceFile = finalCaptures[screenshots.indexOf(file)];
-  const sourcePath = path.join(
-    root,
-    `app-store/screenshots/ipad-13-final/${sourceFile}`,
-  );
-  const relativePath = `app-store/aso/ipad-13/model-b/${file}`;
-  const absolutePath = path.join(root, relativePath);
-  const info = pngInfo(relativePath);
-  const fresh =
-    fs.existsSync(sourcePath) &&
-    fs.existsSync(absolutePath) &&
-    fs.statSync(absolutePath).mtimeMs >= fs.statSync(sourcePath).mtimeMs;
-  add(
-    `iPad screenshot ${file}`,
-    fresh &&
+if (app.ios?.supportsTablet) {
+  for (const file of finalCaptures) {
+    const relativePath = `app-store/screenshots/ipad-13-final/${file}`;
+    const info = pngInfo(relativePath);
+    add(
+      `Final iPad capture ${file}`,
       info?.width === 2064 &&
-      info?.height === 2752 &&
-      info?.colorType !== 4 &&
-      info?.colorType !== 6,
-    !fs.existsSync(sourcePath)
-      ? "stale until exact final capture exists and compositor reruns"
-      : info
-        ? `${info.width}x${info.height}, colorType=${info.colorType}, fresh=${fresh}`
+        info?.height === 2752 &&
+        info?.colorType !== 4 &&
+        info?.colorType !== 6,
+      info
+        ? `${info.width}x${info.height}, colorType=${info.colorType}`
         : "missing",
-  );
+    );
+  }
+
+  for (const file of screenshots) {
+    const sourceFile = finalCaptures[screenshots.indexOf(file)];
+    const sourcePath = path.join(
+      root,
+      `app-store/screenshots/ipad-13-final/${sourceFile}`,
+    );
+    const relativePath = `app-store/aso-v2/ipad-13/${file}`;
+    const absolutePath = path.join(root, relativePath);
+    const info = pngInfo(relativePath);
+    const fresh =
+      fs.existsSync(sourcePath) &&
+      fs.existsSync(absolutePath) &&
+      fs.statSync(absolutePath).mtimeMs >= fs.statSync(sourcePath).mtimeMs;
+    add(
+      `iPad screenshot ${file}`,
+      fresh &&
+        info?.width === 2064 &&
+        info?.height === 2752 &&
+        info?.colorType !== 4 &&
+        info?.colorType !== 6,
+      !fs.existsSync(sourcePath)
+        ? "stale until exact final capture exists and compositor reruns"
+        : info
+          ? `${info.width}x${info.height}, colorType=${info.colorType}, fresh=${fresh}`
+          : "missing",
+    );
+  }
 }
 
 const watchScreenshotPath =
