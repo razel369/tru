@@ -1,9 +1,10 @@
 import * as Haptics from "expo-haptics";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
   AppState,
+  BackHandler,
+  Linking,
   NativeModules,
   Platform,
   StyleSheet,
@@ -22,6 +23,12 @@ import type { Pet } from "../../types";
 import { deletePawPairCloudAccount } from "../account/delete-account";
 import { trackAnalyticsEvent } from "../analytics/service";
 import {
+  getCloudAccount,
+  signInWithAppleAccount,
+} from "../cloud-sync/service";
+import { careCircleInviteCodeFromUrl } from "../cloud-sync/household-invite";
+import {
+  clearCareReminderPreferences,
   getCareReminderPrivacy,
   getCareReminderState,
   initializeCareNotifications,
@@ -47,7 +54,10 @@ import type { PawPairSystemRoute } from "../system/routes";
 import { canAddPet, defaultFreeEntitlement, isPlus } from "../subscriptions/entitlements";
 import { PremiumPaywallScreen } from "../subscriptions/PremiumPaywallScreen";
 import { appStoreReviewPremiumPackages } from "../subscriptions/revenuecat";
-import { refreshEntitlement } from "../subscriptions/storekit";
+import {
+  clearCachedEntitlement,
+  refreshEntitlement,
+} from "../subscriptions/storekit";
 import type { PremiumEntryPoint } from "../subscriptions/types";
 import {
   buildWatchSnapshot,
@@ -58,10 +68,11 @@ import {
 import { CareBottomNav, type CareTab } from "./CareBottomNav";
 import { buildUpcomingAppointments } from "./appointments";
 import { buildCareInsights } from "./care-insights";
+import { assignmentForOccurrence } from "./care-circle";
+import { CareCircleScreen } from "./CareCircleScreen";
 import { CareLogSheet } from "./CareLogSheet";
 import { buildCareSchedule } from "./engine";
 import { HealthHubScreen } from "./HealthHubScreen";
-import { HomeCareScreen } from "./HomeCareScreen";
 import { MotionLabScreen } from "./MotionLabScreen";
 import { resolveNativeMotionQASettings } from "./native-motion-qa";
 import { resolveNativeScreenshotQASettings } from "./native-screenshot-qa";
@@ -72,7 +83,12 @@ import { PetsHubScreen } from "./PetsHubScreen";
 import { PlanScreen } from "./PlanScreen";
 import { QuickAddScreen } from "./QuickAddScreen";
 import { usePetCareStore } from "./store";
-import type { CareCategory, CareTask, ScheduledCare } from "./types";
+import type {
+  CareCategory,
+  CaregiverIdentity,
+  CareTask,
+  ScheduledCare,
+} from "./types";
 import { useCareClock } from "./useCareClock";
 
 type PetEditor = { mode: "add" } | { mode: "edit"; pet: Pet };
@@ -84,7 +100,6 @@ type PendingConfirmation = {
   title: string;
 };
 
-const ACTIVATION_PAYWALL_KEY = "pawpair.premium.activation-paywall.v1";
 const nativeMotionQA = resolveNativeMotionQASettings(
   Platform.OS === "ios"
     ? (NativeModules.PawPairSystemBridge as
@@ -114,6 +129,21 @@ function isSameLocalDate(first: Date, second: Date) {
 export function PetCareApp() {
   const insets = useSafeAreaInsets();
   const store = usePetCareStore();
+  const currentCaregiver = useMemo<CaregiverIdentity>(() => {
+    if (nativeScreenshotQA.caregiverName) {
+      return {
+        id: "screenshot-caregiver",
+        displayName: nativeScreenshotQA.caregiverName,
+      };
+    }
+    const account =
+      store.cloudSyncStatus.phase === "signed-out"
+        ? null
+        : store.cloudSyncStatus.account;
+    return account?.userId
+      ? { id: account.userId, displayName: account.displayName }
+      : { id: "local-device", displayName: "You" };
+  }, [store.cloudSyncStatus]);
   const notificationPets = store.state.pets;
   const notificationTasks = store.state.tasks;
   const activatePetFromNotification = store.setActivePetId;
@@ -129,6 +159,9 @@ export function PetCareApp() {
   );
   const selectedDateTracksToday = useRef(true);
   const [toast, setToast] = useState<string | null>(null);
+  const [pendingInviteCode, setPendingInviteCode] = useState<string | null>(
+    null,
+  );
   const [petEditor, setPetEditor] = useState<PetEditor | null>(null);
   const [addCategory, setAddCategory] = useState<CareCategory>("feeding");
   const [editingTask, setEditingTask] = useState<CareTask | null>(null);
@@ -150,12 +183,26 @@ export function PetCareApp() {
     useState<PendingConfirmation | null>(null);
   const [logEditor, setLogEditor] = useState<ScheduledCare | null>(null);
   const [entitlement, setEntitlement] = useState(defaultFreeEntitlement);
+
+  useEffect(() => {
+    const openInvite = (url: string | null) => {
+      if (!url) return;
+      const code = careCircleInviteCodeFromUrl(url);
+      if (!code) return;
+      setPendingInviteCode(code);
+      setSettingsOpen(false);
+      setTab("home");
+    };
+    void Linking.getInitialURL().then(openInvite).catch(() => undefined);
+    const subscription = Linking.addEventListener("url", ({ url }) =>
+      openInvite(url),
+    );
+    return () => subscription.remove();
+  }, []);
   const [paywallSource, setPaywallSource] =
     useState<PremiumEntryPoint | null>(
       nativeScreenshotQA.openPremium ? "pets" : null,
     );
-  const [activationPromptReady, setActivationPromptReady] = useState(false);
-  const activationPromptSeen = useRef(true);
 
   const applyCareReminderState = useCallback((result: CareReminderState) => {
     setRemindersEnabled(result.enabled);
@@ -195,9 +242,11 @@ export function PetCareApp() {
     if (!store.loaded) return;
     let active = true;
     const consume = () => {
-      void consumePendingSystemRoute().then((route) => {
-        if (active && route) openSystemRoute(route);
-      });
+      void consumePendingSystemRoute()
+        .then((route) => {
+          if (active && route) openSystemRoute(route);
+        })
+        .catch(() => undefined);
     };
     consume();
     const unsubscribe = subscribeSystemRoutes(openSystemRoute);
@@ -244,6 +293,15 @@ export function PetCareApp() {
     void initializeCareNotifications()
       .then(refreshCareReminderState)
       .catch(refreshCareReminderState);
+
+    const subscription = AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        void refreshCareReminderState();
+      }
+    });
+    return () => {
+      subscription.remove();
+    };
   }, [refreshCareReminderState]);
 
   useEffect(() => {
@@ -259,21 +317,66 @@ export function PetCareApp() {
   }, []);
 
   useEffect(() => {
+    if (Platform.OS !== "android") return;
+    const subscription = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        if (confirmation) {
+          setConfirmation(null);
+          return true;
+        }
+        if (logEditor) {
+          setLogEditor(null);
+          return true;
+        }
+        if (legalDocument) {
+          setLegalDocument(null);
+          return true;
+        }
+        if (petEditor) {
+          setPetEditor(null);
+          return true;
+        }
+        if (paywallSource) {
+          setPaywallSource(null);
+          return true;
+        }
+        if (settingsOpen) {
+          setSettingsOpen(false);
+          return true;
+        }
+        if (motionLabOpen) {
+          setMotionLabOpen(false);
+          return true;
+        }
+        if (tab === "add") {
+          setEditingTask(null);
+          setTab(addReturnTab);
+          return true;
+        }
+        return false;
+      },
+    );
+    return () => subscription.remove();
+  }, [
+    addReturnTab,
+    confirmation,
+    legalDocument,
+    logEditor,
+    motionLabOpen,
+    paywallSource,
+    petEditor,
+    settingsOpen,
+    tab,
+  ]);
+
+  useEffect(() => {
     let active = true;
-    void refreshEntitlement().then((next) => {
-      if (active) setEntitlement(next);
-    });
-    void AsyncStorage.getItem(ACTIVATION_PAYWALL_KEY)
-      .then((value) => {
-        if (!active) return;
-        activationPromptSeen.current = value === "shown";
-        setActivationPromptReady(true);
+    void refreshEntitlement()
+      .then((next) => {
+        if (active) setEntitlement(next);
       })
-      .catch(() => {
-        if (!active) return;
-        activationPromptSeen.current = true;
-        setActivationPromptReady(true);
-      });
+      .catch(() => undefined);
     return () => {
       active = false;
     };
@@ -317,7 +420,7 @@ export function PetCareApp() {
         );
         if (!occurrence) return;
 
-        logNotificationOccurrence(occurrence, action.action);
+        logNotificationOccurrence(occurrence, action.action, currentCaregiver);
         if (action.action === "done") {
           void trackAnalyticsEvent("care_item_completed");
         }
@@ -327,7 +430,12 @@ export function PetCareApp() {
             : `${occurrence.task.title} skipped`,
         );
       }),
-    [logNotificationOccurrence, notificationPets, notificationTasks],
+    [
+      currentCaregiver,
+      logNotificationOccurrence,
+      notificationPets,
+      notificationTasks,
+    ],
   );
 
   useEffect(() => {
@@ -401,17 +509,19 @@ export function PetCareApp() {
     if (!store.loaded) return;
     void syncWatchCare(
       buildWatchSnapshot(watchHomeSchedule, store.state.activePetId),
-    );
+    ).catch(() => undefined);
   }, [careNow, store.loaded, store.state.activePetId, watchHomeSchedule]);
 
-  useEffect(
-    () =>
-      subscribeWatchCareActions((action) => {
+  useEffect(() => {
+    if (!store.loaded) return;
+    let unsubscribe: () => void = () => undefined;
+    const timer = setTimeout(() => {
+      unsubscribe = subscribeWatchCareActions((action) => {
         const occurrence = watchSchedule.find(
           (item) => item.id === action.occurrenceId,
         );
         if (!occurrence) return;
-        logNotificationOccurrence(occurrence, action.status);
+        logNotificationOccurrence(occurrence, action.status, currentCaregiver);
         setToast(
           action.status === "done"
             ? `${occurrence.task.title} completed from Apple Watch`
@@ -420,9 +530,13 @@ export function PetCareApp() {
         void Haptics.notificationAsync(
           Haptics.NotificationFeedbackType.Success,
         ).catch(() => undefined);
-      }),
-    [logNotificationOccurrence, watchSchedule],
-  );
+      });
+    }, 1_500);
+    return () => {
+      clearTimeout(timer);
+      unsubscribe();
+    };
+  }, [currentCaregiver, logNotificationOccurrence, store.loaded, watchSchedule]);
   const careInsights = useMemo(
     () =>
       buildCareInsights(
@@ -458,6 +572,7 @@ export function PetCareApp() {
         bottomInset={insets.bottom}
         onReset={store.clearAllData}
         onRestore={store.replaceAllData}
+        onRetry={store.retryLoad}
         topInset={insets.top}
       />
     );
@@ -507,8 +622,6 @@ export function PetCareApp() {
           store.addPet(pet);
           setToast(null);
           if (intent === "premium") {
-            activationPromptSeen.current = true;
-            void AsyncStorage.setItem(ACTIVATION_PAYWALL_KEY, "shown");
             setPaywallSource("onboarding");
           }
         }}
@@ -569,12 +682,20 @@ export function PetCareApp() {
       <SettingsScreen
         bottomInset={insets.bottom}
         careState={store.state}
+        cloudSyncStatus={store.cloudSyncStatus}
         notificationPermission={notificationPermission}
         onClose={() => setSettingsOpen(false)}
+        onConnectCloud={async () => {
+          if (!(await getCloudAccount())) {
+            await signInWithAppleAccount();
+          }
+          await store.connectCloudSync();
+        }}
         onDeleteAccount={async () => {
           const previousRemindersEnabled = remindersEnabled;
           let remindersWereDisabled = false;
           let cloudAccountDeleted = false;
+          let analyticsCleanupWarning = false;
           try {
             await setCareRemindersEnabled(
               false,
@@ -585,10 +706,26 @@ export function PetCareApp() {
             remindersWereDisabled = previousRemindersEnabled;
             const deletion = await deletePawPairCloudAccount();
             cloudAccountDeleted = deletion.cloudAccountDeleted;
+            analyticsCleanupWarning = deletion.analyticsCleanupWarning;
+            await Promise.all([
+              clearCareReminderPreferences(),
+              clearCachedEntitlement(),
+            ]);
             const result = await store.clearAllData();
+            setEntitlement(defaultFreeEntitlement);
+            setReminderPrivacy("private");
             setSettingsOpen(false);
-            if (result.warning) {
-              Alert.alert("Account deleted with a cleanup warning", result.warning);
+            const cleanupWarnings = [
+              analyticsCleanupWarning
+                ? "Local analytics settings could not be fully cleared. Restart PawPair and try deleting the remaining local data again."
+                : null,
+              result.warning,
+            ].filter((warning): warning is string => Boolean(warning));
+            if (cleanupWarnings.length > 0) {
+              Alert.alert(
+                "Account deleted with a cleanup warning",
+                cleanupWarnings.join("\n\n"),
+              );
             }
           } catch (error) {
             if (
@@ -698,11 +835,11 @@ export function PetCareApp() {
     );
   }
 
-  const complete = (item: ScheduledCare) => {
+  const completeNow = (item: ScheduledCare) => {
     void Haptics.notificationAsync(
       Haptics.NotificationFeedbackType.Success,
     ).catch(() => undefined);
-    store.logOccurrence(item, "done");
+    store.logOccurrence(item, "done", currentCaregiver);
     void trackAnalyticsEvent("care_item_completed");
     const stock = item.task.details?.stock;
     const remaining =
@@ -715,22 +852,30 @@ export function PetCareApp() {
         ? `${item.task.title} completed. Refill soon: ${remaining} ${item.task.details?.stockUnit || "doses"} left`
         : item.task.title + " completed for " + item.pet.name,
     );
-    if (
-      activationPromptReady &&
-      !activationPromptSeen.current &&
-      !isPlus(entitlement)
-    ) {
-      activationPromptSeen.current = true;
-      void AsyncStorage.setItem(ACTIVATION_PAYWALL_KEY, "shown");
-      setTimeout(() => setPaywallSource("first-care"), 650);
+  };
+
+  const complete = (item: ScheduledCare) => {
+    const assignment = assignmentForOccurrence(
+      store.state.assignments ?? [],
+      item,
+    );
+    if (assignment && assignment.caregiverId !== currentCaregiver.id) {
+      setConfirmation({
+        body: `${assignment.caregiverName} claimed this care moment. Taking over will make you the recorded caregiver and keeps the handoff clear.`,
+        confirmLabel: "Take over & finish",
+        title: `${assignment.caregiverName} is handling this`,
+        onConfirm: () => completeNow(item),
+      });
+      return;
     }
+    completeNow(item);
   };
 
   const skip = (item: ScheduledCare) => {
     void Haptics.notificationAsync(
       Haptics.NotificationFeedbackType.Warning,
     ).catch(() => undefined);
-    store.logOccurrence(item, "skipped");
+    store.logOccurrence(item, "skipped", currentCaregiver);
     setToast(item.task.title + " skipped");
   };
 
@@ -765,15 +910,46 @@ export function PetCareApp() {
     <View style={styles.app}>
       <AutoOfflineBanner />
       {tab === "home" && (
-        <HomeCareScreen
+        <CareCircleScreen
           activePetId={store.state.activePetId}
+          assignments={store.state.assignments ?? []}
           bottomInset={insets.bottom}
+          cloudSyncStatus={store.cloudSyncStatus}
+          currentCaregiver={currentCaregiver}
+          inviteCode={pendingInviteCode}
           now={careNow}
+          onAcceptInvite={async (code) => {
+            const household = await store.acceptCareCircleInvite(code);
+            setPendingInviteCode(null);
+            setToast(`Joined ${household.name}`);
+          }}
           onActivePetChange={store.setActivePetId}
           onComplete={complete}
           onOpenAdd={() => openAdd()}
           onOpenLog={setLogEditor}
-          onSkip={skip}
+          onOpenPlan={() => changeTab("plan")}
+          onOpenSettings={() => {
+            setSettingsOpen(true);
+            void refreshCareReminderState();
+          }}
+          onInviteDismiss={() => setPendingInviteCode(null)}
+          onRelease={(item) => {
+            store.releaseOccurrence(item, currentCaregiver.id);
+            setToast(`${item.task.title} is open to the Care Circle`);
+          }}
+          onTakeOver={(item) => {
+            void Haptics.impactAsync(
+              Haptics.ImpactFeedbackStyle.Medium,
+            ).catch(() => undefined);
+            store.assignOccurrence(item, currentCaregiver);
+            setToast(`You are handling ${item.task.title}`);
+          }}
+          onSwitchHousehold={async (householdId) => {
+            const household = await store.switchCareCircleHousehold(
+              householdId,
+            );
+            setToast(`Opened ${household.name}`);
+          }}
           pets={store.state.pets}
           schedule={homeSchedule}
           scrollToTopSignal={homeScrollRequest}
@@ -849,7 +1025,7 @@ export function PetCareApp() {
             setSelectedDate(nextDate);
             setToast(task.title + (editingTask ? " updated" : " added"));
             setEditingTask(null);
-            setTab("plan");
+            setTab(addReturnTab);
           }}
           pets={store.state.pets}
           topInset={insets.top}
